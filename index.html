@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+  <div class="general">
+    <div class="col-1"></div>
+      <div id="drawflow"></div>
+    <div class="col-2"></div>
+  </div>
+  <script src="main.js"></script>
+  <!--<script src="engine/index.js"></script>-->
+  <link rel="stylesheet" type="text/css" href="draflow.css" />
+
+  <script>
+    var id = document.getElementById("drawflow");
+    //var editor = Draflow(id);
+    const config = {
+
+    }
+    const editor = new Drawflow(id);
+    editor.start();
+
+    //console.log(editor);
+
+    editor.addNode();
+    editor.addNode();
+    editor.addNode();
+    editor.addNode();
+    editor.addNode();
+    //const editor = new Draflow.Editor(id, options).start();
+
+  </script>
+  <style>
+
+    html, body {
+      overflow: hidden;
+      margin: 0px;
+    }
+    .general {
+      display: flex;
+    }
+    .col-1, .col-2 {
+      display: block;
+      width: 200px;
+      height: 100vh;
+      background: #484848;
+    }
+    #drawflow {
+      width: calc(100vw - 400px);
+      height: 100vh;
+      background: #cacaca;
+    }
+
+    @media only screen and (max-width: 767px) {
+      .col-1, .col-2 {
+        display: none;
+      }
+      #drawflow {
+        width: 100%;
+      }
+    }
+  </style>
+</body>
+</html>

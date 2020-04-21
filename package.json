@@ -1,0 +1,22 @@
+{
+  "name": "draflow",
+  "version": "0.0.1",
+  "description": "Flow library",
+  "main": "index.js",
+  "scripts": {
+    "dev": "webpack-dev-server --mode development --open",
+    "build": "webpack --mode=production",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "flow"
+  ],
+  "author": "Jero soler",
+  "license": "ISC",
+  "devDependencies": {
+    "webpack-cli": "^3.3.11"
+  },
+  "dependencies": {
+    "webpack": "^4.42.1"
+  }
+}
