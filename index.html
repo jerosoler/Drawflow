@@ -7,6 +7,7 @@
   <title>Document</title>
 </head>
 <body>
+  <div class="top"></div>
   <div class="general">
     <div class="col-1"></div>
       <div id="drawflow"></div>
@@ -17,6 +18,7 @@
   <link rel="stylesheet" type="text/css" href="draflow.css" />
 
   <script>
+
     var id = document.getElementById("drawflow");
     //var editor = Draflow(id);
     const config = {
@@ -27,19 +29,33 @@
 
     //console.log(editor);
 
-    editor.addNode();
-    editor.addNode();
-    editor.addNode();
-    editor.addNode();
-    editor.addNode();
-    //const editor = new Draflow.Editor(id, options).start();
 
+    var html = '<div><p>Hollaaa</p><input type="text"></div>';
+    var test = document.createElement("div");
+    test.innerHTML = 'Hello World!!';
+    test.addEventListener('dblclick', function() {
+      alert("test");
+      console.log(editor.export());
+    });
+
+    //editor.addNode(inputs, outputs, posx, posy, html);
+    editor.addNode(2,3,150,300, html);
+    editor.addNode(2,3,400,300, test);
+    editor.addNode(0,1,0,0, html);
+    editor.addNode(1,1,700,1000, html);
+    editor.addNode(1,0,300,220, html);
+    editor.addNode(5,7,700,0, html);
+    //const editor = new Draflow.Editor(id, options).start();
   </script>
   <style>
 
     html, body {
       overflow: hidden;
       margin: 0px;
+    }
+    .top {
+      height: 50px;
+      background: #484848;
     }
     .general {
       display: flex;

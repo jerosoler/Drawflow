@@ -18,15 +18,15 @@ export default class Drawflow {
     this.mouse_y = 0;
     this.zoom = 1;
     this.select_elements = null;
+    this.drawflow = { "drawflow": { "Home": { "data": {} }}};
   }
 
   start () {
-    console.log("Start Drawflow!!");
+    console.info("Start Drawflow!!");
     this.container.classList.add("parent-drawflow");
     this.precanvas = document.createElement('div');
     this.precanvas.classList.add("drawflow");
     this.container.appendChild(this.precanvas);
-
 
     this.container.addEventListener('mouseup', this.dragEnd.bind(this));
     this.container.addEventListener('mousemove', this.position.bind(this));
@@ -34,16 +34,20 @@ export default class Drawflow {
 
     this.container.addEventListener('touchend', this.dragEnd.bind(this));
     this.container.addEventListener('touchmove', this.position.bind(this));
-    this.container.addEventListener('touchstart', this.click.bind(this) );
+    this.container.addEventListener('touchstart', this.click.bind(this));
 
+    window.addEventListener('keyup', this.key.bind(this));
     this.container.addEventListener('wheel', this.zoom_enter.bind(this));
 
   }
 
   click(e) {
     this.ele_selected = e.target;
-    switch (e.target.classList[0]) {
-      case 'node':
+    if(e.target.closest(".drawflow_content_node") != null) {
+      this.ele_selected = e.target.closest(".drawflow_content_node").parentElement;
+    }
+    switch (this.ele_selected.classList[0]) {
+      case 'drawflow-node':
         if(this.node_selected != null) {
           this.node_selected.classList.remove("selected");
         }
@@ -94,11 +98,6 @@ export default class Drawflow {
     }
 
     if(this.connection) {
-      //var newx = e.clientX - (e.clientX - (e.clientX*zoom));
-
-      //var newx = e.clientX * canvas.clientWidth / (canvas.clientWidth * zoom) ;
-      //var newy = e.clientY * canvas.clientHeight / (canvas.clientHeight * zoom);
-
       this.updateConnection(e_pos_x, e_pos_y);
     }
     if(this.editor_selected) {
@@ -114,20 +113,15 @@ export default class Drawflow {
     if(this.drag) {
 
       var x = (this.pos_x - e_pos_x) * this.precanvas.clientWidth / (this.precanvas.clientWidth * this.zoom);
-      // console.log(pos_x)
-      // console.log(e_pos_x);
       var y = (this.pos_y - e_pos_y) * this.precanvas.clientHeight / (this.precanvas.clientHeight * this.zoom);
       this.pos_x = e_pos_x;
       this.pos_y = e_pos_y;
 
-
-
       this.ele_selected.style.top = (this.ele_selected.offsetTop - y) + "px";
       this.ele_selected.style.left = (this.ele_selected.offsetLeft - x) + "px";
 
-
-      /*ele_selected.style.top = (ele_selected.offsetTop - canvas.offsetTop - y) + "px";
-      ele_selected.style.left = (ele_selected.offsetLeft - canvas.offsetLeft -x) + "px";*/
+      this.drawflow.drawflow.Home.data[this.ele_selected.id.slice(5)].pos_x = (this.ele_selected.offsetLeft - x);
+      this.drawflow.drawflow.Home.data[this.ele_selected.id.slice(5)].pos_y = (this.ele_selected.offsetTop - y);
 
       this.updateConnectionNodes(this.ele_selected.id, e_pos_x, e_pos_y)
     }
@@ -163,10 +157,14 @@ export default class Drawflow {
     if(this.connection === true) {
       if(ele_last.classList[0] === 'input') {
         // Fix connection;
-        var output_id = this.ele_selected.parentElement.id;
-        var input_id = ele_last.parentElement.id;
+        var output_id = this.ele_selected.parentElement.parentElement.id;
+        var output_class = this.ele_selected.classList[1];
+        var input_id = ele_last.parentElement.parentElement.id;
+        var input_class = ele_last.classList[1];
         this.connection_ele.classList.add("node_in_"+input_id);
         this.connection_ele.classList.add("node_out_"+output_id);
+        this.connection_ele.classList.add(output_class);
+        this.connection_ele.classList.add(input_class);
         this.connection_ele = null;
       } else {
         // Remove Connection;
@@ -174,15 +172,19 @@ export default class Drawflow {
         this.connection_ele = null;
       }
     }
-    /*if(ele_last.classList[0] === 'node') {
-      node_selected.classList.remove("selected");
-      node_selected = null;
-    }*/
+
     this.drag = false;
     this.connection = false;
     this.ele_selected = null;
     this.editor_selected = false;
 
+  }
+  key(e) {
+    if(e.key === "Delete") {
+      if(this.node_selected != null) {
+        this.removeNodeId(this.node_selected.id);
+      }
+    }
   }
 
   zoom_enter(event, delta) {
@@ -199,12 +201,8 @@ export default class Drawflow {
         if(this.zoom < 1.6) {
             this.zoom+=0.1;
         }
-
       }
 
-      // (pos_x - e_pos_x) * canvas.clientWidth / (canvas.clientWidth * zoom);
-      //canvas_x = (canvas_x) * (canvas.clientWidth / (canvas.clientWidth * zoom));
-      //canvas_y = (canvas_y) * (canvas.clientHeight / (canvas.clientHeight * zoom));
       this.precanvas.style.transform = "translate("+this.canvas_x+"px, "+this.canvas_y+"px) scale("+this.zoom+")";
     }
   }
@@ -225,11 +223,8 @@ export default class Drawflow {
   updateConnection(eX, eY) {
     var path = this.connection_ele.children[0];
 
-
-    var line_x = this.ele_selected.offsetWidth/2 + 2.5 + this.ele_selected.parentElement.offsetLeft + this.ele_selected.offsetLeft;
-    var line_y = this.ele_selected.offsetHeight/2 + 2.5 + this.ele_selected.parentElement.offsetTop + this.ele_selected.offsetTop;
-
-
+    var line_x = this.ele_selected.offsetWidth/2 + 2.5 + this.ele_selected.parentElement.parentElement.offsetLeft + this.ele_selected.offsetLeft;
+    var line_y = this.ele_selected.offsetHeight/2 + 2.5 + this.ele_selected.parentElement.parentElement.offsetTop + this.ele_selected.offsetTop;
 
     var x = eX * ( this.precanvas.clientWidth / (this.precanvas.clientWidth * this.zoom)) - (this.precanvas.getBoundingClientRect().x *  ( this.precanvas.clientWidth / (this.precanvas.clientWidth * this.zoom)) );
     var y = eY * ( this.precanvas.clientHeight / (this.precanvas.clientHeight * this.zoom)) - (this.precanvas.getBoundingClientRect().y *  ( this.precanvas.clientHeight / (this.precanvas.clientHeight * this.zoom)) );
@@ -250,20 +245,19 @@ export default class Drawflow {
 
     const elemsOut = document.getElementsByClassName(idSearchOut);
     Object.keys(elemsOut).map(function(item, index) {
-      // console.log("Out")
+
       var elemtsearchId_out = document.getElementById(id);
 
       var id_search = elemsOut[item].classList[1].replace('node_in_', '');
       var elemtsearchId = document.getElementById(id_search);
 
-      var elemtsearch = elemtsearchId.querySelectorAll('.input')[0]
+      var elemtsearch = elemtsearchId.querySelectorAll('.'+elemsOut[item].classList[4])[0]
 
+      var eX = elemtsearch.offsetWidth/2 + 2.5 + elemtsearch.parentElement.parentElement.offsetLeft + elemtsearch.offsetLeft;
+      var eY = elemtsearch.offsetHeight/2 + 2.5 + elemtsearch.parentElement.parentElement.offsetTop + elemtsearch.offsetTop;
 
-      var eX = elemtsearch.offsetWidth/2 + 2.5 + elemtsearch.parentElement.offsetLeft + elemtsearch.offsetLeft;
-      var eY = elemtsearch.offsetHeight/2 + 2.5 + elemtsearch.parentElement.offsetTop + elemtsearch.offsetTop;
-
-      var line_x = elemtsearchId_out.offsetLeft + elemtsearchId_out.querySelectorAll('.output')[0].offsetLeft + elemtsearchId_out.querySelectorAll('.output')[0].offsetWidth/2 + 2.5;
-      var line_y = elemtsearchId_out.offsetTop + elemtsearchId_out.querySelectorAll('.output')[0].offsetTop + elemtsearchId_out.querySelectorAll('.output')[0].offsetHeight/2 + 2.5;
+      var line_x = elemtsearchId_out.offsetLeft + elemtsearchId_out.querySelectorAll('.'+elemsOut[item].classList[3])[0].offsetLeft + elemtsearchId_out.querySelectorAll('.'+elemsOut[item].classList[3])[0].offsetWidth/2 + 2.5;
+      var line_y = elemtsearchId_out.offsetTop + elemtsearchId_out.querySelectorAll('.'+elemsOut[item].classList[3])[0].offsetTop + elemtsearchId_out.querySelectorAll('.'+elemsOut[item].classList[3])[0].offsetHeight/2 + 2.5;
 
       var x = eX;
       var y = eY;
@@ -284,16 +278,13 @@ export default class Drawflow {
       var id_search = elems[item].classList[2].replace('node_out_', '');
       var elemtsearchId = document.getElementById(id_search);
 
-      var elemtsearch = elemtsearchId.querySelectorAll('.output')[0]
+      var elemtsearch = elemtsearchId.querySelectorAll('.'+elems[item].classList[3])[0]
 
-      var line_x = elemtsearch.offsetWidth/2 + 2.5 + elemtsearch.parentElement.offsetLeft + elemtsearch.offsetLeft;
-      var line_y = elemtsearch.offsetHeight/2 + 2.5 + elemtsearch.parentElement.offsetTop + elemtsearch.offsetTop;
+      var line_x = elemtsearch.offsetWidth/2 + 2.5 + elemtsearch.parentElement.parentElement.offsetLeft + elemtsearch.offsetLeft;
+      var line_y = elemtsearch.offsetHeight/2 + 2.5 + elemtsearch.parentElement.parentElement.offsetTop + elemtsearch.offsetTop;
 
-      var eX = elemtsearchId_in.offsetLeft;
-      var eY = elemtsearchId_in.offsetTop;
-
-      var x = eX + 2.5;
-      var y = eY + elemtsearch.offsetTop/2 + elemtsearch.offsetHeight/2 + 2.5;
+      var x = elemtsearchId_in.offsetLeft + elemtsearchId_in.querySelectorAll('.'+elems[item].classList[4])[0].offsetLeft + elemtsearchId_in.querySelectorAll('.'+elems[item].classList[4])[0].offsetWidth/2 + 2.5;
+      var y = elemtsearchId_in.offsetTop + elemtsearchId_in.querySelectorAll('.'+elems[item].classList[4])[0].offsetTop + elemtsearchId_in.querySelectorAll('.'+elems[item].classList[4])[0].offsetHeight/2 + 2.5;
 
       var curvature = 0.5;
       var hx1 = line_x + Math.abs(x - line_x) * curvature;
@@ -318,37 +309,103 @@ export default class Drawflow {
       this.precanvas.appendChild(div);
     }
 
-
     this.select_elements.children[0].setAttributeNS(null, 'x', this.pos_click_x - this.precanvas.offsetLeft - this.canvas_x);
     this.select_elements.children[0].setAttributeNS(null, 'y', this.pos_click_y - this.precanvas.offsetTop - this.canvas_y);
     this.select_elements.children[0].setAttributeNS(null, 'width', eX - this.pos_click_x);
     this.select_elements.children[0].setAttributeNS(null, 'height', eY - this.pos_click_y);
   }
 
-  addNode () {
+  addNode (num_in, num_out, ele_pos_x, ele_pos_y, html) {
     const parent = document.createElement('div');
     parent.classList.add("parent-node");
 
     const node = document.createElement('div');
     node.innerHTML = "";
     node.setAttribute("id", "node-"+this.nodeId);
-    node.classList.add("node");
-    const input = document.createElement('div');
-    input.classList.add("input");
+    node.classList.add("drawflow-node");
 
-    const output = document.createElement('div');
-    output.classList.add("output");
-    node.appendChild(input);
-    const input2 = document.createElement('div');
-    input2.classList.add("input");
-    node.appendChild(input2);
-    node.appendChild(output);
-    const output2 = document.createElement('div');
-    output2.classList.add("output");
-    node.appendChild(output2);
+    const inputs = document.createElement('div');
+    inputs.classList.add("inputs");
+
+    const outputs = document.createElement('div');
+    outputs.classList.add("outputs");
+
+    const json_inputs = {}
+    for(var x = 0; x < num_in; x++) {
+      const input = document.createElement('div');
+      input.classList.add("input");
+      input.classList.add("input_"+(x+1));
+      json_inputs["input_"+(x+1)] = { "connections": []};
+      inputs.appendChild(input);
+    }
+
+    const json_outputs = {}
+    for(var x = 0; x < num_out; x++) {
+      const output = document.createElement('div');
+      output.classList.add("output");
+      output.classList.add("output_"+(x+1));
+      json_outputs["output_"+(x+1)] = { "connections": []};
+      outputs.appendChild(output);
+    }
+
+    const content = document.createElement('div');
+    content.classList.add("drawflow_content_node");
+    content.innerHTML = this.nodeId;
+    if(typeof html === 'string') {
+      content.innerHTML = html;
+    } else if (typeof html === "object") {
+      content.appendChild(html);
+    }
+
+
+    node.appendChild(inputs);
+    node.appendChild(content);
+    node.appendChild(outputs);
+    node.style.top = ele_pos_y + "px";
+    node.style.left = ele_pos_x + "px";
     parent.appendChild(node);
     this.precanvas.appendChild(parent);
+    var json = {
+      id: this.nodeId,
+      data: {},
+      html: html,
+      inputs: json_inputs,
+      outputs: json_outputs,
+      pos_x: ele_pos_x,
+      pos_y: ele_pos_y,
+    }
+    this.drawflow.drawflow.Home.data[this.nodeId] = json;
+
     this.nodeId++;
+
+  }
+
+  removeNodeId(id) {
+    document.getElementById(id).remove();
+    this.removeConnectionNodeId(id);
+  }
+
+  removeConnectionNodeId(id) {
+    const idSearchIn = 'node_in_'+id;
+    const idSearchOut = 'node_out_'+id;
+
+    const elemsOut = document.getElementsByClassName(idSearchOut);
+    for(var i = elemsOut.length-1; i >= 0; i--) {
+      elemsOut[i].remove();
+    }
+
+    const elemsIn = document.getElementsByClassName(idSearchIn);
+    for(var i = elemsIn.length-1; i >= 0; i--) {
+      elemsIn[i].remove();
+    }
+  }
+
+  export () {
+    return this.drawflow;
+  }
+
+  import () {
+    return true;
   }
 
 }

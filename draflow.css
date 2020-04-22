@@ -7,33 +7,46 @@
   width: 100%;
   height: 100%;
   position: relative;
+  user-select: none;
 
 }
-.parent-node {
+.drawflow .parent-node {
   position: relative;
 
 }
-.node {
+.drawflow .drawflow-node {
+  display: flex;
+  align-items: center;
   position: absolute;
   background: cyan;
-  width: 100px;
-  height: 60px;
+  width: 160px;
+  min-height: 40px;
   border-radius:4px;
   border: 2px solid black;
   color: black;
   z-index: 2;
+  padding: 15px;
 }
 
-.node.selected {
+.drawflow .drawflow-node.selected {
   background: red;
 }
-.node:hover {
+.drawflow .drawflow-node:hover {
   cursor: move;
 }
 
-.node .input, .node .output {
+.drawflow .drawflow-node .inputs, .drawflow .drawflow-node .outputs {
+  width: 0px;
+}
 
-  position: absolute;
+.drawflow .drawflow-node .drawflow_content_node {
+  width: 100%;
+  display: block;
+}
+
+.drawflow .drawflow-node .input, .drawflow .drawflow-node .output {
+
+  position: relative;
   width: 20px;
   height: 20px;
   background: white;
@@ -41,59 +54,52 @@
   border: 2px solid black;
   cursor: crosshair;
   z-index: 1;
+  margin-bottom: 5px;
 }
 
-.node .input {
-  left: -10px;
+.drawflow .drawflow-node .input {
+  left: -27px;
   top: 2px;
   background: yellow;
 }
-.node .output {
-  right: -10px;
+.drawflow .drawflow-node .output {
+  right: -3px;
   top: 2px;
 }
 
 
-.node .input + .input {
-  top: 30px;
-}
 
-.node .output + .output {
-  top: 30px;
-}
-
-svg {
+.drawflow svg {
   z-index: 0;
   position: absolute;
   overflow: visible !important;
 }
-.connection {
+.drawflow .connection {
   position: absolute;
   transform: translate(9999px, 9999px);
 }
-.connection .main-path {
+.drawflow .connection .main-path {
   fill: none;
   stroke-width: 5px;
   stroke: steelblue;
   transform: translate(-9999px, -9999px);
 }
 
-.main-path {
+.drawflow .main-path {
   fill: none;
   stroke-width: 5px;
   stroke: steelblue;
 }
-.selectbox {
+.drawflow .selectbox {
   z-index: 3;
   position: absolute;
   transform: translate(9999px, 9999px);
 }
-.selectbox rect {
+.drawflow .selectbox rect {
   fill: blue;
   opacity: 0.5;
   stroke: yellow;
   stroke-width: 5;
   stroke-opacity: 0.5;
   transform: translate(-9999px, -9999px);
-
 }
