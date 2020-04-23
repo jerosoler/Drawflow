@@ -35,16 +35,22 @@
     test.innerHTML = 'Hello World!!';
     test.addEventListener('dblclick', function() {
       alert("test");
-      console.log(editor.export());
+      console.log(editor.export().drawflow.Home.data);
     });
 
     //editor.addNode(inputs, outputs, posx, posy, html);
     editor.addNode(2,3,150,300, html);
     editor.addNode(2,3,400,300, test);
     editor.addNode(0,1,0,0, html);
-    editor.addNode(1,1,700,1000, html);
+    editor.addNode(1,1,700,400, html);
     editor.addNode(1,0,300,220, html);
     editor.addNode(5,7,700,0, html);
+
+    /*setTimeout(function(){
+      editor.clear()
+      editor.addNode(2,3,700,300, test);
+     }, 3000);
+   */
     //const editor = new Draflow.Editor(id, options).start();
   </script>
   <style>

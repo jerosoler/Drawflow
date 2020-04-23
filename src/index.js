@@ -10,6 +10,7 @@ export default class Drawflow {
     this.editor_selected = false;
     this.connection = false;
     this.connection_ele = null;
+    this.connection_selected = null;
     this.canvas_x = 0;
     this.canvas_y = 0;
     this.pos_x = 0;
@@ -17,12 +18,14 @@ export default class Drawflow {
     this.mouse_x = 0;
     this.mouse_y = 0;
     this.zoom = 1;
+    this.zoom_max = 1.6;
+    this.zoom_min = 0.5;
     this.select_elements = null;
     this.drawflow = { "drawflow": { "Home": { "data": {} }}};
   }
 
   start () {
-    console.info("Start Drawflow!!");
+    // console.info("Start Drawflow!!");
     this.container.classList.add("parent-drawflow");
     this.precanvas = document.createElement('div');
     this.precanvas.classList.add("drawflow");
@@ -51,6 +54,10 @@ export default class Drawflow {
         if(this.node_selected != null) {
           this.node_selected.classList.remove("selected");
         }
+        if(this.connection_selected != null) {
+          this.connection_selected.classList.remove("selected");
+          this.connection_selected = null;
+        }
         this.node_selected = this.ele_selected;
         this.node_selected.classList.add("selected");
         this.drag = true;
@@ -61,12 +68,20 @@ export default class Drawflow {
           this.node_selected.classList.remove("selected");
           this.node_selected = null;
         }
+        if(this.connection_selected != null) {
+          this.connection_selected.classList.remove("selected");
+          this.connection_selected = null;
+        }
         this.drawConnection(e.target);
         break;
       case 'parent-drawflow':
         if(this.node_selected != null) {
           this.node_selected.classList.remove("selected");
           this.node_selected = null;
+        }
+        if(this.connection_selected != null) {
+          this.connection_selected.classList.remove("selected");
+          this.connection_selected = null;
         }
         this.editor_selected = true;
         break;
@@ -75,8 +90,24 @@ export default class Drawflow {
           this.node_selected.classList.remove("selected");
           this.node_selected = null;
         }
+        if(this.connection_selected != null) {
+          this.connection_selected.classList.remove("selected");
+          this.connection_selected = null;
+        }
         this.editor_selected = true;
         break;
+      case 'main-path':
+        if(this.node_selected != null) {
+          this.node_selected.classList.remove("selected");
+          this.node_selected = null;
+        }
+        if(this.connection_selected != null) {
+          this.connection_selected.classList.remove("selected");
+          this.connection_selected = null;
+        }
+        this.connection_selected = this.ele_selected;
+        this.connection_selected.classList.add("selected");
+      break;
       default:
     }
     if (e.type === "touchstart") {
@@ -101,14 +132,14 @@ export default class Drawflow {
       this.updateConnection(e_pos_x, e_pos_y);
     }
     if(this.editor_selected) {
-      if (e.ctrlKey) {
+      /*if (e.ctrlKey) {
         this.selectElements(e_pos_x, e_pos_y);
-      } else {
+      } else { */
       x =  this.canvas_x + (-(this.pos_x - e_pos_x))
       y = this.canvas_y + (-(this.pos_y - e_pos_y))
       // console.log(canvas_x +' - ' +pos_x + ' - '+ e_pos_x + ' - ' + x);
       this.precanvas.style.transform = "translate("+x+"px, "+y+"px) scale("+this.zoom+")";
-      }
+      //}
     }
     if(this.drag) {
 
@@ -161,11 +192,27 @@ export default class Drawflow {
         var output_class = this.ele_selected.classList[1];
         var input_id = ele_last.parentElement.parentElement.id;
         var input_class = ele_last.classList[1];
+
+        if(this.container.querySelectorAll('.connection.node_in_'+input_id+'.node_out_'+output_id+'.'+output_class+'.'+input_class).length === 0) {
+        // Conection no exist save connection
+
         this.connection_ele.classList.add("node_in_"+input_id);
         this.connection_ele.classList.add("node_out_"+output_id);
         this.connection_ele.classList.add(output_class);
         this.connection_ele.classList.add(input_class);
+        var id_input = input_id.slice(5);
+        var id_output = output_id.slice(5);
+
+        this.drawflow.drawflow.Home.data[id_output].outputs[output_class].connections.push( {"node": id_input, "output": input_class});
+        this.drawflow.drawflow.Home.data[id_input].inputs[input_class].connections.push( {"node": id_output, "input": output_class});
+
         this.connection_ele = null;
+      } else {
+        // Connection exists Remove Connection;
+        this.connection_ele.remove();
+        this.connection_ele = null;
+      }
+
       } else {
         // Remove Connection;
         this.connection_ele.remove();
@@ -184,6 +231,9 @@ export default class Drawflow {
       if(this.node_selected != null) {
         this.removeNodeId(this.node_selected.id);
       }
+      if(this.connection_selected != null) {
+        this.removeConnection();
+      }
     }
   }
 
@@ -192,18 +242,33 @@ export default class Drawflow {
       event.preventDefault()
       if(event.deltaY > 0) {
         // Zoom Out
-        if(this.zoom > 0.5) {
-          this.zoom-=0.1;
-        }
-
+        this.zoom_out();
       } else {
         // Zoom In
-        if(this.zoom < 1.6) {
-            this.zoom+=0.1;
-        }
+        this.zoom_in();
       }
-
-      this.precanvas.style.transform = "translate("+this.canvas_x+"px, "+this.canvas_y+"px) scale("+this.zoom+")";
+      //this.precanvas.style.transform = "translate("+this.canvas_x+"px, "+this.canvas_y+"px) scale("+this.zoom+")";
+    }
+  }
+  zoom_refresh(){
+    this.precanvas.style.transform = "translate("+this.canvas_x+"px, "+this.canvas_y+"px) scale("+this.zoom+")";
+  }
+  zoom_in() {
+    if(this.zoom < this.zoom_max) {
+        this.zoom+=0.1;
+        this.zoom_refresh();
+    }
+  }
+  zoom_out() {
+    if(this.zoom > this.zoom_min) {
+      this.zoom-=0.1;
+        this.zoom_refresh();
+    }
+  }
+  zoom_reset(){
+    if(this.zoom != 1) {
+      this.zoom = 1;
+      this.zoom_refresh();
     }
   }
 
@@ -295,7 +360,7 @@ export default class Drawflow {
     })
   }
 
-  selectElements(eX, eY) {
+  /*selectElements(eX, eY) {
     if(this.select_elements == null) {
       var div = document.createElementNS('http://www.w3.org/2000/svg',"svg");
       this.select_elements = div;
@@ -313,7 +378,7 @@ export default class Drawflow {
     this.select_elements.children[0].setAttributeNS(null, 'y', this.pos_click_y - this.precanvas.offsetTop - this.canvas_y);
     this.select_elements.children[0].setAttributeNS(null, 'width', eX - this.pos_click_x);
     this.select_elements.children[0].setAttributeNS(null, 'height', eY - this.pos_click_y);
-  }
+  }*/
 
   addNode (num_in, num_out, ele_pos_x, ele_pos_y, html) {
     const parent = document.createElement('div');
@@ -382,7 +447,27 @@ export default class Drawflow {
 
   removeNodeId(id) {
     document.getElementById(id).remove();
+    delete this.drawflow.drawflow.Home.data[id.slice(5)];
     this.removeConnectionNodeId(id);
+  }
+
+  removeConnection() {
+    if(this.connection_selected != null) {
+      var listclass = this.connection_selected.parentElement.classList;
+      this.connection_selected.parentElement.remove();
+
+      var index_out = this.drawflow.drawflow.Home.data[listclass[2].slice(14)].outputs[listclass[3]].connections.findIndex(function(item,i) {
+        return item.node === listclass[1].slice(13) && item.output === listclass[4]
+      });
+      this.drawflow.drawflow.Home.data[listclass[2].slice(14)].outputs[listclass[3]].connections.splice(index_out,1);
+
+      var index_in = this.drawflow.drawflow.Home.data[listclass[1].slice(13)].inputs[listclass[4]].connections.findIndex(function(item,i) {
+        return item.node === listclass[2].slice(14) && item.input === listclass[3]
+      });
+      this.drawflow.drawflow.Home.data[listclass[1].slice(13)].inputs[listclass[4]].connections.splice(index_in,1);
+
+      this.connection_selected = null;
+    }
   }
 
   removeConnectionNodeId(id) {
@@ -391,15 +476,44 @@ export default class Drawflow {
 
     const elemsOut = document.getElementsByClassName(idSearchOut);
     for(var i = elemsOut.length-1; i >= 0; i--) {
+
+      var listclass = elemsOut[i].classList;
+      /*
+      var index_out = this.drawflow.drawflow.Home.data[listclass[2].slice(14)].outputs[listclass[3]].connections.findIndex(function(item,i) {
+        return item.node === listclass[1].slice(13) && item.output === listclass[4]
+      });
+      this.drawflow.drawflow.Home.data[listclass[2].slice(14)].outputs[listclass[3]].connections.splice(index_out,1);
+      */
+      var index_in = this.drawflow.drawflow.Home.data[listclass[1].slice(13)].inputs[listclass[4]].connections.findIndex(function(item,i) {
+        return item.node === listclass[2].slice(14) && item.input === listclass[3]
+      });
+      this.drawflow.drawflow.Home.data[listclass[1].slice(13)].inputs[listclass[4]].connections.splice(index_in,1);
+
       elemsOut[i].remove();
     }
 
     const elemsIn = document.getElementsByClassName(idSearchIn);
     for(var i = elemsIn.length-1; i >= 0; i--) {
+
+      var listclass = elemsIn[i].classList;
+
+      var index_out = this.drawflow.drawflow.Home.data[listclass[2].slice(14)].outputs[listclass[3]].connections.findIndex(function(item,i) {
+        return item.node === listclass[1].slice(13) && item.output === listclass[4]
+      });
+      this.drawflow.drawflow.Home.data[listclass[2].slice(14)].outputs[listclass[3]].connections.splice(index_out,1);
+      /*
+      var index_in = this.drawflow.drawflow.Home.data[listclass[1].slice(13)].inputs[listclass[4]].connections.findIndex(function(item,i) {
+        return item.node === listclass[2].slice(14) && item.input === listclass[3]
+      });
+      this.drawflow.drawflow.Home.data[listclass[1].slice(13)].inputs[listclass[4]].connections.splice(index_in,1);
+      */
       elemsIn[i].remove();
     }
   }
-
+  clear () {
+    this.precanvas.innerHTML = "";
+    this.drawflow = { "drawflow": { "Home": { "data": {} }}};
+  }
   export () {
     return this.drawflow;
   }
