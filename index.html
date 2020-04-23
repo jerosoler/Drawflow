@@ -29,22 +29,25 @@
 
     //console.log(editor);
 
-
-    var html = '<div><p>Hollaaa</p><input type="text"></div>';
+    const data = {
+      "input": 'hola',
+      "output": 'adios' };
+    var html = '<div><p>Hollaaa</p><input type="text" df-input value=""></div>';
     var test = document.createElement("div");
-    test.innerHTML = 'Hello World!!';
+    test.innerHTML = 'Hello World!! <input type="text" df-input value="">';
+
     test.addEventListener('dblclick', function() {
       alert("test");
       console.log(editor.export().drawflow.Home.data);
     });
 
-    //editor.addNode(inputs, outputs, posx, posy, html);
-    editor.addNode(2,3,150,300, html);
-    editor.addNode(2,3,400,300, test);
-    editor.addNode(0,1,0,0, html);
-    editor.addNode(1,1,700,400, html);
-    editor.addNode(1,0,300,220, html);
-    editor.addNode(5,7,700,0, html);
+    //editor.addNode(inputs, outputs, posx, posy, class, data, html);
+    editor.addNode(2,3,150,300, 'test', data, html);
+    editor.addNode(2,3,400,300,'beautiful', data, test);
+    editor.addNode(0,1,0,0, '', {}, html);
+    editor.addNode(1,1,700,400, '', {}, html);
+    editor.addNode(1,0,300,220, '', {}, html);
+    editor.addNode(5,7,700,0, '', {}, html);
 
     /*setTimeout(function(){
       editor.clear()
@@ -76,6 +79,13 @@
       width: calc(100vw - 400px);
       height: 100vh;
       background: #cacaca;
+    }
+    .drawflow-node.beautiful {
+      background: green;
+    }
+
+    .drawflow-node.test {
+      background: yellow;
     }
 
     @media only screen and (max-width: 767px) {

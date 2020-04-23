@@ -1,7 +1,6 @@
 export default class Drawflow {
-  constructor(container, config) {
+  constructor(container) {
     this.container = container;
-    this.config = config;
     this.precanvas = null;
     this.nodeId = 1;
     this.ele_selected = null;
@@ -17,11 +16,15 @@ export default class Drawflow {
     this.pos_y = 0;
     this.mouse_x = 0;
     this.mouse_y = 0;
+    this.line_path = 5;
+
+    this.select_elements = null;
+    this.drawflow = { "drawflow": { "Home": { "data": {} }}};
+    // Configurable options
     this.zoom = 1;
     this.zoom_max = 1.6;
     this.zoom_min = 0.5;
-    this.select_elements = null;
-    this.drawflow = { "drawflow": { "Home": { "data": {} }}};
+
   }
 
   start () {
@@ -41,6 +44,8 @@ export default class Drawflow {
 
     window.addEventListener('keyup', this.key.bind(this));
     this.container.addEventListener('wheel', this.zoom_enter.bind(this));
+
+    this.container.addEventListener('input', this.updateNodeValue.bind(this));
 
   }
 
@@ -288,8 +293,8 @@ export default class Drawflow {
   updateConnection(eX, eY) {
     var path = this.connection_ele.children[0];
 
-    var line_x = this.ele_selected.offsetWidth/2 + 2.5 + this.ele_selected.parentElement.parentElement.offsetLeft + this.ele_selected.offsetLeft;
-    var line_y = this.ele_selected.offsetHeight/2 + 2.5 + this.ele_selected.parentElement.parentElement.offsetTop + this.ele_selected.offsetTop;
+    var line_x = this.ele_selected.offsetWidth/2 + this.line_path/2 + this.ele_selected.parentElement.parentElement.offsetLeft + this.ele_selected.offsetLeft;
+    var line_y = this.ele_selected.offsetHeight/2 + this.line_path/2 + this.ele_selected.parentElement.parentElement.offsetTop + this.ele_selected.offsetTop;
 
     var x = eX * ( this.precanvas.clientWidth / (this.precanvas.clientWidth * this.zoom)) - (this.precanvas.getBoundingClientRect().x *  ( this.precanvas.clientWidth / (this.precanvas.clientWidth * this.zoom)) );
     var y = eY * ( this.precanvas.clientHeight / (this.precanvas.clientHeight * this.zoom)) - (this.precanvas.getBoundingClientRect().y *  ( this.precanvas.clientHeight / (this.precanvas.clientHeight * this.zoom)) );
@@ -307,7 +312,7 @@ export default class Drawflow {
     // Aquí nos quedamos;
     const idSearch = 'node_in_'+id;
     const idSearchOut = 'node_out_'+id;
-
+    var line_path = this.line_path/2;
     const elemsOut = document.getElementsByClassName(idSearchOut);
     Object.keys(elemsOut).map(function(item, index) {
 
@@ -318,11 +323,11 @@ export default class Drawflow {
 
       var elemtsearch = elemtsearchId.querySelectorAll('.'+elemsOut[item].classList[4])[0]
 
-      var eX = elemtsearch.offsetWidth/2 + 2.5 + elemtsearch.parentElement.parentElement.offsetLeft + elemtsearch.offsetLeft;
-      var eY = elemtsearch.offsetHeight/2 + 2.5 + elemtsearch.parentElement.parentElement.offsetTop + elemtsearch.offsetTop;
+      var eX = elemtsearch.offsetWidth/2 + line_path + elemtsearch.parentElement.parentElement.offsetLeft + elemtsearch.offsetLeft;
+      var eY = elemtsearch.offsetHeight/2 + line_path + elemtsearch.parentElement.parentElement.offsetTop + elemtsearch.offsetTop;
 
-      var line_x = elemtsearchId_out.offsetLeft + elemtsearchId_out.querySelectorAll('.'+elemsOut[item].classList[3])[0].offsetLeft + elemtsearchId_out.querySelectorAll('.'+elemsOut[item].classList[3])[0].offsetWidth/2 + 2.5;
-      var line_y = elemtsearchId_out.offsetTop + elemtsearchId_out.querySelectorAll('.'+elemsOut[item].classList[3])[0].offsetTop + elemtsearchId_out.querySelectorAll('.'+elemsOut[item].classList[3])[0].offsetHeight/2 + 2.5;
+      var line_x = elemtsearchId_out.offsetLeft + elemtsearchId_out.querySelectorAll('.'+elemsOut[item].classList[3])[0].offsetLeft + elemtsearchId_out.querySelectorAll('.'+elemsOut[item].classList[3])[0].offsetWidth/2 + line_path;
+      var line_y = elemtsearchId_out.offsetTop + elemtsearchId_out.querySelectorAll('.'+elemsOut[item].classList[3])[0].offsetTop + elemtsearchId_out.querySelectorAll('.'+elemsOut[item].classList[3])[0].offsetHeight/2 + line_path;
 
       var x = eX;
       var y = eY;
@@ -345,11 +350,11 @@ export default class Drawflow {
 
       var elemtsearch = elemtsearchId.querySelectorAll('.'+elems[item].classList[3])[0]
 
-      var line_x = elemtsearch.offsetWidth/2 + 2.5 + elemtsearch.parentElement.parentElement.offsetLeft + elemtsearch.offsetLeft;
-      var line_y = elemtsearch.offsetHeight/2 + 2.5 + elemtsearch.parentElement.parentElement.offsetTop + elemtsearch.offsetTop;
+      var line_x = elemtsearch.offsetWidth/2 + line_path + elemtsearch.parentElement.parentElement.offsetLeft + elemtsearch.offsetLeft;
+      var line_y = elemtsearch.offsetHeight/2 + line_path + elemtsearch.parentElement.parentElement.offsetTop + elemtsearch.offsetTop;
 
-      var x = elemtsearchId_in.offsetLeft + elemtsearchId_in.querySelectorAll('.'+elems[item].classList[4])[0].offsetLeft + elemtsearchId_in.querySelectorAll('.'+elems[item].classList[4])[0].offsetWidth/2 + 2.5;
-      var y = elemtsearchId_in.offsetTop + elemtsearchId_in.querySelectorAll('.'+elems[item].classList[4])[0].offsetTop + elemtsearchId_in.querySelectorAll('.'+elems[item].classList[4])[0].offsetHeight/2 + 2.5;
+      var x = elemtsearchId_in.offsetLeft + elemtsearchId_in.querySelectorAll('.'+elems[item].classList[4])[0].offsetLeft + elemtsearchId_in.querySelectorAll('.'+elems[item].classList[4])[0].offsetWidth/2 + line_path;
+      var y = elemtsearchId_in.offsetTop + elemtsearchId_in.querySelectorAll('.'+elems[item].classList[4])[0].offsetTop + elemtsearchId_in.querySelectorAll('.'+elems[item].classList[4])[0].offsetHeight/2 + line_path;
 
       var curvature = 0.5;
       var hx1 = line_x + Math.abs(x - line_x) * curvature;
@@ -380,7 +385,7 @@ export default class Drawflow {
     this.select_elements.children[0].setAttributeNS(null, 'height', eY - this.pos_click_y);
   }*/
 
-  addNode (num_in, num_out, ele_pos_x, ele_pos_y, html) {
+  addNode (num_in, num_out, ele_pos_x, ele_pos_y, classoverride, data, html) {
     const parent = document.createElement('div');
     parent.classList.add("parent-node");
 
@@ -388,6 +393,10 @@ export default class Drawflow {
     node.innerHTML = "";
     node.setAttribute("id", "node-"+this.nodeId);
     node.classList.add("drawflow-node");
+    if(classoverride != '') {
+      node.classList.add(classoverride);
+    }
+
 
     const inputs = document.createElement('div');
     inputs.classList.add("inputs");
@@ -415,13 +424,17 @@ export default class Drawflow {
 
     const content = document.createElement('div');
     content.classList.add("drawflow_content_node");
-    content.innerHTML = this.nodeId;
     if(typeof html === 'string') {
       content.innerHTML = html;
     } else if (typeof html === "object") {
       content.appendChild(html);
     }
-
+    Object.entries(data).forEach(function (key, value) {
+    var elems = content.querySelectorAll('[df-'+key[0]+']');
+      for(var i = 0; i < elems.length; i++) {
+          elems[i].value = key[1];
+      }
+    })
 
     node.appendChild(inputs);
     node.appendChild(content);
@@ -432,7 +445,7 @@ export default class Drawflow {
     this.precanvas.appendChild(parent);
     var json = {
       id: this.nodeId,
-      data: {},
+      data: data,
       html: html,
       inputs: json_inputs,
       outputs: json_outputs,
@@ -442,6 +455,21 @@ export default class Drawflow {
     this.drawflow.drawflow.Home.data[this.nodeId] = json;
 
     this.nodeId++;
+
+  }
+
+  updateNodeValue(event) {
+    var attr = event.target.attributes
+    for(var i= 0; i < attr.length; i++) {
+      if(attr[i].nodeName.startsWith('df-')) {
+        /*console.log(attr[i].nodeName);
+        console.log(event.target.value);
+        console.log(event.target.closest(".drawflow_content_node").parentElement.id.slice(5));*/
+        this.drawflow.drawflow.Home.data[event.target.closest(".drawflow_content_node").parentElement.id.slice(5)].data[attr[i].nodeName.slice(3)] = event.target.value;
+      }
+
+    }
+
 
   }
 
