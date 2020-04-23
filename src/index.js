@@ -17,6 +17,7 @@ export default class Drawflow {
     this.mouse_x = 0;
     this.mouse_y = 0;
     this.line_path = 5;
+    this.first_click = null;
 
     this.select_elements = null;
     this.drawflow = { "drawflow": { "Home": { "data": {} }}};
@@ -25,6 +26,9 @@ export default class Drawflow {
     this.zoom_max = 1.6;
     this.zoom_min = 0.5;
 
+    // Mobile
+    this.evCache = new Array();
+    this.prevDiff = -1;
   }
 
   start () {
@@ -46,10 +50,76 @@ export default class Drawflow {
     this.container.addEventListener('wheel', this.zoom_enter.bind(this));
 
     this.container.addEventListener('input', this.updateNodeValue.bind(this));
+    /* Mobile zoom */
+    this.container.onpointerdown = this.pointerdown_handler.bind(this);
+    this.container.onpointermove = this.pointermove_handler.bind(this);
+    this.container.onpointerup = this.pointerup_handler.bind(this);
+    this.container.onpointercancel = this.pointerup_handler.bind(this);
+    this.container.onpointerout = this.pointerup_handler.bind(this);
+    this.container.onpointerleave = this.pointerup_handler.bind(this);
 
+    this.load();
   }
 
+  /* Mobile zoom */
+  pointerdown_handler(ev) {
+   this.evCache.push(ev);
+  }
+
+  pointermove_handler(ev) {
+   for (var i = 0; i < this.evCache.length; i++) {
+     if (ev.pointerId == this.evCache[i].pointerId) {
+        this.evCache[i] = ev;
+     break;
+     }
+   }
+
+   if (this.evCache.length == 2) {
+     // Calculate the distance between the two pointers
+     var curDiff = Math.abs(this.evCache[0].clientX - this.evCache[1].clientX);
+
+     if (this.prevDiff > 100) {
+       if (curDiff > this.prevDiff) {
+         // The distance between the two pointers has increased
+
+         this.zoom_in();
+       }
+       if (curDiff < this.prevDiff) {
+         // The distance between the two pointers has decreased
+         this.zoom_out();
+       }
+     }
+     this.prevDiff = curDiff;
+   }
+  }
+
+  pointerup_handler(ev) {
+    this.remove_event(ev);
+    if (this.evCache.length < 2) {
+      this.prevDiff = -1;
+    }
+  }
+  remove_event(ev) {
+   // Remove this event from the target's cache
+   for (var i = 0; i < this.evCache.length; i++) {
+     if (this.evCache[i].pointerId == ev.pointerId) {
+       this.evCache.splice(i, 1);
+       break;
+     }
+   }
+  }
+  /* End Mobile Zoom */
+  load() {
+    for (var key in this.drawflow.drawflow.Home.data) {
+      this.addNodeImport(this.drawflow.drawflow.Home.data[key], this.precanvas);
+      this.nodeId = key+1;
+    }
+    for (var key in this.drawflow.drawflow.Home.data) {
+      this.updateConnectionNodes('node-'+key);
+    }
+  }
   click(e) {
+    this.first_click = e.target;
     this.ele_selected = e.target;
     if(e.target.closest(".drawflow_content_node") != null) {
       this.ele_selected = e.target.closest(".drawflow_content_node").parentElement;
@@ -132,6 +202,7 @@ export default class Drawflow {
       var e_pos_x = e.clientX;
       var e_pos_y = e.clientY;
     }
+
 
     if(this.connection) {
       this.updateConnection(e_pos_x, e_pos_y);
@@ -234,7 +305,9 @@ export default class Drawflow {
   key(e) {
     if(e.key === "Delete") {
       if(this.node_selected != null) {
-        this.removeNodeId(this.node_selected.id);
+        if(this.first_click.tagName !== 'INPUT' && this.first_click.tagName !== 'TEXTAREA') {
+          this.removeNodeId(this.node_selected.id);
+        }
       }
       if(this.connection_selected != null) {
         this.removeConnection();
@@ -386,6 +459,7 @@ export default class Drawflow {
   }*/
 
   addNode (num_in, num_out, ele_pos_x, ele_pos_y, classoverride, data, html) {
+
     const parent = document.createElement('div');
     parent.classList.add("parent-node");
 
@@ -424,18 +498,35 @@ export default class Drawflow {
 
     const content = document.createElement('div');
     content.classList.add("drawflow_content_node");
-    if(typeof html === 'string') {
-      content.innerHTML = html;
-    } else if (typeof html === "object") {
-      content.appendChild(html);
-    }
+    content.innerHTML = html;
     Object.entries(data).forEach(function (key, value) {
-    var elems = content.querySelectorAll('[df-'+key[0]+']');
-      for(var i = 0; i < elems.length; i++) {
-          elems[i].value = key[1];
+      if(typeof key[1] === "object") {
+        insertObjectkeys(null, key[0], key[0]);
+      } else {
+        var elems = content.querySelectorAll('[df-'+key[0]+']');
+          for(var i = 0; i < elems.length; i++) {
+            elems[i].value = key[1];
+          }
       }
     })
 
+    function insertObjectkeys(object, name, completname) {
+      if(object === null) {
+        var object = data[name];
+      } else {
+        var object = object[name]
+      }
+      Object.entries(object).forEach(function (key, value) {
+        if(typeof key[1] === "object") {
+          insertObjectkeys(object, key[0], name+'-'+key[0]);
+        } else {
+          var elems = content.querySelectorAll('[df-'+completname+'-'+key[0]+']');
+            for(var i = 0; i < elems.length; i++) {
+              elems[i].value = key[1];
+            }
+        }
+      });
+    }
     node.appendChild(inputs);
     node.appendChild(content);
     node.appendChild(outputs);
@@ -446,6 +537,7 @@ export default class Drawflow {
     var json = {
       id: this.nodeId,
       data: data,
+      class: classoverride,
       html: html,
       inputs: json_inputs,
       outputs: json_outputs,
@@ -455,16 +547,102 @@ export default class Drawflow {
     this.drawflow.drawflow.Home.data[this.nodeId] = json;
 
     this.nodeId++;
+  }
 
+  addNodeImport (dataNode, precanvas) {
+    const parent = document.createElement('div');
+    parent.classList.add("parent-node");
+
+    const node = document.createElement('div');
+    node.innerHTML = "";
+    node.setAttribute("id", "node-"+dataNode.id);
+    node.classList.add("drawflow-node");
+    if(dataNode.class != '') {
+      node.classList.add(dataNode.class);
+    }
+
+    const inputs = document.createElement('div');
+    inputs.classList.add("inputs");
+
+    const outputs = document.createElement('div');
+    outputs.classList.add("outputs");
+
+    Object.keys(dataNode.inputs).map(function(input_item, index) {
+      const input = document.createElement('div');
+      input.classList.add("input");
+      input.classList.add(input_item);
+      inputs.appendChild(input);
+      Object.keys(dataNode.inputs[input_item].connections).map(function(output_item, index) {
+
+        var connection = document.createElementNS('http://www.w3.org/2000/svg',"svg");
+        var path = document.createElementNS('http://www.w3.org/2000/svg',"path");
+        path.classList.add("main-path");
+        path.setAttributeNS(null, 'd', '');
+        // path.innerHTML = 'a';
+        connection.classList.add("connection");
+        connection.classList.add("node_in_node-"+dataNode.id);
+        connection.classList.add("node_out_node-"+dataNode.inputs[input_item].connections[output_item].node);
+        connection.classList.add(dataNode.inputs[input_item].connections[output_item].input);
+        connection.classList.add(input_item);
+
+        connection.appendChild(path);
+        precanvas.appendChild(connection);
+
+      });
+    });
+
+
+    for(var x = 0; x < Object.keys(dataNode.outputs).length; x++) {
+      const output = document.createElement('div');
+      output.classList.add("output");
+      output.classList.add("output_"+(x+1));
+      outputs.appendChild(output);
+    }
+
+    const content = document.createElement('div');
+    content.classList.add("drawflow_content_node");
+    content.innerHTML = dataNode.html;
+    Object.entries(dataNode.data).forEach(function (key, value) {
+      if(typeof key[1] === "object") {
+        insertObjectkeys(null, key[0], key[0]);
+      } else {
+        var elems = content.querySelectorAll('[df-'+key[0]+']');
+          for(var i = 0; i < elems.length; i++) {
+            elems[i].value = key[1];
+          }
+      }
+    })
+
+    function insertObjectkeys(object, name, completname) {
+      if(object === null) {
+        var object = dataNode.data[name];
+      } else {
+        var object = object[name]
+      }
+      Object.entries(object).forEach(function (key, value) {
+        if(typeof key[1] === "object") {
+          insertObjectkeys(object, key[0], name+'-'+key[0]);
+        } else {
+          var elems = content.querySelectorAll('[df-'+completname+'-'+key[0]+']');
+            for(var i = 0; i < elems.length; i++) {
+              elems[i].value = key[1];
+            }
+        }
+      });
+    }
+    node.appendChild(inputs);
+    node.appendChild(content);
+    node.appendChild(outputs);
+    node.style.top = dataNode.pos_y + "px";
+    node.style.left = dataNode.pos_x + "px";
+    parent.appendChild(node);
+    this.precanvas.appendChild(parent);
   }
 
   updateNodeValue(event) {
     var attr = event.target.attributes
     for(var i= 0; i < attr.length; i++) {
       if(attr[i].nodeName.startsWith('df-')) {
-        /*console.log(attr[i].nodeName);
-        console.log(event.target.value);
-        console.log(event.target.closest(".drawflow_content_node").parentElement.id.slice(5));*/
         this.drawflow.drawflow.Home.data[event.target.closest(".drawflow_content_node").parentElement.id.slice(5)].data[attr[i].nodeName.slice(3)] = event.target.value;
       }
 
@@ -546,8 +724,9 @@ export default class Drawflow {
     return this.drawflow;
   }
 
-  import () {
-    return true;
+  import (data) {
+    this.clear();
+    this.drawflow = data;
+    this.load();
   }
-
 }
