@@ -3,6 +3,7 @@
   overflow: hidden;
   touch-action: none;
 }
+
 .drawflow {
   width: 100%;
   height: 100%;
@@ -10,10 +11,12 @@
   user-select: none;
 
 }
+
 .drawflow .parent-node {
   position: relative;
 
 }
+
 .drawflow .drawflow-node {
   display: flex;
   align-items: center;
@@ -66,8 +69,6 @@
   right: -3px;
   top: 2px;
 }
-
-
 
 .drawflow svg {
   z-index: 0;
