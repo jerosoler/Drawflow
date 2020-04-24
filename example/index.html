@@ -7,8 +7,232 @@
   <title>Drawflow</title>
 </head>
 <body>
-  <script src="src/index.js"></script>
-  <!--<script src="engine/index.js"></script>-->
-  <link rel="stylesheet" type="text/css" href="src/draflow.css" />
+  <script src="../dist/drawflow.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/js/all.min.js" integrity="sha256-KzZiKy0DWYsnwMF+X1DvQngQ2/FxF7MF3Ff72XcpuPs=" crossorigin="anonymous"></script>
+  <link rel="stylesheet" type="text/css" href="../dist/drawflow.min.css" />
+  <link rel="stylesheet" type="text/css" href="beautiful.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css" integrity="sha256-h20CPZ0QyXlBuAw7A+KluUYx/3pK+c7lYEpqLTlxjYQ=" crossorigin="anonymous" />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+
+
+  <header>
+    <h2>Drawflow</h2>
+    <div class="github-link"><a href="https://github.com/jerosoler/Drawflow" target="_blank"><i class="fab fa-github fa-3x"></i></a></div>
+  </header>
+  <div class="wrapper">
+    <div class="col">
+      <div class="drag-drawflow" draggable="true" ondragstart="drag(event)" data-node="facebook">
+        <i class="fab fa-facebook"></i> Facebook
+      </div>
+      <div class="drag-drawflow" draggable="true" ondragstart="drag(event)" data-node="slack">
+        <i class="fab fa-slack"></i> Slack recive message
+      </div>
+      <div class="drag-drawflow" draggable="true" ondragstart="drag(event)" data-node="github">
+        <i class="fab fa-github"></i> Github Star
+      </div>
+      <div class="drag-drawflow" draggable="true" ondragstart="drag(event)" data-node="telegram">
+        <i class="fab fa-telegram"></i> Telegram send message
+      </div>
+      <div class="drag-drawflow" draggable="true" ondragstart="drag(event)" data-node="aws">
+        <i class="fab fa-aws"></i> AWS
+      </div>
+      <div class="drag-drawflow" draggable="true" ondragstart="drag(event)" data-node="log">
+        <i class="fas fa-file-signature"></i ondragstart="drag(event)"> File Log
+      </div>
+      <div class="drag-drawflow" draggable="true" ondragstart="drag(event)" data-node="google">
+        <i class="fab fa-google-drive"></i> Google Drive save
+      </div>
+      <div class="drag-drawflow" draggable="true" ondragstart="drag(event)" data-node="email">
+        <i class="fas fa-at"></i> Email send
+      </div>
+      <div class="drag-drawflow" draggable="true" ondragstart="drag(event)" data-node="template">
+        <i class="fas fa-code"></i> Template
+      </div>
+
+
+    </div>
+    <div id="drawflow" ondrop="drop(event)" ondragover="allowDrop(event)">
+      <div class="btn-export" onclick="Swal.fire({ title: 'Export',
+      html: '<pre><code>'+JSON.stringify(editor.export(), null,4)+'</code></pre>'
+      })">Export</div>
+      <div class="bar-zoom">
+        <i class="fas fa-search-minus" onclick="editor.zoom_out()"></i>
+        <i class="fas fa-search" onclick="editor.zoom_reset()"></i>
+        <i class="fas fa-search-plus" onclick="editor.zoom_in()"></i>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    var id = document.getElementById("drawflow");
+    const editor = new Drawflow(id);
+    editor.start();
+
+
+
+
+    var welcome = `
+    <div>
+      <div class="title-box">👏 Welcome!!</div>
+      <div class="box">
+        <p>Simple flow library <b>demo</b>
+        <a href="https://github.com/jerosoler/Drawflow" target="_blank">Drawflow</a> by <b>Jero Soler</b></p><br>
+
+        <p>Multiple input / outputs<br>
+           Data sync nodes<br>
+           Import / export<br>
+           Simple use<br>
+           Pure Javascript<br>
+        </p>
+        <br>
+        <p><b><u>Shortkeys:</u></b></p>
+        <p>🎹 <b>Delete</b> for remove selected<br>
+        💠 Mouse Left Click == Move<br>
+        ❌ Mouse Right == Delete Option<br>
+        🔍 Ctrl + Wheel == Zoom<br>
+        📱 Mobile support<br>
+        ...</p>
+      </div>
+    </div>
+    `;
+
+
+
+
+
+    //editor.addNode(name, inputs, outputs, posx, posy, class, data, html);
+    editor.addNode('welcome', 0, 0, 50, 50, 'welcome', {}, welcome );
+
+
+
+
+
+
+
+    /* DRAG EVENT */
+   function allowDrop(ev) {
+      ev.preventDefault();
+    }
+
+    function drag(ev) {
+      ev.dataTransfer.setData("node", ev.target.getAttribute('data-node'));
+    }
+
+    function drop(ev) {
+      ev.preventDefault();
+      var data = ev.dataTransfer.getData("node");
+      addNodeToDrawFlow(data, ev.clientX, ev.clientY);
+      //ev.target.appendChild(document.getElementById(data));
+    }
+
+    function addNodeToDrawFlow(name, pos_x, pos_y) {
+      pos_x = pos_x * ( editor.precanvas.clientWidth / (editor.precanvas.clientWidth * editor.zoom)) - (editor.precanvas.getBoundingClientRect().x * ( editor.precanvas.clientWidth / (editor.precanvas.clientWidth * editor.zoom)));
+      pos_y = pos_y * ( editor.precanvas.clientHeight / (editor.precanvas.clientHeight * editor.zoom)) - (editor.precanvas.getBoundingClientRect().y * ( editor.precanvas.clientHeight / (editor.precanvas.clientHeight * editor.zoom)));
+      switch (name) {
+        case 'facebook':
+        var facebook = `
+        <div>
+          <div class="title-box"><i class="fab fa-facebook"></i> Facebook Message</div>
+        </div>
+        `;
+          editor.addNode('facebook', 0,  1, pos_x, pos_y, 'facebook', {}, facebook );
+          break;
+        case 'slack':
+          var slackchat = `
+          <div>
+            <div class="title-box"><i class="fab fa-slack"></i> Slack chat message</div>
+          </div>
+          `
+          editor.addNode('slack', 1, 0, pos_x, pos_y, 'slack', {}, slackchat );
+          break;
+        case 'github':
+          var githubtemplate = `
+          <div>
+            <div class="title-box"><i class="fab fa-github "></i> Github Stars</div>
+            <div class="box">
+              <p>Enter repository url</p>
+            <input type="text" df-name>
+            </div>
+          </div>
+          `;
+          editor.addNode('github', 0, 1, pos_x, pos_y, 'github', { "name": ''}, githubtemplate );
+          break;
+        case 'telegram':
+          var telegrambot = `
+          <div>
+            <div class="title-box"><i class="fab fa-telegram-plane"></i> Telegram bot</div>
+            <div class="box">
+              <p>Send to telegram</p>
+              <p>select channel</p>
+              <select df-channel>
+                <option value="channel_1">Channel 1</option>
+                <option value="channel_2">Channel 2</option>
+                <option value="channel_3">Channel 3</option>
+                <option value="channel_4">Channel 4</option>
+              </select>
+            </div>
+          </div>
+          `;
+          editor.addNode('telegram', 1, 0, pos_x, pos_y, 'telegram', { "channel": 'channel_3'}, telegrambot );
+          break;
+        case 'aws':
+          var aws = `
+          <div>
+            <div class="title-box"><i class="fab fa-aws"></i> Aws Save </div>
+            <div class="box">
+              <p>Save in aws</p>
+              <input type="text" df-db-dbname placeholder="DB name"><br><br>
+              <input type="text" df-db-key placeholder="DB key">
+              <p>Output Log</p>
+            </div>
+          </div>
+          `;
+          editor.addNode('aws', 1, 1, pos_x, pos_y, 'aws', { "db": { "dbname": '', "key": '' }}, aws );
+          break;
+          case 'log':
+            var log = `
+            <div>
+              <div class="title-box"><i class="fas fa-file-signature"></i> Save log file </div>
+            </div>
+            `;
+            editor.addNode('log', 1, 0, pos_x, pos_y, 'log', {}, log );
+            break;
+          case 'google':
+            var google = `
+            <div>
+              <div class="title-box"><i class="fab fa-google-drive"></i> Google Drive save </div>
+            </div>
+            `;
+            editor.addNode('google', 1, 0, pos_x, pos_y, 'google', {}, google );
+            break;
+          case 'email':
+            var email = `
+            <div>
+              <div class="title-box"><i class="fas fa-at"></i> Send Email </div>
+            </div>
+            `;
+            editor.addNode('email', 1, 0, pos_x, pos_y, 'email', {}, email );
+            break;
+
+          case 'template':
+            var template = `
+            <div>
+              <div class="title-box"><i class="fas fa-code"></i> Template</div>
+              <div class="box">
+                Ger Vars
+                <textarea df-template></textarea>
+                Output template with vars
+              </div>
+            </div>
+            `;
+            editor.addNode('template', 1, 1, pos_x, pos_y, 'template', { "template": 'Write your template'}, template );
+            break;
+        default:
+      }
+    }
+
+
+  </script>
 </body>
 </html>

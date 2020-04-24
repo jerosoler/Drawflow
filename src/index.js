@@ -1,4 +1,4 @@
-export default class Drawflow {
+class Drawflow {
   constructor(container) {
     this.container = container;
     this.precanvas = null;

@@ -8,10 +8,10 @@ const minifyCSS = require('gulp-minify-css');
 
 gulp.task('js', done => {
    return gulp.src('src/*.js')
-  .pipe(minify())
+  .pipe(minify({noSource: true}))
   .pipe(concat('drawflow.min.js'))
   .pipe(gulp.dest('dist/'))
-    done();
+
 });
 
 
