@@ -38,6 +38,7 @@ export default class Drawflow {
     this.precanvas.classList.add("drawflow");
     this.container.appendChild(this.precanvas);
 
+    /* Mouse and Touch Actions */
     this.container.addEventListener('mouseup', this.dragEnd.bind(this));
     this.container.addEventListener('mousemove', this.position.bind(this));
     this.container.addEventListener('mousedown', this.click.bind(this) );
@@ -46,9 +47,15 @@ export default class Drawflow {
     this.container.addEventListener('touchmove', this.position.bind(this));
     this.container.addEventListener('touchstart', this.click.bind(this));
 
+    /* Context Menu */
+    this.container.addEventListener('contextmenu', this.contextmenu.bind(this));
+    /* Delete */
     window.addEventListener('keyup', this.key.bind(this));
+
+    /* Zoom Mouse */
     this.container.addEventListener('wheel', this.zoom_enter.bind(this));
 
+    /* Update data Nodes */
     this.container.addEventListener('input', this.updateNodeValue.bind(this));
     /* Mobile zoom */
     this.container.onpointerdown = this.pointerdown_handler.bind(this);
@@ -119,8 +126,13 @@ export default class Drawflow {
     }
   }
   click(e) {
+
     this.first_click = e.target;
     this.ele_selected = e.target;
+    if(e.button === 0) {
+      this.contextmenuDel();
+    }
+
     if(e.target.closest(".drawflow_content_node") != null) {
       this.ele_selected = e.target.closest(".drawflow_content_node").parentElement;
     }
@@ -182,6 +194,25 @@ export default class Drawflow {
         }
         this.connection_selected = this.ele_selected;
         this.connection_selected.classList.add("selected");
+      break;
+      case 'drawflow-delete':
+        if(this.node_selected ) {
+          this.removeNodeId(this.node_selected.id);
+        }
+
+        if(this.connection_selected) {
+          this.removeConnection()
+        }
+
+        if(this.node_selected != null) {
+          this.node_selected.classList.remove("selected");
+          this.node_selected = null;
+        }
+        if(this.connection_selected != null) {
+          this.connection_selected.classList.remove("selected");
+          this.connection_selected = null;
+        }
+
       break;
       default:
     }
@@ -302,6 +333,36 @@ export default class Drawflow {
     this.editor_selected = false;
 
   }
+  contextmenu(e) {
+    e.preventDefault();
+    if(this.precanvas.getElementsByClassName("drawflow-delete").length) {
+      this.precanvas.getElementsByClassName("drawflow-delete")[0].remove()
+    };
+    if(this.node_selected || this.connection_selected) {
+      var deletebox = document.createElement('div');
+      deletebox.classList.add("drawflow-delete");
+      deletebox.innerHTML = "x";
+      if(this.node_selected) {
+        this.node_selected.appendChild(deletebox);
+
+      }
+      if(this.connection_selected) {
+        deletebox.style.top = e.clientY * ( this.precanvas.clientHeight / (this.precanvas.clientHeight * this.zoom)) - (this.precanvas.getBoundingClientRect().y *  ( this.precanvas.clientHeight / (this.precanvas.clientHeight * this.zoom)) ) + "px";
+        deletebox.style.left = e.clientX * ( this.precanvas.clientWidth / (this.precanvas.clientWidth * this.zoom)) - (this.precanvas.getBoundingClientRect().x *  ( this.precanvas.clientWidth / (this.precanvas.clientWidth * this.zoom)) ) + "px";
+
+        this.precanvas.appendChild(deletebox);
+
+      }
+
+    }
+
+  }
+  contextmenuDel() {
+    if(this.precanvas.getElementsByClassName("drawflow-delete").length) {
+      this.precanvas.getElementsByClassName("drawflow-delete")[0].remove()
+    };
+  }
+
   key(e) {
     if(e.key === "Delete") {
       if(this.node_selected != null) {
@@ -458,7 +519,7 @@ export default class Drawflow {
     this.select_elements.children[0].setAttributeNS(null, 'height', eY - this.pos_click_y);
   }*/
 
-  addNode (num_in, num_out, ele_pos_x, ele_pos_y, classoverride, data, html) {
+  addNode (name, num_in, num_out, ele_pos_x, ele_pos_y, classoverride, data, html) {
 
     const parent = document.createElement('div');
     parent.classList.add("parent-node");
@@ -536,6 +597,7 @@ export default class Drawflow {
     this.precanvas.appendChild(parent);
     var json = {
       id: this.nodeId,
+      name: name,
       data: data,
       class: classoverride,
       html: html,
