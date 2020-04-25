@@ -14,6 +14,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css" integrity="sha256-h20CPZ0QyXlBuAw7A+KluUYx/3pK+c7lYEpqLTlxjYQ=" crossorigin="anonymous" />
   <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+  <script src="https://unpkg.com/micromodal/dist/micromodal.min.js"></script>
 
 
   <header>
@@ -23,31 +24,40 @@
   <div class="wrapper">
     <div class="col">
       <div class="drag-drawflow" draggable="true" ondragstart="drag(event)" data-node="facebook">
-        <i class="fab fa-facebook"></i> Facebook
+        <i class="fab fa-facebook"></i><span> Facebook</span>
       </div>
       <div class="drag-drawflow" draggable="true" ondragstart="drag(event)" data-node="slack">
-        <i class="fab fa-slack"></i> Slack recive message
+        <i class="fab fa-slack"></i><span> Slack recive message</span>
       </div>
       <div class="drag-drawflow" draggable="true" ondragstart="drag(event)" data-node="github">
-        <i class="fab fa-github"></i> Github Star
+        <i class="fab fa-github"></i><span> Github Star</span>
       </div>
       <div class="drag-drawflow" draggable="true" ondragstart="drag(event)" data-node="telegram">
-        <i class="fab fa-telegram"></i> Telegram send message
+        <i class="fab fa-telegram"></i><span> Telegram send message</span>
       </div>
       <div class="drag-drawflow" draggable="true" ondragstart="drag(event)" data-node="aws">
-        <i class="fab fa-aws"></i> AWS
+        <i class="fab fa-aws"></i><span> AWS</span>
       </div>
       <div class="drag-drawflow" draggable="true" ondragstart="drag(event)" data-node="log">
-        <i class="fas fa-file-signature"></i ondragstart="drag(event)"> File Log
+        <i class="fas fa-file-signature"></i><span> File Log</span>
       </div>
       <div class="drag-drawflow" draggable="true" ondragstart="drag(event)" data-node="google">
-        <i class="fab fa-google-drive"></i> Google Drive save
+        <i class="fab fa-google-drive"></i><span> Google Drive save</span>
       </div>
       <div class="drag-drawflow" draggable="true" ondragstart="drag(event)" data-node="email">
-        <i class="fas fa-at"></i> Email send
+        <i class="fas fa-at"></i><span> Email send</span>
       </div>
       <div class="drag-drawflow" draggable="true" ondragstart="drag(event)" data-node="template">
-        <i class="fas fa-code"></i> Template
+        <i class="fas fa-code"></i><span> Template</span>
+      </div>
+      <div class="drag-drawflow" draggable="true" ondragstart="drag(event)" data-node="multiple">
+        <i class="fas fa-code-branch"></i><span> Multiple inputs/outputs</span>
+      </div>
+      <div class="drag-drawflow" draggable="true" ondragstart="drag(event)" data-node="personalized">
+        <i class="fas fa-fill"></i><span> Personalized</span>
+      </div>
+      <div class="drag-drawflow" draggable="true" ondragstart="drag(event)" data-node="dbclick">
+        <i class="fas fa-mouse"></i><span> DBClick!</span>
       </div>
 
 
@@ -56,6 +66,7 @@
       <div class="btn-export" onclick="Swal.fire({ title: 'Export',
       html: '<pre><code>'+JSON.stringify(editor.export(), null,4)+'</code></pre>'
       })">Export</div>
+      <div class="btn-clear" onclick="editor.clear()">Clear</div>
       <div class="bar-zoom">
         <i class="fas fa-search-minus" onclick="editor.zoom_out()"></i>
         <i class="fas fa-search" onclick="editor.zoom_reset()"></i>
@@ -99,31 +110,52 @@
 
 
 
-
-
     //editor.addNode(name, inputs, outputs, posx, posy, class, data, html);
     editor.addNode('welcome', 0, 0, 50, 50, 'welcome', {}, welcome );
 
 
-
-
-
-
-
     /* DRAG EVENT */
+
+    /* Mouse and Touch Actions */
+
+    var elements = document.getElementsByClassName('drag-drawflow');
+    for (var i = 0; i < elements.length; i++) {
+      elements[i].addEventListener('touchend', drop, false);
+      elements[i].addEventListener('touchmove', positionMobile, false);
+      elements[i].addEventListener('touchstart', drag, false );
+    }
+
+    var mobile_item_selec = '';
+    var mobile_last_move = null;
+   function positionMobile(ev) {
+     mobile_last_move = event;
+   }
+
    function allowDrop(ev) {
       ev.preventDefault();
     }
 
     function drag(ev) {
+      if (ev.type === "touchstart") {
+        mobile_item_selec = ev.target.closest(".drag-drawflow").getAttribute('data-node');
+      } else {
       ev.dataTransfer.setData("node", ev.target.getAttribute('data-node'));
+      }
     }
 
     function drop(ev) {
-      ev.preventDefault();
-      var data = ev.dataTransfer.getData("node");
-      addNodeToDrawFlow(data, ev.clientX, ev.clientY);
-      //ev.target.appendChild(document.getElementById(data));
+      if (ev.type === "touchend") {
+        var parentdrawflow = document.elementFromPoint( mobile_last_move.touches[0].clientX, mobile_last_move.touches[0].clientY).closest("#drawflow");
+        if(parentdrawflow != null) {
+          addNodeToDrawFlow(mobile_item_selec, mobile_last_move.touches[0].clientX, mobile_last_move.touches[0].clientY);
+        }
+        mobile_item_selec = '';
+      } else {
+        ev.preventDefault();
+        var data = ev.dataTransfer.getData("node");
+        addNodeToDrawFlow(data, ev.clientX, ev.clientY);
+      }
+
     }
 
     function addNodeToDrawFlow(name, pos_x, pos_y) {
@@ -190,7 +222,7 @@
           `;
           editor.addNode('aws', 1, 1, pos_x, pos_y, 'aws', { "db": { "dbname": '', "key": '' }}, aws );
           break;
-          case 'log':
+        case 'log':
             var log = `
             <div>
               <div class="title-box"><i class="fas fa-file-signature"></i> Save log file </div>
@@ -228,9 +260,58 @@
             `;
             editor.addNode('template', 1, 1, pos_x, pos_y, 'template', { "template": 'Write your template'}, template );
             break;
+          case 'multiple':
+            var multiple = `
+            <div>
+              <div class="box">
+                Multiple!
+              </div>
+            </div>
+            `;
+            editor.addNode('multiple', 3, 4, pos_x, pos_y, 'multiple', {}, multiple );
+            break;
+          case 'personalized':
+            var personalized = `
+            <div>
+              Personalized
+            </div>
+            `;
+            editor.addNode('personalized', 1, 1, pos_x, pos_y, 'personalized', {}, personalized );
+            break;
+          case 'dbclick':
+            var dbclick = `
+            <div>
+            <div class="title-box"><i class="fas fa-mouse"></i> Db Click</div>
+              <div class="box dbclickbox" ondblclick="showpopup(event)">
+                Db Click in the box
+                <div class="modal" style="display:none">
+                  <div class="modal-content">
+                    <span class="close" onclick="closemodal(event)">&times;</span>
+                    Change your variable {name} ! 
+                    <input type="text" df-name>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+            `;
+            editor.addNode('dbclick', 1, 1, pos_x, pos_y, 'dbclick', { name: ''}, dbclick );
+            break;
+
         default:
       }
     }
+
+  var timer = 0;
+  function showpopup(e) {
+    e.target.closest(".drawflow-node").style.zIndex = "9999";
+    e.target.children[0].style.display  ="block";
+  }
+
+   function closemodal(e) {
+     e.target.closest(".drawflow-node").style.zIndex = "2";
+     e.target.parentElement.parentElement.style.display  ="none";
+   }
 
 
   </script>

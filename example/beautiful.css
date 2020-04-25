@@ -40,13 +40,14 @@ header a {
 }
 
 .col {
+  overflow: auto;
   width: 300px;
   height: 100%;
   border-right: 1px solid var(--border-color);
 }
 
 .drag-drawflow {
-  line-height: 70px;
+  line-height: 50px;
   border-bottom: 1px solid var(--border-color);
   padding-left: 20px;
   cursor: move;
@@ -62,6 +63,21 @@ header a {
   font-weight: bold;
   border: 1px solid #0e5ba3;
   background: #4ea9ff;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  z-index: 5;
+}
+
+.btn-clear {
+  float: right;
+  position: absolute;
+  top: 10px;
+  right: 85px;
+  color: white;
+  font-weight: bold;
+  border: 1px solid #96015b;
+  background: #e3195a;
   padding: 5px 10px;
   border-radius: 4px;
   cursor: pointer;
@@ -102,6 +118,18 @@ header a {
   background-image:
    linear-gradient(to right, #f1f1f1 1px, transparent 1px),
    linear-gradient(to bottom, #f1f1f1 1px, transparent 1px);
+}
+
+@media only screen and (max-width: 768px) {
+  .col {
+    width: 50px;
+  }
+  .col .drag-drawflow span {
+    display:none;
+  }
+  #drawflow {
+    width: calc(100vw - 51px);
+  }
 }
 
 
@@ -211,4 +239,55 @@ header a {
 
 .drawflow-node textarea {
   height: 100px;
+}
+
+
+.drawflow-node.personalized {
+  background: red;
+  height: 200px;
+  text-align: center;
+  color: white;
+}
+.drawflow-node.personalized .input {
+  background: yellow;
+}
+.drawflow-node.personalized .output {
+  background: green;
+}
+
+.drawflow-node.personalized.selected {
+  background: blue;
+}
+
+
+
+/* Modal */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 7; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 15% auto; /* 15% from the top and centered */
+  padding: 20px;
+  border: 1px solid #888;
+  width: 400px; /* Could be more or less, depending on screen size */
+}
+
+/* The Close Button */
+.modal .close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  cursor:pointer;
 }

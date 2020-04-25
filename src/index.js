@@ -299,21 +299,25 @@ class Drawflow {
         var output_class = this.ele_selected.classList[1];
         var input_id = ele_last.parentElement.parentElement.id;
         var input_class = ele_last.classList[1];
+        if(output_id !== input_id) {
 
-        if(this.container.querySelectorAll('.connection.node_in_'+input_id+'.node_out_'+output_id+'.'+output_class+'.'+input_class).length === 0) {
-        // Conection no exist save connection
+          if(this.container.querySelectorAll('.connection.node_in_'+input_id+'.node_out_'+output_id+'.'+output_class+'.'+input_class).length === 0) {
+          // Conection no exist save connection
 
-        this.connection_ele.classList.add("node_in_"+input_id);
-        this.connection_ele.classList.add("node_out_"+output_id);
-        this.connection_ele.classList.add(output_class);
-        this.connection_ele.classList.add(input_class);
-        var id_input = input_id.slice(5);
-        var id_output = output_id.slice(5);
+          this.connection_ele.classList.add("node_in_"+input_id);
+          this.connection_ele.classList.add("node_out_"+output_id);
+          this.connection_ele.classList.add(output_class);
+          this.connection_ele.classList.add(input_class);
+          var id_input = input_id.slice(5);
+          var id_output = output_id.slice(5);
 
-        this.drawflow.drawflow.Home.data[id_output].outputs[output_class].connections.push( {"node": id_input, "output": input_class});
-        this.drawflow.drawflow.Home.data[id_input].inputs[input_class].connections.push( {"node": id_output, "input": output_class});
+          this.drawflow.drawflow.Home.data[id_output].outputs[output_class].connections.push( {"node": id_input, "output": input_class});
+          this.drawflow.drawflow.Home.data[id_input].inputs[input_class].connections.push( {"node": id_output, "input": output_class});
+        } else {
+          this.connection_ele.remove();
+        }
 
-        this.connection_ele = null;
+          this.connection_ele = null;
       } else {
         // Connection exists Remove Connection;
         this.connection_ele.remove();
