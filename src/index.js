@@ -22,6 +22,7 @@ class Drawflow {
     this.select_elements = null;
     this.drawflow = { "drawflow": { "Home": { "data": {} }}};
     // Configurable options
+    this.editor_mode = 'edit';
     this.zoom = 1;
     this.zoom_max = 1.6;
     this.zoom_min = 0.5;
@@ -38,7 +39,9 @@ class Drawflow {
     this.precanvas.classList.add("drawflow");
     this.container.appendChild(this.precanvas);
 
+
     /* Mouse and Touch Actions */
+
     this.container.addEventListener('mouseup', this.dragEnd.bind(this));
     this.container.addEventListener('mousemove', this.position.bind(this));
     this.container.addEventListener('mousedown', this.click.bind(this) );
@@ -54,9 +57,9 @@ class Drawflow {
 
     /* Zoom Mouse */
     this.container.addEventListener('wheel', this.zoom_enter.bind(this));
-
     /* Update data Nodes */
     this.container.addEventListener('input', this.updateNodeValue.bind(this));
+
     /* Mobile zoom */
     this.container.onpointerdown = this.pointerdown_handler.bind(this);
     this.container.onpointermove = this.pointermove_handler.bind(this);
@@ -126,15 +129,24 @@ class Drawflow {
     }
   }
   click(e) {
+    if(this.editor_mode === 'fixed') {
+      //return false;
+       if(e.target.classList[0] === 'parent-drawflow' || e.target.classList[0] === 'drawflow') {
+         this.ele_selected = e.target.closest(".parent-drawflow");
+       } else {
+         return false;
+       }
 
-    this.first_click = e.target;
-    this.ele_selected = e.target;
-    if(e.button === 0) {
-      this.contextmenuDel();
-    }
+    } else {
+      this.first_click = e.target;
+      this.ele_selected = e.target;
+      if(e.button === 0) {
+        this.contextmenuDel();
+      }
 
-    if(e.target.closest(".drawflow_content_node") != null) {
-      this.ele_selected = e.target.closest(".drawflow_content_node").parentElement;
+      if(e.target.closest(".drawflow_content_node") != null) {
+        this.ele_selected = e.target.closest(".drawflow_content_node").parentElement;
+      }
     }
     switch (this.ele_selected.classList[0]) {
       case 'drawflow-node':
@@ -339,6 +351,9 @@ class Drawflow {
   }
   contextmenu(e) {
     e.preventDefault();
+    if(this.editor_mode === 'fixed') {
+      return false;
+    }
     if(this.precanvas.getElementsByClassName("drawflow-delete").length) {
       this.precanvas.getElementsByClassName("drawflow-delete")[0].remove()
     };
@@ -368,6 +383,9 @@ class Drawflow {
   }
 
   key(e) {
+    if(this.editor_mode === 'fixed') {
+      return false;
+    }
     if(e.key === "Delete") {
       if(this.node_selected != null) {
         if(this.first_click.tagName !== 'INPUT' && this.first_click.tagName !== 'TEXTAREA') {

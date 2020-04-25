@@ -133,6 +133,7 @@ header a {
 }
 
 
+
 /* Editing Drawflow */
 
 .drawflow .drawflow-node {
@@ -142,7 +143,6 @@ header a {
   box-shadow: 0 2px 15px 2px var(--border-color);
   padding: 0px;
   width: 200px;
-
 }
 
 .drawflow .drawflow-node.selected  {
@@ -264,12 +264,12 @@ header a {
 /* Modal */
 .modal {
   display: none; /* Hidden by default */
-  position: fixed; /* Stay in place */
+  position: absolute; /* Stay in place */
   z-index: 7; /* Sit on top */
   left: 0;
   top: 0;
-  width: 100%; /* Full width */
-  height: 100%; /* Full height */
+  width: 100vw; /* Full width */
+  height: 100vh; /* Full height */
   overflow: auto; /* Enable scroll if needed */
   background-color: rgb(0,0,0); /* Fallback color */
   background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
@@ -290,4 +290,10 @@ header a {
   font-size: 28px;
   font-weight: bold;
   cursor:pointer;
+}
+
+@media only screen and (max-width: 768px) {
+  .modal-content {
+    width: 80%;
+  }
 }

@@ -159,6 +159,9 @@
     }
 
     function addNodeToDrawFlow(name, pos_x, pos_y) {
+      if(editor.editor_mode === 'fixed') {
+        return false;
+      }
       pos_x = pos_x * ( editor.precanvas.clientWidth / (editor.precanvas.clientWidth * editor.zoom)) - (editor.precanvas.getBoundingClientRect().x * ( editor.precanvas.clientWidth / (editor.precanvas.clientWidth * editor.zoom)));
       pos_y = pos_y * ( editor.precanvas.clientHeight / (editor.precanvas.clientHeight * editor.zoom)) - (editor.precanvas.getBoundingClientRect().y * ( editor.precanvas.clientHeight / (editor.precanvas.clientHeight * editor.zoom)));
       switch (name) {
@@ -283,11 +286,11 @@
             <div>
             <div class="title-box"><i class="fas fa-mouse"></i> Db Click</div>
               <div class="box dbclickbox" ondblclick="showpopup(event)">
-                Db Click in the box
+                Db Click here
                 <div class="modal" style="display:none">
                   <div class="modal-content">
                     <span class="close" onclick="closemodal(event)">&times;</span>
-                    Change your variable {name} ! 
+                    Change your variable {name} !
                     <input type="text" df-name>
                   </div>
 
@@ -302,15 +305,23 @@
       }
     }
 
-  var timer = 0;
+  var transform = '';
   function showpopup(e) {
     e.target.closest(".drawflow-node").style.zIndex = "9999";
-    e.target.children[0].style.display  ="block";
+    e.target.children[0].style.display = "block";
+    transform = editor.precanvas.style.transform;
+    editor.precanvas.style.transform = '';
+    e.target.children[0].style.top  = -editor.canvas_y - editor.container.offesetTop  +'px';
+    e.target.children[0].style.left  = -editor.canvas_x  - editor.container.offesetLeft +'px';
+    editor.editor_mode = "fixed";
+
   }
 
    function closemodal(e) {
      e.target.closest(".drawflow-node").style.zIndex = "2";
      e.target.parentElement.parentElement.style.display  ="none";
+     editor.precanvas.style.transform = transform;
+      editor.editor_mode = "edit";
    }
 
 
