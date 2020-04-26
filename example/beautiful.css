@@ -53,6 +53,31 @@ header a {
   cursor: move;
   user-select: none;
 }
+.menu {
+  position: absolute;
+  height: 40px;
+  display: block;
+  background: white;
+  width: 100%;
+}
+.menu ul {
+  padding: 0px;
+  margin: 0px;
+  line-height: 40px;
+}
+
+.menu ul li {
+  display: inline-block;
+margin-left: 10px;
+border-right: 1px solid var(--border-color);
+padding-right: 10px;
+line-height: 40px;
+cursor: pointer;
+}
+
+.menu ul li.selected {
+  font-weight: bold;
+}
 
 .btn-export {
   float: right;
@@ -87,6 +112,22 @@ header a {
     width:80% !important;
 }
 
+.btn-lock {
+  float: right;
+  position: absolute;
+  bottom: 10px;
+  right: 140px;
+  display: flex;
+  font-size: 24px;
+  color: white;
+  padding: 5px 10px;
+  background: #555555;
+  border-radius: 4px;
+  border-right: 1px solid var(--border-color);
+  z-index: 5;
+  cursor: pointer;
+}
+
 .bar-zoom {
   float: right;
   position: absolute;
@@ -112,7 +153,8 @@ header a {
 #drawflow {
   position: relative;
   width: calc(100vw - 301px);
-  height: 100%;
+  height: calc(100% - 50px);
+  top: 40px;
   background: var(--background-color);
   background-size: 25px 25px;
   background-image:

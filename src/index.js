@@ -1,5 +1,6 @@
 class Drawflow {
   constructor(container) {
+    this.events = {};
     this.container = container;
     this.precanvas = null;
     this.nodeId = 1;
@@ -22,6 +23,7 @@ class Drawflow {
     this.select_elements = null;
     this.drawflow = { "drawflow": { "Home": { "data": {} }}};
     // Configurable options
+    this.module = 'Home';
     this.editor_mode = 'edit';
     this.zoom = 1;
     this.zoom_max = 1.6;
@@ -35,6 +37,7 @@ class Drawflow {
   start () {
     // console.info("Start Drawflow!!");
     this.container.classList.add("parent-drawflow");
+    this.container.tabIndex = 0;
     this.precanvas = document.createElement('div');
     this.precanvas.classList.add("drawflow");
     this.container.appendChild(this.precanvas);
@@ -53,7 +56,7 @@ class Drawflow {
     /* Context Menu */
     this.container.addEventListener('contextmenu', this.contextmenu.bind(this));
     /* Delete */
-    window.addEventListener('keyup', this.key.bind(this));
+    this.container.addEventListener('keyup', this.key.bind(this));
 
     /* Zoom Mouse */
     this.container.addEventListener('wheel', this.zoom_enter.bind(this));
@@ -120,11 +123,15 @@ class Drawflow {
   }
   /* End Mobile Zoom */
   load() {
-    for (var key in this.drawflow.drawflow.Home.data) {
-      this.addNodeImport(this.drawflow.drawflow.Home.data[key], this.precanvas);
-      this.nodeId = key+1;
+    for (var key in this.drawflow.drawflow[this.module].data) {
+      this.addNodeImport(this.drawflow.drawflow[this.module].data[key], this.precanvas);
+      var number = parseInt(key);
+      if(number >= this.nodeId) {
+        this.nodeId = number+1;
+      }
+
     }
-    for (var key in this.drawflow.drawflow.Home.data) {
+    for (var key in this.drawflow.drawflow[this.module].data) {
       this.updateConnectionNodes('node-'+key);
     }
   }
@@ -157,6 +164,7 @@ class Drawflow {
           this.connection_selected.classList.remove("selected");
           this.connection_selected = null;
         }
+        this.dispatch('nodeSelected', this.ele_selected.id.slice(5));
         this.node_selected = this.ele_selected;
         this.node_selected.classList.add("selected");
         this.drag = true;
@@ -257,6 +265,7 @@ class Drawflow {
       x =  this.canvas_x + (-(this.pos_x - e_pos_x))
       y = this.canvas_y + (-(this.pos_y - e_pos_y))
       // console.log(canvas_x +' - ' +pos_x + ' - '+ e_pos_x + ' - ' + x);
+      this.dispatch('translate', { x: x, y: y});
       this.precanvas.style.transform = "translate("+x+"px, "+y+"px) scale("+this.zoom+")";
       //}
     }
@@ -270,8 +279,8 @@ class Drawflow {
       this.ele_selected.style.top = (this.ele_selected.offsetTop - y) + "px";
       this.ele_selected.style.left = (this.ele_selected.offsetLeft - x) + "px";
 
-      this.drawflow.drawflow.Home.data[this.ele_selected.id.slice(5)].pos_x = (this.ele_selected.offsetLeft - x);
-      this.drawflow.drawflow.Home.data[this.ele_selected.id.slice(5)].pos_y = (this.ele_selected.offsetTop - y);
+      this.drawflow.drawflow[this.module].data[this.ele_selected.id.slice(5)].pos_x = (this.ele_selected.offsetLeft - x);
+      this.drawflow.drawflow[this.module].data[this.ele_selected.id.slice(5)].pos_y = (this.ele_selected.offsetTop - y);
 
       this.updateConnectionNodes(this.ele_selected.id, e_pos_x, e_pos_y)
     }
@@ -280,7 +289,7 @@ class Drawflow {
       this.mouse_x = e_pos_x;
       this.mouse_y = e_pos_y;
     }
-
+    this.dispatch('mouseMove', {x: e_pos_x,y: e_pos_y });
   }
 
   dragEnd(e) {
@@ -298,6 +307,7 @@ class Drawflow {
       var e_pos_y = e.clientY;
       var ele_last = e.target;
     }
+
 
     if(this.editor_selected) {
       this.canvas_x = this.canvas_x + (-(this.pos_x - e_pos_x));
@@ -323,8 +333,10 @@ class Drawflow {
           var id_input = input_id.slice(5);
           var id_output = output_id.slice(5);
 
-          this.drawflow.drawflow.Home.data[id_output].outputs[output_class].connections.push( {"node": id_input, "output": input_class});
-          this.drawflow.drawflow.Home.data[id_input].inputs[input_class].connections.push( {"node": id_output, "input": output_class});
+          this.drawflow.drawflow[this.module].data[id_output].outputs[output_class].connections.push( {"node": id_input, "output": input_class});
+          this.drawflow.drawflow[this.module].data[id_input].inputs[input_class].connections.push( {"node": id_output, "input": output_class});
+          this.dispatch('connectionCreated', { ouput_id: id_output, input_id: id_input, output_class:  output_class, input_class: input_class});
+
         } else {
           this.connection_ele.remove();
         }
@@ -412,6 +424,7 @@ class Drawflow {
     }
   }
   zoom_refresh(){
+    this.dispatch('zoom', this.zoom);
     this.precanvas.style.transform = "translate("+this.canvas_x+"px, "+this.canvas_y+"px) scale("+this.zoom+")";
   }
   zoom_in() {
@@ -542,7 +555,6 @@ class Drawflow {
   }*/
 
   addNode (name, num_in, num_out, ele_pos_x, ele_pos_y, classoverride, data, html) {
-
     const parent = document.createElement('div');
     parent.classList.add("parent-node");
 
@@ -628,8 +640,8 @@ class Drawflow {
       pos_x: ele_pos_x,
       pos_y: ele_pos_y,
     }
-    this.drawflow.drawflow.Home.data[this.nodeId] = json;
-
+    this.drawflow.drawflow[this.module].data[this.nodeId] = json;
+    this.dispatch('nodeCreated', this.nodeId);
     this.nodeId++;
   }
 
@@ -727,7 +739,7 @@ class Drawflow {
     var attr = event.target.attributes
     for(var i= 0; i < attr.length; i++) {
       if(attr[i].nodeName.startsWith('df-')) {
-        this.drawflow.drawflow.Home.data[event.target.closest(".drawflow_content_node").parentElement.id.slice(5)].data[attr[i].nodeName.slice(3)] = event.target.value;
+        this.drawflow.drawflow[this.module].data[event.target.closest(".drawflow_content_node").parentElement.id.slice(5)].data[attr[i].nodeName.slice(3)] = event.target.value;
       }
 
     }
@@ -737,7 +749,8 @@ class Drawflow {
 
   removeNodeId(id) {
     document.getElementById(id).remove();
-    delete this.drawflow.drawflow.Home.data[id.slice(5)];
+    delete this.drawflow.drawflow[this.module].data[id.slice(5)];
+    this.dispatch('nodeRemoved', id.slice(5));
     this.removeConnectionNodeId(id);
   }
 
@@ -746,16 +759,16 @@ class Drawflow {
       var listclass = this.connection_selected.parentElement.classList;
       this.connection_selected.parentElement.remove();
 
-      var index_out = this.drawflow.drawflow.Home.data[listclass[2].slice(14)].outputs[listclass[3]].connections.findIndex(function(item,i) {
+      var index_out = this.drawflow.drawflow[this.module].data[listclass[2].slice(14)].outputs[listclass[3]].connections.findIndex(function(item,i) {
         return item.node === listclass[1].slice(13) && item.output === listclass[4]
       });
-      this.drawflow.drawflow.Home.data[listclass[2].slice(14)].outputs[listclass[3]].connections.splice(index_out,1);
+      this.drawflow.drawflow[this.module].data[listclass[2].slice(14)].outputs[listclass[3]].connections.splice(index_out,1);
 
-      var index_in = this.drawflow.drawflow.Home.data[listclass[1].slice(13)].inputs[listclass[4]].connections.findIndex(function(item,i) {
+      var index_in = this.drawflow.drawflow[this.module].data[listclass[1].slice(13)].inputs[listclass[4]].connections.findIndex(function(item,i) {
         return item.node === listclass[2].slice(14) && item.input === listclass[3]
       });
-      this.drawflow.drawflow.Home.data[listclass[1].slice(13)].inputs[listclass[4]].connections.splice(index_in,1);
-
+      this.drawflow.drawflow[this.module].data[listclass[1].slice(13)].inputs[listclass[4]].connections.splice(index_in,1);
+      this.dispatch('connectionRemoved', { ouput_id: listclass[2].slice(14), input_id: listclass[1].slice(13), ouput_class: listclass[3], input_class: listclass[4] } );
       this.connection_selected = null;
     }
   }
@@ -769,15 +782,15 @@ class Drawflow {
 
       var listclass = elemsOut[i].classList;
       /*
-      var index_out = this.drawflow.drawflow.Home.data[listclass[2].slice(14)].outputs[listclass[3]].connections.findIndex(function(item,i) {
+      var index_out = this.drawflow.drawflow[this.module].data[listclass[2].slice(14)].outputs[listclass[3]].connections.findIndex(function(item,i) {
         return item.node === listclass[1].slice(13) && item.output === listclass[4]
       });
-      this.drawflow.drawflow.Home.data[listclass[2].slice(14)].outputs[listclass[3]].connections.splice(index_out,1);
+      this.drawflow.drawflow[this.module].data[listclass[2].slice(14)].outputs[listclass[3]].connections.splice(index_out,1);
       */
-      var index_in = this.drawflow.drawflow.Home.data[listclass[1].slice(13)].inputs[listclass[4]].connections.findIndex(function(item,i) {
+      var index_in = this.drawflow.drawflow[this.module].data[listclass[1].slice(13)].inputs[listclass[4]].connections.findIndex(function(item,i) {
         return item.node === listclass[2].slice(14) && item.input === listclass[3]
       });
-      this.drawflow.drawflow.Home.data[listclass[1].slice(13)].inputs[listclass[4]].connections.splice(index_in,1);
+      this.drawflow.drawflow[this.module].data[listclass[1].slice(13)].inputs[listclass[4]].connections.splice(index_in,1);
 
       elemsOut[i].remove();
     }
@@ -787,19 +800,43 @@ class Drawflow {
 
       var listclass = elemsIn[i].classList;
 
-      var index_out = this.drawflow.drawflow.Home.data[listclass[2].slice(14)].outputs[listclass[3]].connections.findIndex(function(item,i) {
+      var index_out = this.drawflow.drawflow[this.module].data[listclass[2].slice(14)].outputs[listclass[3]].connections.findIndex(function(item,i) {
         return item.node === listclass[1].slice(13) && item.output === listclass[4]
       });
-      this.drawflow.drawflow.Home.data[listclass[2].slice(14)].outputs[listclass[3]].connections.splice(index_out,1);
+      this.drawflow.drawflow[this.module].data[listclass[2].slice(14)].outputs[listclass[3]].connections.splice(index_out,1);
       /*
-      var index_in = this.drawflow.drawflow.Home.data[listclass[1].slice(13)].inputs[listclass[4]].connections.findIndex(function(item,i) {
+      var index_in = this.drawflow.drawflow[this.module].data[listclass[1].slice(13)].inputs[listclass[4]].connections.findIndex(function(item,i) {
         return item.node === listclass[2].slice(14) && item.input === listclass[3]
       });
-      this.drawflow.drawflow.Home.data[listclass[1].slice(13)].inputs[listclass[4]].connections.splice(index_in,1);
+      this.drawflow.drawflow[this.module].data[listclass[1].slice(13)].inputs[listclass[4]].connections.splice(index_in,1);
       */
       elemsIn[i].remove();
     }
   }
+
+  addModule(name) {
+    this.dispatch('moduleCreated', name);
+    this.drawflow.drawflow[name] =  { "data": {} };
+  }
+  changeModule(name) {
+    this.dispatch('moduleChanged', name);
+    this.module = name;
+    this.precanvas.innerHTML = "";
+    this.canvas_x = 0;
+    this.canvas_y = 0;
+    this.pos_x = 0;
+    this.pos_y = 0;
+    this.mouse_x = 0;
+    this.mouse_y = 0;
+    this.zoom = 1;
+    this.precanvas.style.transform = '';
+    this.import(this.drawflow);
+  }
+  clearModuleSelected() {
+    this.precanvas.innerHTML = "";
+    this.drawflow.drawflow[this.module] =  { "data": {} };
+  }
+
   clear () {
     this.precanvas.innerHTML = "";
     this.drawflow = { "drawflow": { "Home": { "data": {} }}};
@@ -813,4 +850,54 @@ class Drawflow {
     this.drawflow = data;
     this.load();
   }
+
+  /* Events */
+  on (event, callback) {
+       // Check if the callback is not a function
+       if (typeof callback !== 'function') {
+           console.error(`The listener callback must be a function, the given type is ${typeof callback}`);
+           return false;
+       }
+
+
+       // Check if the event is not a string
+       if (typeof event !== 'string') {
+           console.error(`The event name must be a string, the given type is ${typeof event}`);
+           return false;
+       }
+
+       // Check if this event not exists
+       if (this.events[event] === undefined) {
+           this.events[event] = {
+               listeners: []
+           }
+       }
+
+       this.events[event].listeners.push(callback);
+   }
+
+   removeListener (event, callback) {
+       // Check if this event not exists
+       if (this.events[event] === undefined) {
+           //console.error(`This event: ${event} does not exist`);
+           return false;
+       }
+
+     this.events[event].listeners = this.events[event].listeners.filter(listener => {
+         return listener.toString() !== callback.toString();
+     });
+   }
+
+   dispatch (event, details) {
+       // Check if this event not exists
+       if (this.events[event] === undefined) {
+           // console.error(`This event: ${event} does not exist`);
+           return false;
+       }
+
+       this.events[event].listeners.forEach((listener) => {
+           listener(details);
+       });
+   }
+
 }

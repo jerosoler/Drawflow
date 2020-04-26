@@ -25,7 +25,7 @@
 
     }
     const editor = new Drawflow(id);
-    editor.editor_mode = 'fixed';
+    //editor.editor_mode = 'fixed';
     //editor.drawflow = {"drawflow":{"Home":{"data":{"1":{"id":1,"name":"github","data":{"input":"hola","output":"adios","select":"saab","form":{"text":"test","test":{"test":"hola mundo"}}},"class":"test","html":"<div><p>Hollaaa2</p><input type=\"text\" df-form-test-test ><input type=\"text\" df-input ><textarea df-output cols=\"16\"></textarea><select df-select>\n                  <option value=\"volvo\">Volvo</option>\n                  <option value=\"saab\">Saab</option>\n                  <option value=\"mercedes\">Mercedes</option>\n                  <option value=\"audi\">Audi</option>\n                </select></div>","inputs":{"input_1":{"connections":[]},"input_2":{"connections":[{"node":"3","input":"output_1"}]}},"outputs":{"output_1":{"connections":[]},"output_2":{"connections":[{"node":"2","output":"input_1"}]},"output_3":{"connections":[]}},"pos_x":519,"pos_y":136},"2":{"id":2,"name":"ifelse","data":{"input":"hola","output":"adios","select":"saab","form":{"text":"test","test":{"test":"hola mundo"}}},"class":"beautiful","html":"<div><p>Hollaaa2</p><input type=\"text\" df-form-test-test ><input type=\"text\" df-input ><textarea df-output cols=\"16\"></textarea><select df-select>\n                  <option value=\"volvo\">Volvo</option>\n                  <option value=\"saab\">Saab</option>\n                  <option value=\"mercedes\">Mercedes</option>\n                  <option value=\"audi\">Audi</option>\n                </select></div>","inputs":{"input_1":{"connections":[{"node":"1","input":"output_2"}]}},"outputs":{"output_1":{"connections":[]}},"pos_x":969,"pos_y":82},"3":{"id":3,"name":"test","data":{"input":"hola","output":"adios","select":"saab","form":{"text":"test","test":{"test":"hola mundo"}}},"class":"","html":"<div><p>Hollaaa2</p><input type=\"text\" df-form-test-test ><input type=\"text\" df-input ><textarea df-output cols=\"16\"></textarea><select df-select>\n                  <option value=\"volvo\">Volvo</option>\n                  <option value=\"saab\">Saab</option>\n                  <option value=\"mercedes\">Mercedes</option>\n                  <option value=\"audi\">Audi</option>\n                </select></div>","inputs":{},"outputs":{"output_1":{"connections":[{"node":"1","output":"input_2"}]}},"pos_x":106,"pos_y":104}}}}}
 
 
@@ -55,6 +55,48 @@
                 </select></div>`;
 
 
+    editor.on('nodeCreated', function(id) {
+      console.log("Node created " + id);
+    })
+
+    editor.on('nodeRemoved', function(id) {
+      console.log("Node removed " + id);
+    })
+
+    editor.on('nodeSelected', function(id) {
+      console.log("Node selected " + id);
+    })
+
+    editor.on('moduleCreated', function(name) {
+      console.log("Module Created " + name);
+    })
+
+    editor.on('moduleChanged', function(name) {
+      console.log("Module Changed " + name);
+    })
+
+    editor.on('connectionCreated', function(connection) {
+      console.log('Connection created');
+      console.log(connection);
+    })
+
+    editor.on('connectionRemoved', function(connection) {
+      console.log('Connection removed');
+      console.log(connection);
+    })
+
+    editor.on('mouseMove', function(position) {
+      console.log('Position mouse x:' + position.x + ' y:'+ position.y);
+    })
+
+    editor.on('zoom', function(zoom) {
+      console.log('Zoom level ' + zoom);
+    })
+
+    editor.on('translate', function(position) {
+      console.log('Translate x:' + position.x + ' y:'+ position.y);
+    })
+
     //editor.addNode(name, inputs, outputs, posx, posy, class, data, html);
     //editor.addNode('github', 2,3,150,300, 'test', data, html);
 
@@ -69,6 +111,13 @@
      }, 3000);
    */
     //const editor = new Draflow.Editor(id, options).start();
+
+      window.addEventListener('keyup',  function(e) {
+        if(e) {
+          console.log(e);
+          editor.addNode('ifelse', 1,1,250,300, 'beautiful', data, html);
+        }
+      });
   </script>
   <style>
 

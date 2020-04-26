@@ -2,6 +2,7 @@
   display: flex;
   overflow: hidden;
   touch-action: none;
+  outline:none;
 }
 
 .drawflow {
