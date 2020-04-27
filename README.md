@@ -229,4 +229,4 @@ Example of exported data:
 ```
 
 ## Example
-View the complete example in folder [example](https://github.com/jerosoler/Drawflow/tree/master/example).
+View the complete example in folder [example](https://github.com/jerosoler/Drawflow/tree/master/docs).
