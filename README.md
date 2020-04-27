@@ -2,12 +2,19 @@
 
 ![Demo](https://github.com/jerosoler/Drawflow/blob/master/docs/drawflow.gif)
 
-Simple flow library
+Simple flow library.
+
+Drawflow allows you to create data flows easily and quickly.
+
+Installing only a javascript library and with four lines of code.
+
+[LIVE DEMO](https://jerosoler.github.io/Drawflow/)
 
 ## Table of contents
 - [Features](#features)
 - [Installation](#installation)
   - [Running](#running)
+- [Mouse and  Keys](#mouse-and-keys)
 - [Editor](#editor)
 - [Modules](#modules)
 - [Nodes](#nodes)
@@ -18,6 +25,7 @@ Simple flow library
   - [Events example](#events-example)
 - [Export / Import](#export-/-import)
   - [Export example](#export-example)
+- [Exaple](#example)
 
 ## Features
 - Drag Nodes
@@ -51,6 +59,10 @@ var id = document.getElementById("drawflow");
 const editor = new Drawflow(id);
 editor.start();
 ```
+## Mouse and  Keys
+- `del key` to remove element.
+- `Right click` to show remove options (Mobile long press).
+- `Left click press` to move editor or node selected.
 
 ## Editor
 You can change the editor to **fixed** type to block. Only editor can be moved. You can put it before start.
@@ -69,6 +81,8 @@ Separate your flows in different editors.
 ```javascript
 editor.addModule('nameNewModule');
 editor.changeModule('nameNewModule');
+// Default Module is Home
+editor.changeModule('Home');
 ```
 
 ## Nodes
@@ -98,15 +112,17 @@ var html = `
 `;
 var data = { "name": '' };
 
-editor.addNode('github', 0,1,150,300, 'github', data, html);
+editor.addNode('github', 0, 1, 150, 300, 'github', data, html);
 ```
 ## Methods
+Other available functions.
+
 Mehtod | Description
 --- | ---
 `zoom_in()` | Increment zoom +0.1
 `zoom_out()` | Decrement zoom -0.1
 `removeNodeId(id)` | Remove node. Ex id: `node-x`
-`removeConnectionNodeId(id)` | Remove node connections. Ex id: `node-x` Connections
+`removeConnectionNodeId(id)` | Remove node connections. Ex id: `node-x`
 `clearModuleSelected()` | Clear data of module selected
 `clear()` | Clear all data of all modules and modules remove.
 
@@ -211,3 +227,6 @@ Example of exported data:
 }
 
 ```
+
+## Example
+View the complete example in folder [example](https://github.com/jerosoler/Drawflow/tree/master/example).
