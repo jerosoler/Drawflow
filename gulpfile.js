@@ -5,7 +5,7 @@ const minifyCSS = require('gulp-minify-css');
 
 
 
-
+/*
 gulp.task('js', done => {
    return gulp.src('src/*.js')
   .pipe(minify({noSource: true}))
@@ -13,7 +13,7 @@ gulp.task('js', done => {
   .pipe(gulp.dest('dist/'))
 
 });
-
+*/
 
 
 gulp.task('css', done => {
@@ -24,7 +24,7 @@ gulp.task('css', done => {
 });
 
 gulp.task('default', gulp.parallel(
-        'js',
+        /*'js',*/
         'css'
   )
 );

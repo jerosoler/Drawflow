@@ -1,4 +1,4 @@
-class Drawflow {
+export default class Drawflow {
   constructor(container) {
     this.events = {};
     this.container = container;

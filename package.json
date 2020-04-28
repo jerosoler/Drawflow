@@ -1,19 +1,27 @@
 {
-  "name": "draflow",
+  "name": "drawflow",
   "version": "0.0.1",
-  "description": "Flow library",
-  "main": "index.js",
+  "description": "Simple flow library",
+  "main": "dist/index.js",
   "scripts": {
     "dev": "webpack-dev-server --mode development --open --host 0.0.0.0",
-    "build": "webpack --mode=production",
+    "build": "webpack --mode=production && gulp && cp src/drawflow.js dist/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
-    "flow"
+    "flow",
+    "javascript",
+    "javascript-library",
+    "flow-based-programming",
+    "flowchart"
   ],
   "author": "Jero soler",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
+    "babel-core": "^6.26.3",
+    "babel-loader": "^8.1.0",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-es2015": "^6.24.1",
     "css-loader": "^3.5.2",
     "gulp": "^4.0.2",
     "gulp-concat": "^2.6.1",
