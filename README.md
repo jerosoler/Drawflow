@@ -25,7 +25,7 @@ Installing only a javascript library and with four lines of code.
   - [Events example](#events-example)
 - [Export / Import](#export-/-import)
   - [Export example](#export-example)
-- [Exaple](#example)
+- [Example](#example)
 
 ## Features
 - Drag Nodes
@@ -63,6 +63,7 @@ editor.start();
 - `del key` to remove element.
 - `Right click` to show remove options (Mobile long press).
 - `Left click press` to move editor or node selected.
+- `Ctrl + Mouse Wheel` Zoom in/out (Mobile pinch).
 
 ## Editor
 You can change the editor to **fixed** type to block. Only editor can be moved. You can put it before start.
@@ -229,4 +230,4 @@ Example of exported data:
 ```
 
 ## Example
-View the complete example in folder [example](https://github.com/jerosoler/Drawflow/tree/master/docs).
+View the complete example in folder [docs](https://github.com/jerosoler/Drawflow/tree/master/docs).
