@@ -26,6 +26,7 @@ Installing only a javascript library and with four lines of code.
 - [Export / Import](#export-/-import)
   - [Export example](#export-example)
 - [Example](#example)
+- [License](#license)
 
 ## Features
 - Drag Nodes
@@ -231,3 +232,6 @@ Example of exported data:
 
 ## Example
 View the complete example in folder [docs](https://github.com/jerosoler/Drawflow/tree/master/docs).
+
+## License
+MIT License
