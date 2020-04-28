@@ -1,12 +1,16 @@
 {
   "name": "drawflow",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Simple flow library",
   "main": "dist/index.js",
   "scripts": {
     "dev": "webpack-dev-server --mode development --open --host 0.0.0.0",
     "build": "webpack --mode=production && gulp && cp src/drawflow.js dist/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jerosoler/Drawflow.git"
   },
   "keywords": [
     "flow",
@@ -17,6 +21,10 @@
   ],
   "author": "Jero soler",
   "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jerosoler/Drawflow/issues"
+  },
+  "homepage": "https://github.com/jerosoler/Drawflow#readme",
   "devDependencies": {
     "babel-core": "^6.26.3",
     "babel-loader": "^8.1.0",
