@@ -1,6 +1,6 @@
 # Drawflow
 
-![Demo](https://github.com/jerosoler/Drawflow/blob/master/docs/drawflow.gif)
+![Demo](https://github.com/jerosoler/Drawflow/raw/master/docs/drawflow.gif)
 
 Simple flow library.
 
@@ -42,13 +42,30 @@ Installing only a javascript library and with four lines of code.
 - Events
 - Mobile support
 - Vanilla javascript (No dependencies)
+- NPM
 
 ## Installation
-Download or clone repository and copy the dist folder. Or CDN option.  
+Download or clone repository and copy the dist folder, CDN option Or npm.  
+#### Clone
+`git clone https://github.com/jerosoler/Drawflow.git`
+
+#### CDN
 ```html
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jerosoler/Drawflow/dist/drawflow.min.css">
 <script src="https://cdn.jsdelivr.net/gh/jerosoler/Drawflow/dist/drawflow.min.js"></script>
 ```
+
+#### NPM
+```javascript
+npm i drawflow
+```
+
+#### Import
+```javascript
+import Drawflow from 'drawflow'
+import styleDrawflow from 'drawflow/dist/drawflow.min.css'
+```
+
 Create the parent element of **drawflow**.
 ```html
 <div id="drawflow"></div>
