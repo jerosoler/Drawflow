@@ -842,12 +842,12 @@ export default class Drawflow {
     this.drawflow = { "drawflow": { "Home": { "data": {} }}};
   }
   export () {
-    return this.drawflow;
+    return JSON.parse(JSON.stringify(this.drawflow));
   }
 
   import (data) {
     this.clear();
-    this.drawflow = data;
+    this.drawflow = JSON.parse(JSON.stringify(data));
     this.load();
   }
 
