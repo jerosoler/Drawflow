@@ -15,7 +15,41 @@
   <div class="but" onclick="importexport()">ImportFromExport</div>
   <div id="drawflow"></div>
   <script>
-    var exportvalue = null;
+
+  var id = document.getElementById("drawflow");
+  const editor = new Drawflow(id);
+  editor.start();
+
+    var html = `
+  <div><input type="text" df-name></div>
+  `;
+  var data = { "name": '' };
+
+
+  var testNode = document.createElement("div");
+  testNode.innerHTML = 'Hola caracola <input type="text" df-name>';
+
+
+  editor.registerNode("testNode", testNode);
+
+
+  //editor.addNode('github', 0, 1, 150, 300, 'github', data, html);
+
+  editor.addNode('github', 0, 1, 200, 250, 'github', data, "testNode", true);
+  setTimeout(function() {
+    editor.addNode('github', 1, 1, 300, 350, 'github', data, "testNode", true);
+      setTimeout(function() {
+    editor.addNode('github', 1, 1, 350, 350, 'github', data, "testNode", true);
+  }, 1000);
+  }, 1000);
+
+
+  editor.addNode('github', 0, 1, 0, 375, 'github', data, "<b>Holaaa</b>");
+  editor.addNode('github', 0, 1, 100, 400, 'github', data, "<b>Adios</b>");
+
+  //editor.import({"drawflow":{"Home":{"data":{"1":{"id":1,"name":"github","data":{"name":""},"class":"github","html":"\n  <div><input type=\"text\" df-name></div>\n  ","typenode":false,"inputs":{},"outputs":{"output_1":{"connections":[]}},"pos_x":122,"pos_y":191},"2":{"id":2,"name":"github","data":{"name":""},"class":"github","html":"testNode","typenode":true,"inputs":{},"outputs":{"output_1":{"connections":[]}},"pos_x":190,"pos_y":334}}}}});
+
+  /*  var exportvalue = null;
     function export2(){
       exportvalue = editor.export();
     }
@@ -42,7 +76,7 @@
     /*setInterval(function(){
     console.log(caracola.drawflow.Home.data);
   }, 200);*/
-
+/*
     setTimeout(function() {
       console.log("Exportado");
       exportdata = editor.export();
@@ -64,7 +98,7 @@
     }, 2000);
   }, 3000);
 
-
+*/
 
 
 

@@ -1,5 +1,5 @@
 export default class Drawflow {
-  constructor(container) {
+  constructor(container, render = null) {
     this.events = {};
     this.container = container;
     this.precanvas = null;
@@ -20,7 +20,10 @@ export default class Drawflow {
     this.line_path = 5;
     this.first_click = null;
 
+
     this.select_elements = null;
+    this.noderegister = {};
+    this.render = render;
     this.drawflow = { "drawflow": { "Home": { "data": {} }}};
     // Configurable options
     this.module = 'Home';
@@ -553,8 +556,11 @@ export default class Drawflow {
     this.select_elements.children[0].setAttributeNS(null, 'width', eX - this.pos_click_x);
     this.select_elements.children[0].setAttributeNS(null, 'height', eY - this.pos_click_y);
   }*/
+  registerNode(name, html, props = null, options = null) {
+    this.noderegister[name] = {html: html, props: props, options: options};
+  }
 
-  addNode (name, num_in, num_out, ele_pos_x, ele_pos_y, classoverride, data, html) {
+  addNode (name, num_in, num_out, ele_pos_x, ele_pos_y, classoverride, data, html, typenode = false) {
     const parent = document.createElement('div');
     parent.classList.add("parent-node");
 
@@ -572,6 +578,8 @@ export default class Drawflow {
 
     const outputs = document.createElement('div');
     outputs.classList.add("outputs");
+
+
 
     const json_inputs = {}
     for(var x = 0; x < num_in; x++) {
@@ -593,7 +601,19 @@ export default class Drawflow {
 
     const content = document.createElement('div');
     content.classList.add("drawflow_content_node");
-    content.innerHTML = html;
+    if(typenode === false) {
+      content.innerHTML = html;
+    } else if (typenode === true) {
+      content.appendChild(this.noderegister[html].html.cloneNode(true));
+    } else {
+      let wrapper = new this.render({
+        render: h => h(this.noderegister[html].html, { props: this.noderegister[html].props }),
+        ...this.noderegister[html].options
+      }).$mount()
+      //
+      content.appendChild(wrapper.$el);
+    }
+
     Object.entries(data).forEach(function (key, value) {
       if(typeof key[1] === "object") {
         insertObjectkeys(null, key[0], key[0]);
@@ -635,6 +655,7 @@ export default class Drawflow {
       data: data,
       class: classoverride,
       html: html,
+      typenode: typenode,
       inputs: json_inputs,
       outputs: json_outputs,
       pos_x: ele_pos_x,
@@ -697,7 +718,22 @@ export default class Drawflow {
 
     const content = document.createElement('div');
     content.classList.add("drawflow_content_node");
-    content.innerHTML = dataNode.html;
+    //content.innerHTML = dataNode.html;
+
+    if(dataNode.typenode === false) {
+      content.innerHTML = dataNode.html;
+    } else if (dataNode.typenode === true) {
+      content.appendChild(this.noderegister[dataNode.html].html.cloneNode(true));
+    } else {
+      let wrapper = new this.render({
+        render: h => h(this.noderegister[dataNode.html].html, { props: this.noderegister[dataNode.html].props }),
+        ...this.noderegister[dataNode.html].options
+      }).$mount()
+      content.appendChild(wrapper.$el);
+    }
+
+
+
     Object.entries(dataNode.data).forEach(function (key, value) {
       if(typeof key[1] === "object") {
         insertObjectkeys(null, key[0], key[0]);

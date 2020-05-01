@@ -19,6 +19,7 @@ Installing only a javascript library and with four lines of code.
 - [Modules](#modules)
 - [Nodes](#nodes)
   - [Node example](#node-example)
+  - [Register Node](#register-node)
 - [Methods](#methods)
   - [Methods example](#methods-example)
 - [Events](#events)
@@ -43,6 +44,7 @@ Installing only a javascript library and with four lines of code.
 - Mobile support
 - Vanilla javascript (No dependencies)
 - NPM
+- Vue Support component nodes
 
 ## Installation
 Download or clone repository and copy the dist folder, CDN option Or npm.  
@@ -77,6 +79,19 @@ var id = document.getElementById("drawflow");
 const editor = new Drawflow(id);
 editor.start();
 ```
+Parameter | Type | Description
+--- | --- | ---
+`id` | Object | Name of module
+`render` | Object | It's for `Vue`.
+
+### For vue example.
+```javascript
+import Vue from 'vue'
+
+// Pass render Vue
+this.editor = new Drawflow(id, Vue);
+```
+
 ## Mouse and  Keys
 - `del key` to remove element.
 - `Right click` to show remove options (Mobile long press).
@@ -118,7 +133,8 @@ Parameter | Type | Description
 `pos_y` | number | Position on start node top
 `class` | text | Added classname to de node
 `data` | json | Data passed to node
-`html` | text | HTML drawn on node
+`html` | text | HTML drawn on node or `name` of register node.
+`typenode` | boolean & text | Default `false`, `true` for Object HTML, `vue` for vue
 
 You can use the attribute `df-*` in **inputs, textarea or select** to synchronize with the node data.
 
@@ -133,6 +149,32 @@ var data = { "name": '' };
 
 editor.addNode('github', 0, 1, 150, 300, 'github', data, html);
 ```
+### Register Node
+
+it's possible register nodes for reuse.
+```javascript
+var html = document.createElement("div");
+html.innerHTML =  "Hello Drawflow!!";
+editor.registerNode('test', html);
+// Use
+editor.addNode('github', 0, 1, 150, 300, 'github', data, 'test', true);
+
+// For vue
+import component from '~/components/testcomponent.vue'
+editor.registerNode('name', component, props, options);
+// Use for vue
+editor.addNode('github', 0, 1, 150, 300, 'github', data, 'name', 'vue');
+```
+
+Parameter | Type | Description
+--- | --- | ---
+`name` | text | Name of module registered.
+`html` | text | HTML to drawn or `vue` component.
+`props` | json | Only for `vue`. Props of component. `Not Required`
+`options` | json | Only for `vue`. Options of component. `Not Required`
+
+
+
 ## Methods
 Other available functions.
 
