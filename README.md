@@ -44,7 +44,7 @@ Installing only a javascript library and with four lines of code.
 - Mobile support
 - Vanilla javascript (No dependencies)
 - NPM
-- Vue Support component nodes
+- Vue Support component nodes && Nuxt
 
 ## Installation
 Download or clone repository and copy the dist folder, CDN option Or npm.  
@@ -90,6 +90,15 @@ import Vue from 'vue'
 
 // Pass render Vue
 this.editor = new Drawflow(id, Vue);
+```
+
+### Nuxt
+Add to `nuxt.config.js` file
+```javascript
+build: {
+    transpile: ['drawflow'],
+    ...
+  }
 ```
 
 ## Mouse and  Keys
