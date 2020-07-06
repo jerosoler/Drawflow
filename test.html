@@ -63,6 +63,19 @@
     function import2() {
       editor.import(caracola2);
     }
+
+    editor.on("nodeCreated", function(id) {
+      console.log("node created "+ id)
+    })
+
+    editor.on("connectionCreated", function(id) {
+      console.log("node created "+ id)
+    })
+
+    editor.on("import", function() {
+      console.log("import");
+    })
+/*
 /*
     var id = document.getElementById("drawflow");
     const editor = new Drawflow(id);

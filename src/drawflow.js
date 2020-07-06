@@ -885,6 +885,7 @@ export default class Drawflow {
     this.clear();
     this.drawflow = JSON.parse(JSON.stringify(data));
     this.load();
+    this.dispatch('import', 'import');
   }
 
   /* Events */

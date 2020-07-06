@@ -219,6 +219,7 @@ Event | Return | Description
   `mouseMove` | { x, y } | Position
   `zoom` | zoom_level | Level of zoom
   `translate` | { x, y } | Position translate editor
+  `import` | `import` | Finish import
 
 ### Events example
 ```javascript
