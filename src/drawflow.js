@@ -59,7 +59,7 @@ export default class Drawflow {
     /* Context Menu */
     this.container.addEventListener('contextmenu', this.contextmenu.bind(this));
     /* Delete */
-    this.container.addEventListener('keyup', this.key.bind(this));
+    this.container.addEventListener('keydown', this.key.bind(this));
 
     /* Zoom Mouse */
     this.container.addEventListener('wheel', this.zoom_enter.bind(this));
@@ -401,7 +401,7 @@ export default class Drawflow {
     if(this.editor_mode === 'fixed') {
       return false;
     }
-    if(e.key === "Delete") {
+    if (e.key === 'Delete' || (e.key === 'Backspace' && e.metaKey))
       if(this.node_selected != null) {
         if(this.first_click.tagName !== 'INPUT' && this.first_click.tagName !== 'TEXTAREA') {
           this.removeNodeId(this.node_selected.id);
