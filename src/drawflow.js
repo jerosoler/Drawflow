@@ -401,7 +401,7 @@ export default class Drawflow {
     if(this.editor_mode === 'fixed') {
       return false;
     }
-    if (e.key === 'Delete' || (e.key === 'Backspace' && e.metaKey))
+    if (e.key === 'Delete' || (e.key === 'Backspace' && e.metaKey)) {
       if(this.node_selected != null) {
         if(this.first_click.tagName !== 'INPUT' && this.first_click.tagName !== 'TEXTAREA') {
           this.removeNodeId(this.node_selected.id);
