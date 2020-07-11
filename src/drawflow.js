@@ -889,8 +889,8 @@ export default class Drawflow {
   }
 
   addModule(name) {
-    this.dispatch('moduleCreated', name);
     this.drawflow.drawflow[name] =  { "data": {} };
+    this.dispatch('moduleCreated', name);
   }
   changeModule(name) {
     this.dispatch('moduleChanged', name);
@@ -906,6 +906,15 @@ export default class Drawflow {
     this.precanvas.style.transform = '';
     this.import(this.drawflow);
   }
+
+  removeModule(name) {
+    if(this.module === name) {
+      this.changeModule('Home');
+    }
+    delete this.drawflow.drawflow[name];
+    this.dispatch('moduleRemoved', name);
+  }
+
   clearModuleSelected() {
     this.precanvas.innerHTML = "";
     this.drawflow.drawflow[this.module] =  { "data": {} };

@@ -124,9 +124,12 @@ Separate your flows in different editors.
 ```javascript
 editor.addModule('nameNewModule');
 editor.changeModule('nameNewModule');
+editor.removeModule('nameModule');
 // Default Module is Home
 editor.changeModule('Home');
 ```
+`RemovedModule` if it is in the same module redirects to the `Home` module
+
 
 ## Nodes
 Adding a node is simple.
@@ -219,6 +222,7 @@ Event | Return | Description
   `connectionRemoved` | { output_id, input_id, output_class, input_class } | `id`'s of nodes and ouput/input selected
   `moduleCreated` | name | `name` of Module
   `moduleChanged` | name | `name` of Module
+  `moduleRemoved` | name | `name` of Module
   `mouseMove` | { x, y } | Position
   `zoom` | zoom_level | Level of zoom
   `translate` | { x, y } | Position translate editor
