@@ -191,6 +191,7 @@ Mehtod | Description
 --- | ---
 `zoom_in()` | Increment zoom +0.1
 `zoom_out()` | Decrement zoom -0.1
+`getNodeFromId(id)` | Get Info of node. Ex: id: `5`
 `removeNodeId(id)` | Remove node. Ex id: `node-x`
 `removeConnectionNodeId(id)` | Remove node connections. Ex id: `node-x`
 `getModuleFromNodeId(id)` | Get name of module where is the id. Ex id: `5`
