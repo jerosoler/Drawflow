@@ -311,6 +311,9 @@ export default class Drawflow {
       var ele_last = e.target;
     }
 
+    if(this.drag) {
+      this.dispatch('nodeMoved', this.ele_selected.id.slice(5));
+    }
 
     if(this.editor_selected) {
       this.canvas_x = this.canvas_x + (-(this.pos_x - e_pos_x));
@@ -831,6 +834,8 @@ export default class Drawflow {
       this.drawflow.drawflow[this.module].data[listclass[1].slice(13)].inputs[listclass[4]].connections.splice(index_in,1);
 
       elemsOut[i].remove();
+
+      this.dispatch('connectionRemoved', { output_id: listclass[2].slice(14), input_id: listclass[1].slice(13), output_class: listclass[3], input_class: listclass[4] } );
     }
 
     const elemsIn = document.getElementsByClassName(idSearchIn);
@@ -849,6 +854,8 @@ export default class Drawflow {
       this.drawflow.drawflow[this.module].data[listclass[1].slice(13)].inputs[listclass[4]].connections.splice(index_in,1);
       */
       elemsIn[i].remove();
+      
+      this.dispatch('connectionRemoved', { output_id: listclass[2].slice(14), input_id: listclass[1].slice(13), output_class: listclass[3], input_class: listclass[4] } );
     }
   }
 

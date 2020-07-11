@@ -213,8 +213,8 @@ Event | Return | Description
   `nodeCreated` | id | `id` of Node
   `nodeRemoved` | id | `id` of Node
   `nodeSelected` | id | `id` of Node
-  `connectionCreated` | { ouput_id, input_id, ouput_class, input_class } | `id`'s of nodes and ouput/input selected
-  `connectionRemoved` | { ouput_id, input_id, ouput_class, input_class } | `id`'s of nodes and ouput/input selected
+  `connectionCreated` | { output_id, input_id, output_class, input_class } | `id`'s of nodes and ouput/input selected
+  `connectionRemoved` | { output_id, input_id, output_class, input_class } | `id`'s of nodes and ouput/input selected
   `moduleCreated` | name | `name` of Module
   `moduleChanged` | name | `name` of Module
   `mouseMove` | { x, y } | Position
