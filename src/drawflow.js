@@ -663,7 +663,9 @@ export default class Drawflow {
     }
     this.drawflow.drawflow[this.module].data[this.nodeId] = json;
     this.dispatch('nodeCreated', this.nodeId);
+    var nodeId = this.nodeId;
     this.nodeId++;
+    return nodeId;
   }
 
   addNodeImport (dataNode, precanvas) {
