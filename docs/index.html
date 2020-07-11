@@ -167,6 +167,10 @@
       console.log('Position mouse x:' + position.x + ' y:'+ position.y);
     })
 
+    editor.on('nodeMoved', function(id) {
+      console.log("Node moved " + id);
+    })
+
     editor.on('zoom', function(zoom) {
       console.log('Zoom level ' + zoom);
     })

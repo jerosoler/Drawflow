@@ -311,6 +311,9 @@ export default class Drawflow {
       var ele_last = e.target;
     }
 
+    if(this.drag) {
+      this.dispatch('nodeMoved', this.ele_selected.id.slice(5));
+    }
 
     if(this.editor_selected) {
       this.canvas_x = this.canvas_x + (-(this.pos_x - e_pos_x));
@@ -338,7 +341,7 @@ export default class Drawflow {
 
           this.drawflow.drawflow[this.module].data[id_output].outputs[output_class].connections.push( {"node": id_input, "output": input_class});
           this.drawflow.drawflow[this.module].data[id_input].inputs[input_class].connections.push( {"node": id_output, "input": output_class});
-          this.dispatch('connectionCreated', { ouput_id: id_output, input_id: id_input, output_class:  output_class, input_class: input_class});
+          this.dispatch('connectionCreated', { output_id: id_output, input_id: id_input, output_class:  output_class, input_class: input_class});
 
         } else {
           this.connection_ele.remove();
@@ -560,6 +563,11 @@ export default class Drawflow {
     this.noderegister[name] = {html: html, props: props, options: options};
   }
 
+  getNodeFromId(id) {
+    var moduleName = this.getModuleFromNodeId(id)
+    return this.drawflow.drawflow[moduleName].data[id];
+  }
+
   addNode (name, num_in, num_out, ele_pos_x, ele_pos_y, classoverride, data, html, typenode = false) {
     const parent = document.createElement('div');
     parent.classList.add("parent-node");
@@ -663,7 +671,9 @@ export default class Drawflow {
     }
     this.drawflow.drawflow[this.module].data[this.nodeId] = json;
     this.dispatch('nodeCreated', this.nodeId);
+    var nodeId = this.nodeId;
     this.nodeId++;
+    return nodeId;
   }
 
   addNodeImport (dataNode, precanvas) {
@@ -784,8 +794,11 @@ export default class Drawflow {
   }
 
   removeNodeId(id) {
-    document.getElementById(id).remove();
-    delete this.drawflow.drawflow[this.module].data[id.slice(5)];
+    var moduleName = this.getModuleFromNodeId(id.slice(5))
+    if(this.module === moduleName) {
+      document.getElementById(id).remove();
+    }
+    delete this.drawflow.drawflow[moduleName].data[id.slice(5)];
     this.dispatch('nodeRemoved', id.slice(5));
     this.removeConnectionNodeId(id);
   }
@@ -804,7 +817,7 @@ export default class Drawflow {
         return item.node === listclass[2].slice(14) && item.input === listclass[3]
       });
       this.drawflow.drawflow[this.module].data[listclass[1].slice(13)].inputs[listclass[4]].connections.splice(index_in,1);
-      this.dispatch('connectionRemoved', { ouput_id: listclass[2].slice(14), input_id: listclass[1].slice(13), ouput_class: listclass[3], input_class: listclass[4] } );
+      this.dispatch('connectionRemoved', { output_id: listclass[2].slice(14), input_id: listclass[1].slice(13), output_class: listclass[3], input_class: listclass[4] } );
       this.connection_selected = null;
     }
   }
@@ -829,6 +842,8 @@ export default class Drawflow {
       this.drawflow.drawflow[this.module].data[listclass[1].slice(13)].inputs[listclass[4]].connections.splice(index_in,1);
 
       elemsOut[i].remove();
+
+      this.dispatch('connectionRemoved', { output_id: listclass[2].slice(14), input_id: listclass[1].slice(13), output_class: listclass[3], input_class: listclass[4] } );
     }
 
     const elemsIn = document.getElementsByClassName(idSearchIn);
@@ -847,7 +862,22 @@ export default class Drawflow {
       this.drawflow.drawflow[this.module].data[listclass[1].slice(13)].inputs[listclass[4]].connections.splice(index_in,1);
       */
       elemsIn[i].remove();
+
+      this.dispatch('connectionRemoved', { output_id: listclass[2].slice(14), input_id: listclass[1].slice(13), output_class: listclass[3], input_class: listclass[4] } );
     }
+  }
+
+  getModuleFromNodeId(id) {
+    var nameModule;
+    const editor = this.drawflow.drawflow
+    Object.keys(editor).map(function(moduleName, index) {
+      Object.keys(editor[moduleName].data).map(function(node, index2) {
+        if(node == id) {
+          nameModule = moduleName;
+        }
+      })
+    });
+    return nameModule;
   }
 
   addModule(name) {
