@@ -193,6 +193,7 @@ Mehtod | Description
 `zoom_out()` | Decrement zoom -0.1
 `removeNodeId(id)` | Remove node. Ex id: `node-x`
 `removeConnectionNodeId(id)` | Remove node connections. Ex id: `node-x`
+`getModuleFromNodeId(id)` | Get name of module where is the id. Ex id: `5`
 `clearModuleSelected()` | Clear data of module selected
 `clear()` | Clear all data of all modules and modules remove.
 

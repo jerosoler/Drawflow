@@ -338,7 +338,7 @@ export default class Drawflow {
 
           this.drawflow.drawflow[this.module].data[id_output].outputs[output_class].connections.push( {"node": id_input, "output": input_class});
           this.drawflow.drawflow[this.module].data[id_input].inputs[input_class].connections.push( {"node": id_output, "input": output_class});
-          this.dispatch('connectionCreated', { ouput_id: id_output, input_id: id_input, output_class:  output_class, input_class: input_class});
+          this.dispatch('connectionCreated', { output_id: id_output, input_id: id_input, output_class:  output_class, input_class: input_class});
 
         } else {
           this.connection_ele.remove();
@@ -804,7 +804,7 @@ export default class Drawflow {
         return item.node === listclass[2].slice(14) && item.input === listclass[3]
       });
       this.drawflow.drawflow[this.module].data[listclass[1].slice(13)].inputs[listclass[4]].connections.splice(index_in,1);
-      this.dispatch('connectionRemoved', { ouput_id: listclass[2].slice(14), input_id: listclass[1].slice(13), ouput_class: listclass[3], input_class: listclass[4] } );
+      this.dispatch('connectionRemoved', { output_id: listclass[2].slice(14), input_id: listclass[1].slice(13), output_class: listclass[3], input_class: listclass[4] } );
       this.connection_selected = null;
     }
   }
@@ -848,6 +848,19 @@ export default class Drawflow {
       */
       elemsIn[i].remove();
     }
+  }
+
+  getModuleFromNodeId(id) {
+    var nameModule;
+    const editor = this.drawflow.drawflow
+    Object.keys(editor).map(function(moduleName, index) {
+      Object.keys(editor[moduleName].data).map(function(node, index2) {
+        if(node == id) {
+          nameModule = moduleName;
+        }
+      })
+    });
+    return nameModule;
   }
 
   addModule(name) {
