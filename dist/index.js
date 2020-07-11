@@ -128,16 +128,24 @@ export default class Drawflow {
   load() {
     for (var key in this.drawflow.drawflow[this.module].data) {
       this.addNodeImport(this.drawflow.drawflow[this.module].data[key], this.precanvas);
-      var number = parseInt(key);
-      if(number >= this.nodeId) {
-        this.nodeId = number+1;
-      }
-
     }
     for (var key in this.drawflow.drawflow[this.module].data) {
       this.updateConnectionNodes('node-'+key);
     }
+
+    const editor = this.drawflow.drawflow
+    let number = 1;
+    Object.keys(editor).map(function(moduleName, index) {
+      Object.keys(editor[moduleName].data).map(function(id, index2) {
+        number = parseInt(id);
+        if(number >= parseInt(id)) {
+          number = number+1;
+        }
+      })
+    });
+    this.nodeId = number;
   }
+
   click(e) {
     if(this.editor_mode === 'fixed') {
       //return false;
@@ -881,8 +889,8 @@ export default class Drawflow {
   }
 
   addModule(name) {
-    this.dispatch('moduleCreated', name);
     this.drawflow.drawflow[name] =  { "data": {} };
+    this.dispatch('moduleCreated', name);
   }
   changeModule(name) {
     this.dispatch('moduleChanged', name);
@@ -898,6 +906,15 @@ export default class Drawflow {
     this.precanvas.style.transform = '';
     this.import(this.drawflow);
   }
+
+  removeModule(name) {
+    if(this.module === name) {
+      this.changeModule('Home');
+    }
+    delete this.drawflow.drawflow[name];
+    this.dispatch('moduleRemoved', name);
+  }
+
   clearModuleSelected() {
     this.precanvas.innerHTML = "";
     this.drawflow.drawflow[this.module] =  { "data": {} };
