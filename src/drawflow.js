@@ -492,6 +492,49 @@ export default class Drawflow {
     path.setAttributeNS(null, 'd', 'M '+ line_x +' '+ line_y +' C '+ hx1 +' '+ line_y +' '+ hx2 +' ' + y +' ' + x +'  ' + y);
   }
 
+  addConnection(id_output, id_input, output_class, input_class) {
+    var nodeOneModule = this.getModuleFromNodeId(id_output);
+    var nodeTwoModule = this.getModuleFromNodeId(id_input);
+    if(nodeOneModule === nodeTwoModule) {
+
+      var dataNode = this.getNodeFromId(id_output);
+      var exist = false;
+      for(var checkOutput in dataNode.outputs[output_class].connections){
+        var connectionSearch = dataNode.outputs[output_class].connections[checkOutput]
+        if(connectionSearch.node == id_input && connectionSearch.output == input_class) {
+            exist = true;
+        }
+      }
+
+      if(exist === false) {
+      // Check connection exist
+        //Create Connection
+        this.drawflow.drawflow[nodeOneModule].data[id_output].outputs[output_class].connections.push( {"node": id_input, "output": input_class});
+        this.drawflow.drawflow[nodeOneModule].data[id_input].inputs[input_class].connections.push( {"node": id_output, "input": output_class});
+
+        if(this.module === nodeOneModule) {
+        //Draw connection
+          var connection = document.createElementNS('http://www.w3.org/2000/svg',"svg");
+          var path = document.createElementNS('http://www.w3.org/2000/svg',"path");
+          path.classList.add("main-path");
+          path.setAttributeNS(null, 'd', '');
+          // path.innerHTML = 'a';
+          connection.classList.add("connection");
+          connection.classList.add("node_in_node-"+id_input);
+          connection.classList.add("node_out_node-"+id_output);
+          connection.classList.add(output_class);
+          connection.classList.add(input_class);
+          connection.appendChild(path);
+          this.precanvas.appendChild(connection);
+          this.updateConnectionNodes('node-'+id_output);
+          this.updateConnectionNodes('node-'+id_input);
+        }
+
+        this.dispatch('connectionCreated', { output_id: id_output, input_id: id_input, output_class:  output_class, input_class: input_class});
+      }
+    }
+  }
+
   updateConnectionNodes(id) {
     // Aquí nos quedamos;
     const idSearch = 'node_in_'+id;
