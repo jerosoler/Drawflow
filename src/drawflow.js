@@ -577,6 +577,18 @@ export default class Drawflow {
     var moduleName = this.getModuleFromNodeId(id)
     return this.drawflow.drawflow[moduleName].data[id];
   }
+  getNodesFromName(name) {
+    var nodes = [];
+    const editor = this.drawflow.drawflow
+    Object.keys(editor).map(function(moduleName, index) {
+      for (var node in editor[moduleName].data) {
+        if(editor[moduleName].data[node].name == name) {
+          nodes.push(editor[moduleName].data[node].id);
+        }
+      }
+    });
+    return nodes;
+  }
 
   addNode (name, num_in, num_out, ele_pos_x, ele_pos_y, classoverride, data, html, typenode = false) {
     const parent = document.createElement('div');

@@ -195,6 +195,7 @@ Mehtod | Description
 `zoom_in()` | Increment zoom +0.1
 `zoom_out()` | Decrement zoom -0.1
 `getNodeFromId(id)` | Get Info of node. Ex: id: `5`
+`getNodesFromName(name)` | Return Array of nodes id. Ex: name: `telegram`
 `removeNodeId(id)` | Remove node. Ex id: `node-x`
 `updateConnectionNodes(id)` | Update connections position from Node Ex id: `node-x`
 `removeConnectionNodeId(id)` | Remove node connections. Ex id: `node-x`
