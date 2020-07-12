@@ -137,9 +137,8 @@ export default class Drawflow {
     let number = 1;
     Object.keys(editor).map(function(moduleName, index) {
       Object.keys(editor[moduleName].data).map(function(id, index2) {
-        number = parseInt(id);
-        if(number >= parseInt(id)) {
-          number = number+1;
+        if(parseInt(id) >= number) {
+          number = parseInt(id)+1;
         }
       })
     });
