@@ -857,13 +857,13 @@ export default class Drawflow {
   }
 
   removeNodeId(id) {
+    this.removeConnectionNodeId(id);
     var moduleName = this.getModuleFromNodeId(id.slice(5))
     if(this.module === moduleName) {
       document.getElementById(id).remove();
     }
     delete this.drawflow.drawflow[moduleName].data[id.slice(5)];
     this.dispatch('nodeRemoved', id.slice(5));
-    this.removeConnectionNodeId(id);
   }
 
   removeConnection() {
