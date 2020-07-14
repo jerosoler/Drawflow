@@ -415,7 +415,7 @@ export default class Drawflow {
     }
     if (e.key === 'Delete' || (e.key === 'Backspace' && e.metaKey)) {
       if(this.node_selected != null) {
-        if(this.first_click.tagName !== 'INPUT' && this.first_click.tagName !== 'TEXTAREA') {
+        if(this.first_click.tagName !== 'INPUT' && this.first_click.tagName !== 'TEXTAREA' && this.first_click.hasAttribute('contenteditable') !== true) {
           this.removeNodeId(this.node_selected.id);
         }
       }
@@ -857,13 +857,13 @@ export default class Drawflow {
   }
 
   removeNodeId(id) {
+    this.removeConnectionNodeId(id);
     var moduleName = this.getModuleFromNodeId(id.slice(5))
     if(this.module === moduleName) {
       document.getElementById(id).remove();
     }
     delete this.drawflow.drawflow[moduleName].data[id.slice(5)];
     this.dispatch('nodeRemoved', id.slice(5));
-    this.removeConnectionNodeId(id);
   }
 
   removeConnection() {
