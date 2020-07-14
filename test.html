@@ -23,7 +23,7 @@
     var html = `
   <div><input type="text" df-name></div>
   `;
-  var data = { "name": '' };
+  var data = { "name": 'hola' };
 
 
   var testNode = document.createElement("div");
@@ -46,6 +46,8 @@
 
   editor.addNode('github', 0, 1, 0, 375, 'github', data, "<b>Holaaa</b>");
   editor.addNode('github', 0, 1, 100, 400, 'github', data, "<b>Adios</b>");
+
+  editor.addNode('github', 0, 1, 0, 375, 'github', data, '<div>Hey<div id="test" contenteditable="true" df-name></div></div>');
 
   //editor.import({"drawflow":{"Home":{"data":{"1":{"id":1,"name":"github","data":{"name":""},"class":"github","html":"\n  <div><input type=\"text\" df-name></div>\n  ","typenode":false,"inputs":{},"outputs":{"output_1":{"connections":[]}},"pos_x":122,"pos_y":191},"2":{"id":2,"name":"github","data":{"name":""},"class":"github","html":"testNode","typenode":true,"inputs":{},"outputs":{"output_1":{"connections":[]}},"pos_x":190,"pos_y":334}}}}});
 
