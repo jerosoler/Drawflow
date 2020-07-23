@@ -885,8 +885,8 @@ export default class Drawflow {
     }
   }
   
-  removeSingleConnection(output_node_id, input_node_id, output_id, input_id) {
-		var selectionpath = document.querySelectorAll('.connection.node_in_node-'+input_node_id+'.node_out_node-'+output_node_id+'.'+output_id+'.'+input_id+' .main-path')[0];
+  removeSingleConnection(id_output, id_input, output_class, input_class) {
+		var selectionpath = document.querySelectorAll('.connection.node_in_node-'+id_input+'.node_out_node-'+id_output+'.'+output_class+'.'+input_class+' .main-path')[0];
 		this.connection_selected = selectionpath;
 		this.removeConnection();
 	}
