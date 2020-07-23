@@ -870,7 +870,7 @@ export default class Drawflow {
     if(this.connection_selected != null) {
       var listclass = this.connection_selected.parentElement.classList;
       this.connection_selected.parentElement.remove();
-
+      console.log(listclass);
       var index_out = this.drawflow.drawflow[this.module].data[listclass[2].slice(14)].outputs[listclass[3]].connections.findIndex(function(item,i) {
         return item.node === listclass[1].slice(13) && item.output === listclass[4]
       });
@@ -882,6 +882,44 @@ export default class Drawflow {
       this.drawflow.drawflow[this.module].data[listclass[1].slice(13)].inputs[listclass[4]].connections.splice(index_in,1);
       this.dispatch('connectionRemoved', { output_id: listclass[2].slice(14), input_id: listclass[1].slice(13), output_class: listclass[3], input_class: listclass[4] } );
       this.connection_selected = null;
+    }
+  }
+
+  removeSingleConnection(id_output, id_input, output_class, input_class) {
+    var nodeOneModule = this.getModuleFromNodeId(id_output);
+    var nodeTwoModule = this.getModuleFromNodeId(id_input);
+    if(nodeOneModule === nodeTwoModule) {
+      // Check nodes in same module.
+
+      // Check connection exist
+      var exists = this.drawflow.drawflow[nodeOneModule].data[id_output].outputs[output_class].connections.findIndex(function(item,i) {
+        return item.node == id_input && item.output === input_class
+      });
+      if(exists > -1) {
+
+        if(this.module === nodeOneModule) {
+          // In same module with view.
+          document.querySelector('.connection.node_in_node-'+id_input+'.node_out_node-'+id_output+'.'+output_class+'.'+input_class).remove();
+        }
+
+        var index_out = this.drawflow.drawflow[nodeOneModule].data[id_output].outputs[output_class].connections.findIndex(function(item,i) {
+          return item.node == id_input && item.output === input_class
+        });
+        this.drawflow.drawflow[nodeOneModule].data[id_output].outputs[output_class].connections.splice(index_out,1);
+
+        var index_in = this.drawflow.drawflow[nodeOneModule].data[id_input].inputs[input_class].connections.findIndex(function(item,i) {
+          return item.node == id_output && item.input === output_class
+        });
+        this.drawflow.drawflow[nodeOneModule].data[id_input].inputs[input_class].connections.splice(index_in,1);
+
+        this.dispatch('connectionRemoved', { output_id: id_output, input_id: id_input, output_class:  output_class, input_class: input_class});
+        return true;
+
+      } else {
+        return false;
+      }
+    } else {
+      return false;
     }
   }
 
@@ -922,7 +960,7 @@ export default class Drawflow {
         return item.node === listclass[2].slice(14) && item.input === listclass[3]
       });
       this.drawflow.drawflow[this.module].data[listclass[1].slice(13)].inputs[listclass[4]].connections.splice(index_in,1);
-      
+
       elemsIn[i].remove();
 
       this.dispatch('connectionRemoved', { output_id: listclass[2].slice(14), input_id: listclass[1].slice(13), output_class: listclass[3], input_class: listclass[4] } );
