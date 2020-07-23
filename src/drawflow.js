@@ -884,6 +884,12 @@ export default class Drawflow {
       this.connection_selected = null;
     }
   }
+  
+  removeSingleConnection(output_node_id, input_node_id, output_id, input_id) {
+		var selectionpath = document.querySelectorAll('.connection.node_in_node-'+input_node_id+'.node_out_node-'+output_node_id+'.'+output_id+'.'+input_id+' .main-path')[0];
+		this.connection_selected = selectionpath;
+		this.removeConnection();
+	}
 
   removeConnectionNodeId(id) {
     const idSearchIn = 'node_in_'+id;
