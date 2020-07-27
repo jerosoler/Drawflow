@@ -856,6 +856,40 @@ export default class Drawflow {
 
   }
 
+  addNodeInput(id) {
+    var moduleName = this.getModuleFromNodeId(id)
+    const infoNode = this.getNodeFromId(id)
+    const numInputs = Object.keys(infoNode.inputs).length;
+    if(this.module === moduleName) {
+      //Draw input
+      const input = document.createElement('div');
+      input.classList.add("input");
+      input.classList.add("input_"+(numInputs+1));
+      const parent = document.querySelector('#node-'+id+' .inputs');
+      parent.appendChild(input);
+      this.updateConnectionNodes('node-'+id);
+
+    }
+    this.drawflow.drawflow[moduleName].data[id].inputs["input_"+(numInputs+1)] = { "connections": []};
+  }
+
+  addNodeOutput(id) {
+    var moduleName = this.getModuleFromNodeId(id)
+    const infoNode = this.getNodeFromId(id)
+    const numOutputs = Object.keys(infoNode.outputs).length;
+    if(this.module === moduleName) {
+      //Draw output
+      const output = document.createElement('div');
+      output.classList.add("output");
+      output.classList.add("output_"+(numOutputs+1));
+      const parent = document.querySelector('#node-'+id+' .outputs');
+      parent.appendChild(output);
+      this.updateConnectionNodes('node-'+id);
+
+    }
+    this.drawflow.drawflow[moduleName].data[id].outputs["output_"+(numOutputs+1)] = { "connections": []};
+  }
+
   removeNodeId(id) {
     this.removeConnectionNodeId(id);
     var moduleName = this.getModuleFromNodeId(id.slice(5))

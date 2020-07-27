@@ -197,6 +197,8 @@ Mehtod | Description
 `getNodeFromId(id)` | Get Info of node. Ex: id: `5`
 `getNodesFromName(name)` | Return Array of nodes id. Ex: name: `telegram`
 `removeNodeId(id)` | Remove node. Ex id: `node-x`
+`addNodeInput(id)` | Add input to node. Ex id: `5`
+`addNodeOutput(id)` | Add output to node. Ex id: `5`
 `addConnection(id_output, id_input, output_class, input_class)` | Add connection. Ex: `15,16,'output_1','input_1'`
 `removeSingleConnection(id_output, id_input, output_class, input_class)` | Remove connection. Ex: `15,16,'output_1','input_1'`
 `updateConnectionNodes(id)` | Update connections position from Node Ex id: `node-x`
