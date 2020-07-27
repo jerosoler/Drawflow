@@ -616,7 +616,7 @@ export default class Drawflow {
 
   getNodeFromId(id) {
     var moduleName = this.getModuleFromNodeId(id)
-    return this.drawflow.drawflow[moduleName].data[id];
+    return JSON.parse(JSON.stringify(this.drawflow.drawflow[moduleName].data[id]));
   }
   getNodesFromName(name) {
     var nodes = [];
