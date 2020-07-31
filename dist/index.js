@@ -1322,7 +1322,11 @@ export default class Drawflow {
                 ele.classList.remove('input_'+output_id);
                 ele.classList.add('input_'+(output_id-1));
               }
-              this.drawflow.drawflow[moduleName].data[itemx.node].outputs[itemx.input].connections[g] = { node: itemz.node, output: 'input_'+(output_id-1)}
+              if(itemz.points) {
+                  this.drawflow.drawflow[moduleName].data[itemx.node].outputs[itemx.input].connections[g] = { node: itemz.node, output: 'input_'+(output_id-1), points: itemz.points }
+              } else {
+                  this.drawflow.drawflow[moduleName].data[itemx.node].outputs[itemx.input].connections[g] = { node: itemz.node, output: 'input_'+(output_id-1)}
+              }
             }
           }
       });
@@ -1360,7 +1364,7 @@ export default class Drawflow {
     let nodeUpdates = [];
     connections.forEach((item, i) => {
       item.connections.forEach((itemx, f) => {
-        nodeUpdates.push(itemx);
+        nodeUpdates.push({ node: itemx.node, output: itemx.output });
       });
       this.drawflow.drawflow[moduleName].data[id].outputs['output_'+ (i+1)] = item;
     });
@@ -1385,13 +1389,18 @@ export default class Drawflow {
             const input_id = itemz.input.slice(7);
             if(output_class_id < input_id) {
               if(this.module === moduleName) {
+
                 const ele = document.querySelector(".connection.node_in_node-"+itemx.node+".node_out_node-"+id+".output_"+input_id+"."+itemx.output);
                 ele.classList.remove('output_'+input_id);
                 ele.classList.remove(itemx.output);
                 ele.classList.add('output_'+(input_id-1));
                 ele.classList.add(itemx.output);
               }
-              this.drawflow.drawflow[moduleName].data[itemx.node].inputs[itemx.output].connections[g] = { node: itemz.node, input: 'output_'+(input_id-1)}
+              if(itemz.points) {
+                  this.drawflow.drawflow[moduleName].data[itemx.node].inputs[itemx.output].connections[g] = { node: itemz.node, input: 'output_'+(input_id-1), points: itemz.points }
+              } else {
+                  this.drawflow.drawflow[moduleName].data[itemx.node].inputs[itemx.output].connections[g] = { node: itemz.node, input: 'output_'+(input_id-1)}
+              }
             }
           }
       });
