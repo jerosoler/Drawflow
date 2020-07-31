@@ -301,6 +301,16 @@ cursor: pointer;
   background: blue;
 }
 
+.drawflow .connection .point {
+  stroke: var(--border-color);
+  stroke-width: 2;
+  fill: white;
+  transform: translate(-9999px, -9999px);
+}
+
+.drawflow .connection .point.selected, .drawflow .connection .point:hover {
+  fill: #4ea9ff;
+}
 
 
 /* Modal */

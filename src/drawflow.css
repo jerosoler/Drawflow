@@ -95,6 +95,18 @@
   stroke: #43b993;
 }
 
+.drawflow .connection .point {
+  cursor: move;
+  stroke: black;
+  stroke-width: 2;
+  fill: white;
+  transform: translate(-9999px, -9999px);
+}
+
+.drawflow .connection .point.selected, .drawflow .connection .point:hover {
+  fill: #1266ab;
+}
+
 .drawflow .main-path {
   fill: none;
   stroke-width: 5px;

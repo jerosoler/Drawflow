@@ -34,7 +34,8 @@ Installing only a javascript library and with four lines of code.
 - Multiple Inputs / Outputs
 - Multiple connections
 - Delete Nodes and Connections
-- Add/Delete inputs/outputs 
+- Add/Delete inputs/outputs
+- Reroute connections
 - Data sync on Nodes
 - Zoom in / out
 - Clear data module
@@ -119,6 +120,13 @@ You can also adjust the zoom values.
 editor.zoom_max = 1.6;
 editor.zoom_min = 0.5;
 ```
+
+### Reroute
+Active reroute connections. Use before `start` or `import`.
+```javascript
+editor.reroute = true;
+```
+Create point with doble click on line connection. Doble click on point for remove.
 
 ## Modules
 Separate your flows in different editors.
@@ -229,6 +237,8 @@ Event | Return | Description
   `nodeMoved` | id | `id` of Node
   `connectionCreated` | { output_id, input_id, output_class, input_class } | `id`'s of nodes and ouput/input selected
   `connectionRemoved` | { output_id, input_id, output_class, input_class } | `id`'s of nodes and ouput/input selected
+  `addReroute` | id | `id` of Node output
+  `removeReroute` | id | `id` of Node output
   `moduleCreated` | name | `name` of Module
   `moduleChanged` | name | `name` of Module
   `moduleRemoved` | name | `name` of Module
