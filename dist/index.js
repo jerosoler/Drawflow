@@ -8,6 +8,7 @@ export default class Drawflow {
     this.node_selected = null;
     this.drag = false;
     this.reroute = false;
+    this.reroute_fix_curvature = false;
     this.curvature = 0.5;
     this.reroute_curvature_start_end = 0.5;
     this.reroute_curvature = 0.5;
@@ -160,6 +161,14 @@ export default class Drawflow {
     this.nodeId = number;
   }
 
+  removeReouteConnectionSelected(){
+    if(this.reroute_fix_curvature) {
+      this.connection_selected.parentElement.querySelectorAll(".main-path").forEach((item, i) => {
+        item.classList.remove("selected");
+      });
+    }
+  }
+
   click(e) {
     if(this.editor_mode === 'fixed') {
       //return false;
@@ -187,6 +196,7 @@ export default class Drawflow {
         }
         if(this.connection_selected != null) {
           this.connection_selected.classList.remove("selected");
+          this.removeReouteConnectionSelected();
           this.connection_selected = null;
         }
         this.dispatch('nodeSelected', this.ele_selected.id.slice(5));
@@ -202,6 +212,7 @@ export default class Drawflow {
         }
         if(this.connection_selected != null) {
           this.connection_selected.classList.remove("selected");
+          this.removeReouteConnectionSelected();
           this.connection_selected = null;
         }
         this.drawConnection(e.target);
@@ -213,6 +224,7 @@ export default class Drawflow {
         }
         if(this.connection_selected != null) {
           this.connection_selected.classList.remove("selected");
+          this.removeReouteConnectionSelected();
           this.connection_selected = null;
         }
         this.editor_selected = true;
@@ -224,6 +236,7 @@ export default class Drawflow {
         }
         if(this.connection_selected != null) {
           this.connection_selected.classList.remove("selected");
+          this.removeReouteConnectionSelected();
           this.connection_selected = null;
         }
         this.editor_selected = true;
@@ -235,10 +248,16 @@ export default class Drawflow {
         }
         if(this.connection_selected != null) {
           this.connection_selected.classList.remove("selected");
+          this.removeReouteConnectionSelected();
           this.connection_selected = null;
         }
         this.connection_selected = this.ele_selected;
         this.connection_selected.classList.add("selected");
+        if(this.reroute_fix_curvature) {
+          this.connection_selected.parentElement.querySelectorAll(".main-path").forEach((item, i) => {
+            item.classList.add("selected");
+          });
+        }
       break;
       case 'point':
         this.drag_point = true;
@@ -259,6 +278,7 @@ export default class Drawflow {
         }
         if(this.connection_selected != null) {
           this.connection_selected.classList.remove("selected");
+          this.removeReouteConnectionSelected();
           this.connection_selected = null;
         }
 
@@ -334,7 +354,16 @@ export default class Drawflow {
       const output_class = this.ele_selected.parentElement.classList[3];
       const input_class = this.ele_selected.parentElement.classList[4];
 
-      const numberPointPosition = Array.from(this.ele_selected.parentElement.children).indexOf(this.ele_selected)-1;
+      let numberPointPosition = Array.from(this.ele_selected.parentElement.children).indexOf(this.ele_selected)-1;
+
+      if(this.reroute_fix_curvature) {
+        const numberMainPath = this.ele_selected.parentElement.querySelectorAll(".main-path").length-1
+
+        numberPointPosition -= numberMainPath;
+        if(numberPointPosition < 0) {
+          numberPointPosition = 0;
+        }
+      }
 
       const nodeId = nodeUpdate.slice(5);
       const searchConnection = this.drawflow.drawflow[this.module].data[nodeId].outputs[output_class].connections.findIndex(function(item,i) {
@@ -659,6 +688,7 @@ export default class Drawflow {
     const createCurvature = this.createCurvature;
     const reroute_curvature = this.reroute_curvature;
     const reroute_curvature_start_end = this.reroute_curvature_start_end;
+    const reroute_fix_curvature = this.reroute_fix_curvature;
     const rerouteWidth = this.reroute_width;
     const zoom = this.zoom;
 
@@ -697,6 +727,7 @@ export default class Drawflow {
       } else {
         const points = elemsOut[item].querySelectorAll('.point');
         let linecurve = '';
+        const reoute_fix = [];
         points.forEach((item, i) => {
           if(i === 0 && ((points.length -1) === 0)) {
             // M line_x line_y C hx1 line_y hx2 y x y
@@ -716,6 +747,7 @@ export default class Drawflow {
             linecurve += ' M '+ line_x +' '+ line_y +' C '+ hx1 +' '+ line_y +' '+ hx2 +' ' + y +' ' + x +'  ' + y;*/
             var lineCurveSearch = createCurvature(line_x, line_y, x, y, reroute_curvature_start_end, 'open');
             linecurve += lineCurveSearch;
+            reoute_fix.push(lineCurveSearch);
 
             //var elemtsearchId_out = document.getElementById(id);
             var elemtsearchId_out = item;
@@ -737,6 +769,7 @@ export default class Drawflow {
             */
             var lineCurveSearch = createCurvature(line_x, line_y, x, y, reroute_curvature_start_end, 'close');
             linecurve += lineCurveSearch;
+            reoute_fix.push(lineCurveSearch);
 
           } else if(i === 0) {
             //console.log("Primero");
@@ -758,6 +791,7 @@ export default class Drawflow {
             linecurve += ' M '+ line_x +' '+ line_y +' C '+ hx1 +' '+ line_y +' '+ hx2 +' ' + y +' ' + x +'  ' + y;*/
             var lineCurveSearch = createCurvature(line_x, line_y, x, y, reroute_curvature_start_end, 'open');
             linecurve += lineCurveSearch;
+            reoute_fix.push(lineCurveSearch);
 
             // SECOND
             var elemtsearchId_out = item;
@@ -776,6 +810,7 @@ export default class Drawflow {
             linecurve += ' M '+ line_x +' '+ line_y +' C '+ hx1 +' '+ line_y +' '+ hx2 +' ' + y +' ' + x +'  ' + y;*/
             var lineCurveSearch = createCurvature(line_x, line_y, x, y, reroute_curvature, 'other');
             linecurve += lineCurveSearch;
+            reoute_fix.push(lineCurveSearch);
 
 
 
@@ -801,6 +836,7 @@ export default class Drawflow {
             linecurve += ' M '+ line_x +' '+ line_y +' C '+ hx1 +' '+ line_y +' '+ hx2 +' ' + y +' ' + x +'  ' + y;*/
             var lineCurveSearch = createCurvature(line_x, line_y, x, y, reroute_curvature_start_end, 'close');
             linecurve += lineCurveSearch;
+            reoute_fix.push(lineCurveSearch);
 
           } else {
             var elemtsearchId_out = item;
@@ -819,10 +855,19 @@ export default class Drawflow {
             linecurve += ' M '+ line_x +' '+ line_y +' C '+ hx1 +' '+ line_y +' '+ hx2 +' ' + y +' ' + x +'  ' + y;*/
             var lineCurveSearch = createCurvature(line_x, line_y, x, y, reroute_curvature, 'other');
             linecurve += lineCurveSearch;
+            reoute_fix.push(lineCurveSearch);
           }
 
         });
-        elemsOut[item].children[0].setAttributeNS(null, 'd', linecurve);
+        if(reroute_fix_curvature) {
+          reoute_fix.forEach((itempath, i) => {
+            elemsOut[item].children[i].setAttributeNS(null, 'd', itempath);
+          });
+
+        } else {
+          elemsOut[item].children[0].setAttributeNS(null, 'd', linecurve);
+        }
+
       }
     })
 
@@ -855,6 +900,7 @@ export default class Drawflow {
       } else {
         const points = elems[item].querySelectorAll('.point');
         let linecurve = '';
+        const reoute_fix = [];
         points.forEach((item, i) => {
           if(i === 0 && ((points.length -1) === 0)) {
             // M line_x line_y C hx1 line_y hx2 y x y
@@ -874,6 +920,7 @@ export default class Drawflow {
             linecurve += ' M '+ line_x +' '+ line_y +' C '+ hx1 +' '+ line_y +' '+ hx2 +' ' + y +' ' + x +'  ' + y;*/
             var lineCurveSearch = createCurvature(line_x, line_y, x, y, reroute_curvature_start_end, 'close');
             linecurve += lineCurveSearch;
+            reoute_fix.push(lineCurveSearch);
 
             //var elemtsearchId_out = document.getElementById(id);
             var elemtsearchId_out = item;
@@ -895,6 +942,7 @@ export default class Drawflow {
             linecurve += ' M '+ line_x +' '+ line_y +' C '+ hx1 +' '+ line_y +' '+ hx2 +' ' + y +' ' + x +'  ' + y;*/
             var lineCurveSearch = createCurvature(line_x, line_y, x, y, reroute_curvature_start_end, 'open');
             linecurve += lineCurveSearch;
+            reoute_fix.push(lineCurveSearch);
 
 
           } else if(i === 0) {
@@ -918,6 +966,7 @@ export default class Drawflow {
             linecurve += ' M '+ line_x +' '+ line_y +' C '+ hx1 +' '+ line_y +' '+ hx2 +' ' + y +' ' + x +'  ' + y;*/
             var lineCurveSearch = createCurvature(line_x, line_y, x, y, reroute_curvature_start_end, 'open');
             linecurve += lineCurveSearch;
+            reoute_fix.push(lineCurveSearch);
 
             // SECOND
             var elemtsearchId_out = item;
@@ -937,6 +986,7 @@ export default class Drawflow {
             linecurve += ' M '+ line_x +' '+ line_y +' C '+ hx1 +' '+ line_y +' '+ hx2 +' ' + y +' ' + x +'  ' + y;*/
             var lineCurveSearch = createCurvature(line_x, line_y, x, y, reroute_curvature, 'other');
             linecurve += lineCurveSearch;
+            reoute_fix.push(lineCurveSearch);
 
           } else if (i === (points.length -1)) {
 
@@ -959,6 +1009,7 @@ export default class Drawflow {
             linecurve += ' M '+ line_x +' '+ line_y +' C '+ hx1 +' '+ line_y +' '+ hx2 +' ' + y +' ' + x +'  ' + y;*/
             var lineCurveSearch = createCurvature(line_x, line_y, x, y, reroute_curvature_start_end, 'close');
             linecurve += lineCurveSearch;
+            reoute_fix.push(lineCurveSearch);
 
           } else {
 
@@ -979,10 +1030,19 @@ export default class Drawflow {
             */
             var lineCurveSearch = createCurvature(line_x, line_y, x, y, reroute_curvature, 'other');
             linecurve += lineCurveSearch;
+            reoute_fix.push(lineCurveSearch);
           }
 
         });
-        elems[item].children[0].setAttributeNS(null, 'd', linecurve);
+        if(reroute_fix_curvature) {
+          reoute_fix.forEach((itempath, i) => {
+            elems[item].children[i].setAttributeNS(null, 'd', itempath);
+          });
+
+        } else {
+          elems[item].children[0].setAttributeNS(null, 'd', linecurve);
+        }
+
       }
     })
   }
@@ -1014,7 +1074,30 @@ export default class Drawflow {
       point.setAttributeNS(null, 'cy', pos_y);
       point.setAttributeNS(null, 'r', this.reroute_width);
 
-      ele.parentElement.appendChild(point);
+      let position_add_array_point = 0;
+      if(this.reroute_fix_curvature) {
+
+        const numberPoints = ele.parentElement.querySelectorAll(".main-path").length;
+        var path = document.createElementNS('http://www.w3.org/2000/svg',"path");
+        path.classList.add("main-path");
+        path.setAttributeNS(null, 'd', '');
+
+        ele.parentElement.insertBefore(path, ele.parentElement.children[numberPoints]);
+        if(numberPoints === 1) {
+          ele.parentElement.appendChild(point);
+        }  else {
+          const search_point = Array.from(ele.parentElement.children).indexOf(ele)
+          position_add_array_point = search_point;
+          ele.parentElement.insertBefore(point, ele.parentElement.children[search_point+numberPoints+1]);
+        }
+
+
+
+      } else {
+        ele.parentElement.appendChild(point);
+      }
+
+
 
       const nodeId = nodeUpdate.slice(5);
       const searchConnection = this.drawflow.drawflow[this.module].data[nodeId].outputs[output_class].connections.findIndex(function(item,i) {
@@ -1024,7 +1107,38 @@ export default class Drawflow {
       if(this.drawflow.drawflow[this.module].data[nodeId].outputs[output_class].connections[searchConnection].points === undefined)  {
         this.drawflow.drawflow[this.module].data[nodeId].outputs[output_class].connections[searchConnection].points = [];
       }
-      this.drawflow.drawflow[this.module].data[nodeId].outputs[output_class].connections[searchConnection].points.push({ pos_x: pos_x, pos_y: pos_y });
+      //this.drawflow.drawflow[this.module].data[nodeId].outputs[output_class].connections[searchConnection].points.push({ pos_x: pos_x, pos_y: pos_y });
+
+
+      if(this.reroute_fix_curvature) {
+        //console.log(position_add_array_point)
+        if(position_add_array_point > 0) {
+          this.drawflow.drawflow[this.module].data[nodeId].outputs[output_class].connections[searchConnection].points.splice(position_add_array_point, 0, { pos_x: pos_x, pos_y: pos_y });
+        } else {
+          this.drawflow.drawflow[this.module].data[nodeId].outputs[output_class].connections[searchConnection].points.push({ pos_x: pos_x, pos_y: pos_y });
+        }
+
+        ele.parentElement.querySelectorAll(".main-path").forEach((item, i) => {
+          item.classList.remove("selected");
+        });
+
+      } else {
+        this.drawflow.drawflow[this.module].data[nodeId].outputs[output_class].connections[searchConnection].points.push({ pos_x: pos_x, pos_y: pos_y });
+      }
+
+
+
+
+
+
+      /*
+      this.drawflow.drawflow[this.module].data[nodeId].outputs[output_class].connections[searchConnection].points.sort((a,b) => (a.pos_x > b.pos_x) ? 1 : (b.pos_x > a.pos_x ) ? -1 : 0 );
+      this.drawflow.drawflow[this.module].data[nodeId].outputs[output_class].connections[searchConnection].points.forEach((item, i) => {
+
+          ele.parentElement.children[i+1].setAttributeNS(null, 'cx', item.pos_x);
+          ele.parentElement.children[i+1].setAttributeNS(null, 'cy', item.pos_y);
+      });*/
+
       this.dispatch('addReroute', nodeId);
       this.updateConnectionNodes(nodeUpdate);
   }
@@ -1035,13 +1149,24 @@ export default class Drawflow {
     const output_class = ele.parentElement.classList[3];
     const input_class = ele.parentElement.classList[4];
 
-    const numberPointPosition = Array.from(ele.parentElement.children).indexOf(ele)-1;
+
+    let numberPointPosition = Array.from(ele.parentElement.children).indexOf(ele)-1;
 
     const nodeId = nodeUpdate.slice(5);
     const searchConnection = this.drawflow.drawflow[this.module].data[nodeId].outputs[output_class].connections.findIndex(function(item,i) {
       return item.node ===  nodeUpdateIn && item.output === input_class;
     });
 
+    if(this.reroute_fix_curvature) {
+
+       const numberMainPath = ele.parentElement.querySelectorAll(".main-path").length
+       ele.parentElement.children[numberMainPath-1].remove();
+       numberPointPosition -= numberMainPath;
+       if(numberPointPosition < 0) {
+         numberPointPosition = 0;
+       }
+    }
+    //console.log(numberPointPosition);
     this.drawflow.drawflow[this.module].data[nodeId].outputs[output_class].connections[searchConnection].points.splice(numberPointPosition,1);
 
     ele.remove();
@@ -1286,15 +1411,32 @@ export default class Drawflow {
 
   addRerouteImport(dataNode) {
     const reroute_width = this.reroute_width
+    const reroute_fix_curvature = this.reroute_fix_curvature
+
     Object.keys(dataNode.outputs).map(function(output_item, index) {
       Object.keys(dataNode.outputs[output_item].connections).map(function(input_item, index) {
         const points = dataNode.outputs[output_item].connections[input_item].points
         if(points !== undefined) {
+
           points.forEach((item, i) => {
             const input_id = dataNode.outputs[output_item].connections[input_item].node;
             const input_class = dataNode.outputs[output_item].connections[input_item].output;
             //console.log('.connection.node_in_'+input_id+'.node_out_'+dataNode.id+'.'+output_item+'.'+input_class);
             const ele = document.querySelector('.connection.node_in_node-'+input_id+'.node_out_node-'+dataNode.id+'.'+output_item+'.'+input_class);
+
+            if(reroute_fix_curvature) {
+              if(i === 0) {
+                for (var z = 0; z < points.length; z++) {
+                  var path = document.createElementNS('http://www.w3.org/2000/svg',"path");
+                  path.classList.add("main-path");
+                  path.setAttributeNS(null, 'd', '');
+                  ele.appendChild(path);
+
+                }
+              }
+            }
+
+
             const point = document.createElementNS('http://www.w3.org/2000/svg',"circle");
             point.classList.add("point");
             var pos_x = item.pos_x;
