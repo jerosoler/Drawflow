@@ -89,9 +89,11 @@
   </div>
 
   <script>
+
     var id = document.getElementById("drawflow");
     const editor = new Drawflow(id);
     editor.reroute = true;
+    //editor.reroute_fix_curvature = true;
 
   /*
     editor.createCurvature = function(start_pos_x, start_pos_y, end_pos_x, end_pos_y, curvature_value, type) {
@@ -206,11 +208,11 @@
       console.log('Connection removed');
       console.log(connection);
     })
-
+/*
     editor.on('mouseMove', function(position) {
       console.log('Position mouse x:' + position.x + ' y:'+ position.y);
     })
-
+*/
     editor.on('nodeMoved', function(id) {
       console.log("Node moved " + id);
     })
