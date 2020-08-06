@@ -26,6 +26,7 @@ export default class Drawflow {
     this.mouse_y = 0;
     this.line_path = 5;
     this.first_click = null;
+    this.force_first_input = false;
 
 
 
@@ -417,12 +418,27 @@ export default class Drawflow {
       this.editor_selected = false;
     }
     if(this.connection === true) {
-      if(ele_last.classList[0] === 'input') {
-        // Fix connection;
-        var output_id = this.ele_selected.parentElement.parentElement.id;
-        var output_class = this.ele_selected.classList[1];
-        var input_id = ele_last.parentElement.parentElement.id;
-        var input_class = ele_last.classList[1];
+      console.log(ele_last)
+      if(ele_last.classList[0] === 'input' || (this.force_first_input && (ele_last.closest(".drawflow_content_node") != null || ele_last.classList[0] === 'drawflow-node'))) {
+
+        if(this.force_first_input && (ele_last.closest(".drawflow_content_node") != null || ele_last.classList[0] === 'drawflow-node')) {
+          if(ele_last.closest(".drawflow_content_node") != null) {
+            var input_id = ele_last.closest(".drawflow_content_node").parentElement.id;
+          } else {
+            var input_id = ele_last.id;
+          }
+
+
+         var input_class = "input_1";
+
+       } else {
+         // Fix connection;
+         var input_id = ele_last.parentElement.parentElement.id;
+         var input_class = ele_last.classList[1];
+       }
+       var output_id = this.ele_selected.parentElement.parentElement.id;
+       var output_class = this.ele_selected.classList[1];
+
         if(output_id !== input_id) {
 
           if(this.container.querySelectorAll('.connection.node_in_'+input_id+'.node_out_'+output_id+'.'+output_class+'.'+input_class).length === 0) {
