@@ -70,6 +70,12 @@ import Drawflow from 'drawflow'
 import styleDrawflow from 'drawflow/dist/drawflow.min.css'
 ```
 
+#### Require 
+```javascript
+var Drawflow = require('drawflow')
+var styleDrawflow = require('drawflow/dist/drawflow.min.css')
+```
+
 Create the parent element of **drawflow**.
 ```html
 <div id="drawflow"></div>
