@@ -2,7 +2,7 @@
   "name": "drawflow",
   "version": "0.0.20",
   "description": "Simple flow library",
-  "main": "dist/index.js",
+  "main": "dist/drawflow.min.js",
   "scripts": {
     "dev": "webpack-dev-server --mode development --open --host 0.0.0.0",
     "build": "webpack --mode=production && gulp && cp src/drawflow.js dist/index.js",
