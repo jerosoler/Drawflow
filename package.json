@@ -1,11 +1,11 @@
 {
   "name": "drawflow",
-  "version": "0.0.20",
+  "version": "0.0.21",
   "description": "Simple flow library",
   "main": "dist/drawflow.min.js",
   "scripts": {
     "dev": "webpack-dev-server --mode development --open --host 0.0.0.0",
-    "build": "webpack --mode=production && gulp && cp src/drawflow.js dist/index.js",
+    "build": "webpack --mode=production && gulp",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
