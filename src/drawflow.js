@@ -567,7 +567,7 @@ export default class Drawflow {
     }
   }
 
-  createCurvature(start_pos_x, start_pos_y, end_pos_x, end_pos_y, curvature_value, type) {
+  createCurvature(start_pos_x, start_pos_y, end_pos_x, end_pos_y, curvature_value, type, out_dir='unknown', in_dir='unknown') {
     var line_x = start_pos_x;
     var line_y = start_pos_y;
     var x = end_pos_x;
@@ -610,8 +610,38 @@ export default class Drawflow {
 
         var hx1 = line_x + Math.abs(x - line_x) * curvature;
         var hx2 = x - Math.abs(x - line_x) * curvature;
+        var hy1 = line_y + Math.abs(y - line_y) * curvature;
+        var hy2 = y - Math.abs(y - line_y) * curvature;
+        if (out_dir == 'top') {
+          var hy1 = line_y + Math.abs(y - line_y) * (curvature*-1);
+          var hx1 = line_x;
+        } else if (out_dir == 'bottom') {
+          var hy1 = line_y + Math.abs(y - line_y) * curvature;
+          var hx1 = line_x;
+          console.log(hy1);
+        } else if (out_dir == 'left') {
+          var hy1 = line_y;
+          var hx1 = line_x + Math.abs(x - line_x) * (curvature*-1);
+        } else if (out_dir == 'right') {
+          var hy1 = line_y;
+          var hx1 = line_x + Math.abs(x - line_x) * curvature;
+        }
 
-        return ' M '+ line_x +' '+ line_y +' C '+ hx1 +' '+ line_y +' '+ hx2 +' ' + y +' ' + x +'  ' + y;
+        if (in_dir == 'top') {
+          var hy2 = y + Math.abs(y - line_y) * (curvature * -1);
+          var hx2 = x;
+        } else if (in_dir == 'bottom') {
+          var hy2 = y + Math.abs(y - line_y) * curvature;
+          var hx2 = x;
+        } else if (in_dir == 'left') {
+          var hy2 = y;
+          var hx2 = x + Math.abs(x - line_x) * (curvature  * -1);
+        } else if (in_dir == 'right') {
+          var hy2 = y;
+          var hx2 = x + Math.abs(x - line_x) * curvature;
+        }
+
+        return ' M '+ line_x +' '+ line_y +' C '+ hx1 +' ' + hy1 +' '+ hx2 +' ' + hy2 +' ' + x +' ' + y;
     }
 
   }
@@ -721,15 +751,48 @@ export default class Drawflow {
         var elemtsearchId = document.getElementById(id_search);
 
         var elemtsearch = elemtsearchId.querySelectorAll('.'+elemsOut[item].classList[4])[0]
+        var elemtsearch_out = elemtsearchId_out.querySelectorAll('.'+elemsOut[item].classList[3])[0]
+        
+        // Set the first delta
+        var delta = elemtsearch_out.parentElement.offsetHeight / 2;
 
-        var eX = elemtsearch.offsetWidth/2 + line_path + elemtsearch.parentElement.parentElement.offsetLeft + elemtsearch.offsetLeft;
-        var eY = elemtsearch.offsetHeight/2 + line_path + elemtsearch.parentElement.parentElement.offsetTop + elemtsearch.offsetTop;
+        // Calculate out direction
+        var pos_x = elemtsearch_out.parentElement.offsetLeft + delta + elemtsearch_out.parentElement.offsetWidth;
+        var pos_y = elemtsearch_out.parentElement.offsetTop + delta;
+        // console.log(elemtsearch.parentElement, pos_x, pos_y, elemtsearch_in, elemtsearchId, elemtsearchId.offsetWidth, elemtsearchId.offsetHeight);
+        if (Math.abs(pos_x) <= delta) {
+          var out_dir = 'left';
+        } else if (Math.abs(pos_y) <= delta) {
+          var out_dir = 'top';
+        } else if (pos_x != 0 && Math.abs(pos_y - elemtsearchId_out.offsetHeight) <= delta) {
+          var out_dir = 'bottom';
+        } else if (pos_y != 0 && Math.abs(pos_x - elemtsearchId_out.offsetWidth) <= delta) {
+          var out_dir = 'right';
+        } else {
+          var out_dir = 'unknown';
+        }
+        // Calculate in direction
+        var in_x = elemtsearch.parentElement.offsetLeft + delta + elemtsearch.parentElement.offsetWidth;
+        var in_y = elemtsearch.parentElement.offsetTop + delta;
+        if (Math.abs(in_x) <= delta) {
+          var in_dir = 'left';
+        } else if (Math.abs(in_y) <= delta) {
+          var in_dir = 'top';
+        } else if (in_x != 0 && Math.abs(in_y - elemtsearchId.offsetHeight) <= delta) {
+          var in_dir = 'bottom';
+        } else if (in_y != 0 && Math.abs(in_x - elemtsearchId.offsetWidth) <= delta) {
+          var in_dir = 'right';
+        } else {
+          var in_dir = 'unknown';
+        }
 
-        var line_x = elemtsearchId_out.offsetLeft + elemtsearchId_out.querySelectorAll('.'+elemsOut[item].classList[3])[0].offsetLeft + elemtsearchId_out.querySelectorAll('.'+elemsOut[item].classList[3])[0].offsetWidth/2 + line_path;
-        var line_y = elemtsearchId_out.offsetTop + elemtsearchId_out.querySelectorAll('.'+elemsOut[item].classList[3])[0].offsetTop + elemtsearchId_out.querySelectorAll('.'+elemsOut[item].classList[3])[0].offsetHeight/2 + line_path;
-
+        
+        var eX = in_x + elemtsearch.parentElement.parentElement.offsetLeft - delta;
+        var eY = in_y + elemtsearch.parentElement.parentElement.offsetTop;
+        var line_x = pos_x + elemtsearch_out.parentElement.parentElement.offsetLeft - delta;
+        var line_y = pos_y + elemtsearch_out.parentElement.parentElement.offsetTop;
         var x = eX;
-        var y = eY;
+        var y = eY; 
         /*
         var curvature = 0.5;
         var hx1 = line_x + Math.abs(x - line_x) * curvature;
@@ -738,7 +801,7 @@ export default class Drawflow {
         elemsOut[item].children[0].setAttributeNS(null, 'd', 'M '+ line_x +' '+ line_y +' C '+ hx1 +' '+ line_y +' '+ hx2 +' ' + y +' ' + x +'  ' + y );
         */
 
-        const lineCurve = createCurvature(line_x, line_y, x, y, curvature, 'openclose');
+        const lineCurve = createCurvature(line_x, line_y, x, y, curvature, 'openclose', out_dir, in_dir);
         elemsOut[item].children[0].setAttributeNS(null, 'd', lineCurve );
       } else {
         const points = elemsOut[item].querySelectorAll('.point');
@@ -897,12 +960,44 @@ export default class Drawflow {
         var elemtsearchId = document.getElementById(id_search);
 
         var elemtsearch = elemtsearchId.querySelectorAll('.'+elems[item].classList[3])[0]
+        var elemtsearch_in = elemtsearchId_in.querySelectorAll('.'+elems[item].classList[4])[0]
 
-        var line_x = elemtsearch.offsetWidth/2 + line_path + elemtsearch.parentElement.parentElement.offsetLeft + elemtsearch.offsetLeft;
-        var line_y = elemtsearch.offsetHeight/2 + line_path + elemtsearch.parentElement.parentElement.offsetTop + elemtsearch.offsetTop;
+        var delta = elemtsearch.parentElement.offsetHeight / 2;
 
-        var x = elemtsearchId_in.offsetLeft + elemtsearchId_in.querySelectorAll('.'+elems[item].classList[4])[0].offsetLeft + elemtsearchId_in.querySelectorAll('.'+elems[item].classList[4])[0].offsetWidth/2 + line_path;
-        var y = elemtsearchId_in.offsetTop + elemtsearchId_in.querySelectorAll('.'+elems[item].classList[4])[0].offsetTop + elemtsearchId_in.querySelectorAll('.'+elems[item].classList[4])[0].offsetHeight/2 + line_path;
+        // Calculate out direction
+        var pos_x = elemtsearch.parentElement.offsetLeft + delta + elemtsearch.parentElement.offsetWidth;
+        var pos_y = elemtsearch.parentElement.offsetTop + delta;
+        // console.log("posX:", pos_x);
+        // console.log(elemtsearch.parentElement, pos_x, pos_y, elemtsearch_in, elemtsearchId, elemtsearchId.offsetWidth, elemtsearchId.offsetHeight);
+        if (Math.abs(pos_x) <= delta) {
+          var out_dir = 'left';
+        } else if (Math.abs(pos_y) <= delta) {
+          var out_dir = 'top';
+        } else if (pos_x != 0 && Math.abs(pos_y - elemtsearchId.offsetHeight) <= delta) {
+          var out_dir = 'bottom';
+        } else if (pos_y != 0 && Math.abs(pos_x - elemtsearchId.offsetWidth) <= delta) {
+          var out_dir = 'right';
+        } else {
+          var out_dir = 'unknown';
+        }
+        // Calculate in direction
+        var in_x = elemtsearch_in.parentElement.offsetLeft + delta + elemtsearch_in.parentElement.offsetWidth;
+        var in_y = elemtsearch_in.parentElement.offsetTop + delta;
+        if (Math.abs(in_x) <= delta) {
+          var in_dir = 'left';
+        } else if (Math.abs(in_y) <= delta) {
+          var in_dir = 'top';
+        } else if (in_x != 0 && Math.abs(in_y - elemtsearchId_in.offsetHeight) <= delta) {
+          var in_dir = 'bottom';
+        } else if (in_y != 0 && Math.abs(in_x - elemtsearchId_in.offsetWidth) <= delta) {
+          var in_dir = 'right';
+        } else {
+          var in_dir = 'unknown';
+        }
+        var line_x = pos_x + elemtsearch.parentElement.parentElement.offsetLeft - delta;
+        var line_y = pos_y + elemtsearch.parentElement.parentElement.offsetTop;
+        var x = in_x + elemtsearchId_in.offsetLeft - delta;
+        var y = in_y + elemtsearchId_in.offsetTop;
         /*
         var curvature = 0.5;
         var hx1 = line_x + Math.abs(x - line_x) * curvature;
@@ -910,7 +1005,7 @@ export default class Drawflow {
         // console.log('M '+ line_x +' '+ line_y +' C '+ hx1 +' '+ line_y +' '+ hx2 +' ' + y +' ' + x +'  ' + y );
         elems[item].children[0].setAttributeNS(null, 'd', 'M '+ line_x +' '+ line_y +' C '+ hx1 +' '+ line_y +' '+ hx2 +' ' + y +' ' + x +'  ' + y );*/
 
-        const lineCurve = createCurvature(line_x, line_y, x, y, curvature, 'openclose');
+        const lineCurve = createCurvature(line_x, line_y, x, y, curvature, 'openclose', out_dir, in_dir);
         elems[item].children[0].setAttributeNS(null, 'd', lineCurve );
 
       } else {
