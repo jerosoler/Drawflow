@@ -171,6 +171,7 @@ export default class Drawflow {
   }
 
   click(e) {
+  	e.preventDefault();
     if(this.editor_mode === 'fixed') {
       //return false;
        if(e.target.classList[0] === 'parent-drawflow' || e.target.classList[0] === 'drawflow') {
