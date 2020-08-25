@@ -676,8 +676,8 @@ export default class Drawflow {
       // Check connection exist
       if(exist === false) {
         //Create Connection
-        this.drawflow.drawflow[nodeOneModule].data[id_output].outputs[output_class].connections.push( {"node": id_input, "output": input_class});
-        this.drawflow.drawflow[nodeOneModule].data[id_input].inputs[input_class].connections.push( {"node": id_output, "input": output_class});
+        this.drawflow.drawflow[nodeOneModule].data[id_output].outputs[output_class].connections.push( {"node": id_input.toString(), "output": input_class});
+        this.drawflow.drawflow[nodeOneModule].data[id_input].inputs[input_class].connections.push( {"node": id_output.toString(), "input": output_class});
 
         if(this.module === nodeOneModule) {
         //Draw connection
