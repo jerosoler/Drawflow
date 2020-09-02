@@ -1,3 +1,8 @@
+[![npm](https://img.shields.io/npm/v/drawflow?color=green)](https://www.npmjs.com/package/drawflow)
+![npm](https://img.shields.io/npm/dy/drawflow)
+![npm bundle size](https://img.shields.io/bundlephobia/minzip/drawflow)
+[![GitHub license](https://img.shields.io/github/license/jerosoler/Drawflow)](https://github.com/jerosoler/Drawflow/blob/master/LICENSE)
+[![Twitter URL](https://img.shields.io/twitter/url?style=social&url=https%3A%2F%2Ftwitter.com%2Fjerosoler)](https://twitter.com/jerosoler)
 # Drawflow
 
 ![Demo](https://github.com/jerosoler/Drawflow/raw/master/docs/drawflow.gif)
@@ -16,6 +21,7 @@ Installing only a javascript library and with four lines of code.
   - [Running](#running)
 - [Mouse and  Keys](#mouse-and-keys)
 - [Editor](#editor)
+  - [Options](#editor-options)
 - [Modules](#modules)
 - [Nodes](#nodes)
   - [Node example](#node-example)
@@ -70,7 +76,7 @@ import Drawflow from 'drawflow'
 import styleDrawflow from 'drawflow/dist/drawflow.min.css'
 ```
 
-#### Require 
+#### Require
 ```javascript
 var Drawflow = require('drawflow')
 var styleDrawflow = require('drawflow/dist/drawflow.min.css')
@@ -126,6 +132,22 @@ You can also adjust the zoom values.
 editor.zoom_max = 1.6;
 editor.zoom_min = 0.5;
 ```
+
+### Editor options
+
+Parameter | Type | Default | Description
+--- | --- | --- | ---
+`reroute` | Boolean | false | Active reroute
+`reroute_fix_curvature` | Boolean | false | Fix adding points
+`curvature` | Number | 0.5 | Curvature
+`reroute_curvature_start_end` | Number | 0.5 | Curvature reroute first point and las point
+`reroute_curvature` | Number | 0.5 | Curvature reroute
+`reroute_width` | Number | 6 | Width of reroute
+`line_path` | Number | 5 | Width of line
+`editor_mode` | Text | `edit` | `edit` or `fixed` mode
+`zoom` | Number | 1 | Default zoom
+`zoom_max` | Number | 1.6 | Default zoom max
+`zoom_min` | Number | 0.5 | Default zoom min
 
 ### Reroute
 Active reroute connections. Use before `start` or `import`.
