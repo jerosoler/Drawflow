@@ -144,6 +144,7 @@ Parameter | Type | Default | Description
 `reroute_curvature` | Number | 0.5 | Curvature reroute
 `reroute_width` | Number | 6 | Width of reroute
 `line_path` | Number | 5 | Width of line
+`force_first_input` | Boolean | false | Force the first input to drop the connection on top of the node
 `editor_mode` | Text | `edit` | `edit` or `fixed` mode
 `zoom` | Number | 1 | Default zoom
 `zoom_max` | Number | 1.6 | Default zoom max
