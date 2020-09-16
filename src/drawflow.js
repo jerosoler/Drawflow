@@ -21,7 +21,9 @@ export default class Drawflow {
     this.canvas_x = 0;
     this.canvas_y = 0;
     this.pos_x = 0;
+    this.pos_x_start = 0;
     this.pos_y = 0;
+    this.pos_y_start = 0;
     this.mouse_x = 0;
     this.mouse_y = 0;
     this.line_path = 5;
@@ -297,10 +299,14 @@ export default class Drawflow {
     }
     if (e.type === "touchstart") {
       this.pos_x = e.touches[0].clientX;
+      this.pos_x_start = e.touches[0].clientX;
       this.pos_y = e.touches[0].clientY;
+      this.pos_y_start = e.touches[0].clientY;
     } else {
       this.pos_x = e.clientX;
+      this.pos_x_start = e.clientX;
       this.pos_y = e.clientY;
+      this.pos_y_start = e.clientY;
     }
   }
 
@@ -414,7 +420,9 @@ export default class Drawflow {
     }
 
     if(this.drag) {
-      this.dispatch('nodeMoved', this.ele_selected.id.slice(5));
+      if(this.pos_x_start != e_pos_x || this.pos_y_start != e_pos_y) {
+        this.dispatch('nodeMoved', this.ele_selected.id.slice(5));
+      }
     }
 
     if(this.drag_point) {
