@@ -149,6 +149,7 @@ Parameter | Type | Default | Description
 `zoom` | Number | 1 | Default zoom
 `zoom_max` | Number | 1.6 | Default zoom max
 `zoom_min` | Number | 0.5 | Default zoom min
+`draggable_inputs` | Boolean | true | Drag nodes on click inputs
 
 ### Reroute
 Active reroute connections. Use before `start` or `import`.

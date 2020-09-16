@@ -27,6 +27,7 @@ export default class Drawflow {
     this.line_path = 5;
     this.first_click = null;
     this.force_first_input = false;
+    this.draggable_inputs = true;
 
 
 
@@ -203,7 +204,13 @@ export default class Drawflow {
         this.dispatch('nodeSelected', this.ele_selected.id.slice(5));
         this.node_selected = this.ele_selected;
         this.node_selected.classList.add("selected");
-        this.drag = true;
+        if(!this.draggable_inputs) {
+          if(e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA' && e.target.hasAttribute('contenteditable') !== true) {
+            this.drag = true;
+          }
+        } else {
+          this.drag = true;
+        }
         break;
       case 'output':
         this.connection = true;
