@@ -201,7 +201,9 @@ export default class Drawflow {
           this.removeReouteConnectionSelected();
           this.connection_selected = null;
         }
-        this.dispatch('nodeSelected', this.ele_selected.id.slice(5));
+        if(this.node_selected != this.ele_selected) {
+          this.dispatch('nodeSelected', this.ele_selected.id.slice(5));
+        }
         this.node_selected = this.ele_selected;
         this.node_selected.classList.add("selected");
         if(!this.draggable_inputs) {
