@@ -264,6 +264,7 @@ Event | Return | Description
   `nodeCreated` | id | `id` of Node
   `nodeRemoved` | id | `id` of Node
   `nodeSelected` | id | `id` of Node
+  `nodeUnselected` | true | Unselect node
   `nodeMoved` | id | `id` of Node
   `connectionCreated` | { output_id, input_id, output_class, input_class } | `id`'s of nodes and ouput/input selected
   `connectionRemoved` | { output_id, input_id, output_class, input_class } | `id`'s of nodes and ouput/input selected

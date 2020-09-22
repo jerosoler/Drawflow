@@ -198,6 +198,9 @@ export default class Drawflow {
       case 'drawflow-node':
         if(this.node_selected != null) {
           this.node_selected.classList.remove("selected");
+          if(this.node_selected != this.ele_selected) {
+            this.dispatch('nodeUnselected', true);
+          }
         }
         if(this.connection_selected != null) {
           this.connection_selected.classList.remove("selected");
@@ -222,6 +225,7 @@ export default class Drawflow {
         if(this.node_selected != null) {
           this.node_selected.classList.remove("selected");
           this.node_selected = null;
+          this.dispatch('nodeUnselected', true);
         }
         if(this.connection_selected != null) {
           this.connection_selected.classList.remove("selected");
@@ -234,6 +238,7 @@ export default class Drawflow {
         if(this.node_selected != null) {
           this.node_selected.classList.remove("selected");
           this.node_selected = null;
+          this.dispatch('nodeUnselected', true);
         }
         if(this.connection_selected != null) {
           this.connection_selected.classList.remove("selected");
@@ -246,6 +251,7 @@ export default class Drawflow {
         if(this.node_selected != null) {
           this.node_selected.classList.remove("selected");
           this.node_selected = null;
+          this.dispatch('nodeUnselected', true);
         }
         if(this.connection_selected != null) {
           this.connection_selected.classList.remove("selected");
@@ -258,6 +264,7 @@ export default class Drawflow {
         if(this.node_selected != null) {
           this.node_selected.classList.remove("selected");
           this.node_selected = null;
+          this.dispatch('nodeUnselected', true);
         }
         if(this.connection_selected != null) {
           this.connection_selected.classList.remove("selected");
@@ -288,6 +295,7 @@ export default class Drawflow {
         if(this.node_selected != null) {
           this.node_selected.classList.remove("selected");
           this.node_selected = null;
+          this.dispatch('nodeUnselected', true);
         }
         if(this.connection_selected != null) {
           this.connection_selected.classList.remove("selected");
