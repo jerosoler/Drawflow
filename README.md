@@ -278,6 +278,7 @@ Event | Return | Description
   `zoom` | zoom_level | Level of zoom
   `translate` | { x, y } | Position translate editor
   `import` | `import` | Finish import
+  `export` | data | Data export
 
 ### Events example
 ```javascript
