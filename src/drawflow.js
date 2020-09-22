@@ -534,6 +534,7 @@ export default class Drawflow {
   }
 
   key(e) {
+    this.dispatch('keydown', e);
     if(this.editor_mode === 'fixed') {
       return false;
     }

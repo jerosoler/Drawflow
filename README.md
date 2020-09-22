@@ -274,6 +274,7 @@ Event | Return | Description
   `moduleRemoved` | name | `name` of Module
   `click` | event | Click event
   `mouseMove` | { x, y } | Position
+  `keydown` | event | Keydown event
   `zoom` | zoom_level | Level of zoom
   `translate` | { x, y } | Position translate editor
   `import` | `import` | Finish import
