@@ -272,6 +272,7 @@ Event | Return | Description
   `moduleCreated` | name | `name` of Module
   `moduleChanged` | name | `name` of Module
   `moduleRemoved` | name | `name` of Module
+  `click` | event | Click event
   `mouseMove` | { x, y } | Position
   `zoom` | zoom_level | Level of zoom
   `translate` | { x, y } | Position translate editor
