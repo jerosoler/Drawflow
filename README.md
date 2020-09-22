@@ -274,6 +274,7 @@ Event | Return | Description
   `moduleChanged` | name | `name` of Module
   `moduleRemoved` | name | `name` of Module
   `click` | event | Click event
+  `contextmenu` | event | Click second button mouse event
   `mouseMove` | { x, y } | Position
   `keydown` | event | Keydown event
   `zoom` | zoom_level | Level of zoom

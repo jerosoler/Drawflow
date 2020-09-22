@@ -509,6 +509,7 @@ export default class Drawflow {
 
   }
   contextmenu(e) {
+    this.dispatch('contextmenu', e);
     e.preventDefault();
     if(this.editor_mode === 'fixed') {
       return false;
