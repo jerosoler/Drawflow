@@ -26,6 +26,17 @@ header h2 {
 header a {
   color: black;
 }
+.them-edit-link {
+  position: absolute;
+  top: 10px;
+  right: 100px;
+  color: black;
+  font-size: 40px;
+}
+.them-edit-link a {
+  text-decoration: none;
+}
+
 .github-link{
   position: absolute;
   top: 10px;

@@ -13,7 +13,9 @@ Drawflow allows you to create data flows easily and quickly.
 
 Installing only a javascript library and with four lines of code.
 
-[LIVE DEMO](https://jerosoler.github.io/Drawflow/)
+⭐ [LIVE DEMO](https://jerosoler.github.io/Drawflow/)
+
+🎨 [THEME EDIT GENERATOR](https://jerosoler.github.io/drawflow-theme-generator/)
 
 ## Table of contents
 - [Features](#features)
