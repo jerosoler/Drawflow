@@ -1648,7 +1648,7 @@ export default class Drawflow {
       const eles = document.querySelectorAll("#node-"+id +" .inputs .input");
       eles.forEach((item, i) => {
         const id_class = item.classList[1].slice(6);
-        if(input_class_id < id_class) {
+        if(parseInt(input_class_id) < parseInt(id_class)) {
           item.classList.remove('input_'+id_class);
           item.classList.add('input_'+(id_class-1));
         }
@@ -1660,7 +1660,7 @@ export default class Drawflow {
       this.drawflow.drawflow[moduleName].data[itemx.node].outputs[itemx.input].connections.forEach((itemz, g) => {
           if(itemz.node == id) {
             const output_id = itemz.output.slice(6);
-            if(input_class_id < output_id) {
+            if(parseInt(input_class_id) < parseInt(output_id)) {
               if(this.module === moduleName) {
                 const ele = document.querySelector(".connection.node_in_node-"+id+".node_out_node-"+itemx.node+"."+itemx.input+".input_"+output_id);
                 ele.classList.remove('input_'+output_id);
@@ -1719,7 +1719,7 @@ export default class Drawflow {
       const eles = document.querySelectorAll("#node-"+id +" .outputs .output");
       eles.forEach((item, i) => {
         const id_class = item.classList[1].slice(7);
-        if(output_class_id < id_class) {
+        if(parseInt(output_class_id) < parseInt(id_class)) {
           item.classList.remove('output_'+id_class);
           item.classList.add('output_'+(id_class-1));
         }
@@ -1731,7 +1731,7 @@ export default class Drawflow {
       this.drawflow.drawflow[moduleName].data[itemx.node].inputs[itemx.output].connections.forEach((itemz, g) => {
           if(itemz.node == id) {
             const input_id = itemz.input.slice(7);
-            if(output_class_id < input_id) {
+            if(parseInt(output_class_id) < parseInt(input_id)) {
               if(this.module === moduleName) {
 
                 const ele = document.querySelector(".connection.node_in_node-"+itemx.node+".node_out_node-"+id+".output_"+input_id+"."+itemx.output);
