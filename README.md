@@ -276,6 +276,7 @@ Event | Return | Description
   `moduleChanged` | name | `name` of Module
   `moduleRemoved` | name | `name` of Module
   `click` | event | Click event
+  `clickEnd` | event | Once the click changes have been made
   `contextmenu` | event | Click second button mouse event
   `mouseMove` | { x, y } | Position
   `keydown` | event | Keydown event
