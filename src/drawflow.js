@@ -356,7 +356,7 @@ export default class Drawflow {
       this.drawflow.drawflow[this.module].data[this.ele_selected.id.slice(5)].pos_x = (this.ele_selected.offsetLeft - x);
       this.drawflow.drawflow[this.module].data[this.ele_selected.id.slice(5)].pos_y = (this.ele_selected.offsetTop - y);
 
-      this.updateConnectionNodes(this.ele_selected.id, e_pos_x, e_pos_y)
+      this.updateConnectionNodes(this.ele_selected.id)
     }
 
     if(this.drag_point) {
