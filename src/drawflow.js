@@ -317,6 +317,7 @@ export default class Drawflow {
       this.pos_y = e.clientY;
       this.pos_y_start = e.clientY;
     }
+    this.dispatch('clickEnd', e);
   }
 
   position(e) {
