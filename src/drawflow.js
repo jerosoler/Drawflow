@@ -454,9 +454,12 @@ export default class Drawflow {
           } else {
             var input_id = ele_last.id;
           }
+         if(Object.keys(this.getNodeFromId(input_id.slice(5)).inputs).length === 0) {
+           var input_class = false;
+         } else {
+          var input_class = "input_1";
+         }
 
-
-         var input_class = "input_1";
 
        } else {
          // Fix connection;
@@ -466,7 +469,7 @@ export default class Drawflow {
        var output_id = this.ele_selected.parentElement.parentElement.id;
        var output_class = this.ele_selected.classList[1];
 
-        if(output_id !== input_id) {
+        if(output_id !== input_id && input_class !== false) {
 
           if(this.container.querySelectorAll('.connection.node_in_'+input_id+'.node_out_'+output_id+'.'+output_class+'.'+input_class).length === 0) {
           // Conection no exist save connection
