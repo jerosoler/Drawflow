@@ -133,6 +133,7 @@ You can also adjust the zoom values.
 ```javascript
 editor.zoom_max = 1.6;
 editor.zoom_min = 0.5;
+editor.zoom_value = 0.1;
 ```
 
 ### Editor options
@@ -151,6 +152,7 @@ Parameter | Type | Default | Description
 `zoom` | Number | 1 | Default zoom
 `zoom_max` | Number | 1.6 | Default zoom max
 `zoom_min` | Number | 0.5 | Default zoom min
+`zoom_value` | Number | 0.1 | Default zoom value update
 `draggable_inputs` | Boolean | true | Drag nodes on click inputs
 
 ### Reroute

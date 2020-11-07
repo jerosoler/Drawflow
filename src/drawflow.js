@@ -43,6 +43,7 @@ export default class Drawflow {
     this.zoom = 1;
     this.zoom_max = 1.6;
     this.zoom_min = 0.5;
+    this.zoom_value = 0.1;
 
     // Mobile
     this.evCache = new Array();
@@ -582,13 +583,13 @@ export default class Drawflow {
   }
   zoom_in() {
     if(this.zoom < this.zoom_max) {
-        this.zoom+=0.1;
+        this.zoom+=this.zoom_value;
         this.zoom_refresh();
     }
   }
   zoom_out() {
     if(this.zoom > this.zoom_min) {
-      this.zoom-=0.1;
+      this.zoom-=this.zoom_value;
         this.zoom_refresh();
     }
   }
