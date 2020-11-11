@@ -44,6 +44,7 @@ export default class Drawflow {
     this.zoom_max = 1.6;
     this.zoom_min = 0.5;
     this.zoom_value = 0.1;
+    this.zoom_last_value = 1;
 
     // Mobile
     this.evCache = new Array();
@@ -579,6 +580,9 @@ export default class Drawflow {
   }
   zoom_refresh(){
     this.dispatch('zoom', this.zoom);
+    this.canvas_x = (this.canvas_x / this.zoom_last_value) * this.zoom;
+    this.canvas_y = (this.canvas_y / this.zoom_last_value) * this.zoom;
+    this.zoom_last_value = this.zoom;
     this.precanvas.style.transform = "translate("+this.canvas_x+"px, "+this.canvas_y+"px) scale("+this.zoom+")";
   }
   zoom_in() {
@@ -1900,6 +1904,7 @@ export default class Drawflow {
     this.mouse_x = 0;
     this.mouse_y = 0;
     this.zoom = 1;
+    this.zoom_last_value = 1;
     this.precanvas.style.transform = '';
     this.import(this.drawflow);
   }

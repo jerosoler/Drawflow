@@ -153,6 +153,7 @@ Parameter | Type | Default | Description
 `zoom_max` | Number | 1.6 | Default zoom max
 `zoom_min` | Number | 0.5 | Default zoom min
 `zoom_value` | Number | 0.1 | Default zoom value update
+`zoom_last_value` | Number | 1 | Default zoom last value
 `draggable_inputs` | Boolean | true | Drag nodes on click inputs
 
 ### Reroute
