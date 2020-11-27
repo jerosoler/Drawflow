@@ -1299,6 +1299,12 @@ export default class Drawflow {
     var moduleName = this.getModuleFromNodeId(id)
     return JSON.parse(JSON.stringify(this.drawflow.drawflow[moduleName].data[id]));
   }
+
+  updateNodeDataFromId(id, data) {
+    var moduleName = this.getModuleFromNodeId(id)
+    this.drawflow.drawflow[moduleName].data[id].data = data;
+  }
+
   getNodesFromName(name) {
     var nodes = [];
     const editor = this.drawflow.drawflow
