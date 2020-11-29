@@ -1578,8 +1578,44 @@ export default class Drawflow {
       }
 
     }
+  }
 
+  updateNodeDataFromId(id, data) {
+    var moduleName = this.getModuleFromNodeId(id)
+    this.drawflow.drawflow[moduleName].data[id].data = data;
+    if(this.module === moduleName) {
+      const content = document.querySelector('#node-'+id);
 
+      Object.entries(data).forEach(function (key, value) {
+        if(typeof key[1] === "object") {
+          insertObjectkeys(null, key[0], key[0]);
+        } else {
+          var elems = content.querySelectorAll('[df-'+key[0]+']');
+            for(var i = 0; i < elems.length; i++) {
+              elems[i].value = key[1];
+            }
+        }
+      })
+
+      function insertObjectkeys(object, name, completname) {
+        if(object === null) {
+          var object = data[name];
+        } else {
+          var object = object[name]
+        }
+        Object.entries(object).forEach(function (key, value) {
+          if(typeof key[1] === "object") {
+            insertObjectkeys(object, key[0], name+'-'+key[0]);
+          } else {
+            var elems = content.querySelectorAll('[df-'+completname+'-'+key[0]+']');
+              for(var i = 0; i < elems.length; i++) {
+                elems[i].value = key[1];
+              }
+          }
+        });
+      }
+
+    }
   }
 
   addNodeInput(id) {
