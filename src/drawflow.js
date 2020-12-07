@@ -1358,12 +1358,20 @@ export default class Drawflow {
     } else if (typenode === true) {
       content.appendChild(this.noderegister[html].html.cloneNode(true));
     } else {
-      let wrapper = new this.render({
-        render: h => h(this.noderegister[html].html, { props: this.noderegister[html].props }),
-        ...this.noderegister[html].options
-      }).$mount()
-      //
-      content.appendChild(wrapper.$el);
+      if(parseInt(this.render.version) === 3 ) {
+        //Vue 3
+        let wrapper = this.render.createApp({
+          render: h => this.render.h(this.noderegister[html].html, this.noderegister[html].props, this.noderegister[html].options)
+        }).mount(content)
+      } else {
+        // Vue 2
+        let wrapper = new this.render({
+          render: h => h(this.noderegister[html].html, { props: this.noderegister[html].props }),
+          ...this.noderegister[html].options
+        }).$mount()
+        //
+        content.appendChild(wrapper.$el);
+      }
     }
 
     Object.entries(data).forEach(function (key, value) {
@@ -1479,11 +1487,19 @@ export default class Drawflow {
     } else if (dataNode.typenode === true) {
       content.appendChild(this.noderegister[dataNode.html].html.cloneNode(true));
     } else {
-      let wrapper = new this.render({
-        render: h => h(this.noderegister[dataNode.html].html, { props: this.noderegister[dataNode.html].props }),
-        ...this.noderegister[dataNode.html].options
-      }).$mount()
-      content.appendChild(wrapper.$el);
+      if(parseInt(this.render.version) === 3 ) {
+        //Vue 3
+        let wrapper = this.render.createApp({
+          render: h => this.render.h(this.noderegister[dataNode.html].html, this.noderegister[dataNode.html].props, this.noderegister[dataNode.html].options)
+        }).mount(content)
+      } else {
+        //Vue 2
+        let wrapper = new this.render({
+          render: h => h(this.noderegister[dataNode.html].html, { props: this.noderegister[dataNode.html].props }),
+          ...this.noderegister[dataNode.html].options
+        }).$mount()
+        content.appendChild(wrapper.$el);
+      }
     }
 
 
