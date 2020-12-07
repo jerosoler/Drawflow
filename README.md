@@ -100,9 +100,17 @@ Parameter | Type | Description
 `id` | Object | Name of module
 `render` | Object | It's for `Vue`.
 
-### For vue example.
+### For vue 2 example.
 ```javascript
 import Vue from 'vue'
+
+// Pass render Vue
+this.editor = new Drawflow(id, Vue);
+```
+
+### For vue 3 example.
+```javascript
+import * as Vue from 'vue'
 
 // Pass render Vue
 this.editor = new Drawflow(id, Vue);
