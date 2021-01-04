@@ -1,3 +1,8 @@
+[![npm](https://img.shields.io/npm/v/drawflow?color=green)](https://www.npmjs.com/package/drawflow)
+![npm](https://img.shields.io/npm/dy/drawflow)
+![npm bundle size](https://img.shields.io/bundlephobia/minzip/drawflow)
+[![GitHub license](https://img.shields.io/github/license/jerosoler/Drawflow)](https://github.com/jerosoler/Drawflow/blob/master/LICENSE)
+[![Twitter URL](https://img.shields.io/twitter/url?style=social&url=https%3A%2F%2Ftwitter.com%2Fjerosoler)](https://twitter.com/jerosoler)
 # Drawflow
 
 ![Demo](https://github.com/jerosoler/Drawflow/raw/master/docs/drawflow.gif)
@@ -8,7 +13,9 @@ Drawflow allows you to create data flows easily and quickly.
 
 Installing only a javascript library and with four lines of code.
 
-[LIVE DEMO](https://jerosoler.github.io/Drawflow/)
+⭐ [LIVE DEMO](https://jerosoler.github.io/Drawflow/)
+
+🎨 [THEME EDIT GENERATOR](https://jerosoler.github.io/drawflow-theme-generator/)
 
 ## Table of contents
 - [Features](#features)
@@ -16,6 +23,7 @@ Installing only a javascript library and with four lines of code.
   - [Running](#running)
 - [Mouse and  Keys](#mouse-and-keys)
 - [Editor](#editor)
+  - [Options](#editor-options)
 - [Modules](#modules)
 - [Nodes](#nodes)
   - [Node example](#node-example)
@@ -70,7 +78,7 @@ import Drawflow from 'drawflow'
 import styleDrawflow from 'drawflow/dist/drawflow.min.css'
 ```
 
-#### Require 
+#### Require
 ```javascript
 var Drawflow = require('drawflow')
 var styleDrawflow = require('drawflow/dist/drawflow.min.css')
@@ -92,9 +100,17 @@ Parameter | Type | Description
 `id` | Object | Name of module
 `render` | Object | It's for `Vue`.
 
-### For vue example.
+### For vue 2 example.
 ```javascript
 import Vue from 'vue'
+
+// Pass render Vue
+this.editor = new Drawflow(id, Vue);
+```
+
+### For vue 3 example.
+```javascript
+import * as Vue from 'vue'
 
 // Pass render Vue
 this.editor = new Drawflow(id, Vue);
@@ -125,7 +141,28 @@ You can also adjust the zoom values.
 ```javascript
 editor.zoom_max = 1.6;
 editor.zoom_min = 0.5;
+editor.zoom_value = 0.1;
 ```
+
+### Editor options
+
+Parameter | Type | Default | Description
+--- | --- | --- | ---
+`reroute` | Boolean | false | Active reroute
+`reroute_fix_curvature` | Boolean | false | Fix adding points
+`curvature` | Number | 0.5 | Curvature
+`reroute_curvature_start_end` | Number | 0.5 | Curvature reroute first point and las point
+`reroute_curvature` | Number | 0.5 | Curvature reroute
+`reroute_width` | Number | 6 | Width of reroute
+`line_path` | Number | 5 | Width of line
+`force_first_input` | Boolean | false | Force the first input to drop the connection on top of the node
+`editor_mode` | Text | `edit` | `edit` or `fixed` mode
+`zoom` | Number | 1 | Default zoom
+`zoom_max` | Number | 1.6 | Default zoom max
+`zoom_min` | Number | 0.5 | Default zoom min
+`zoom_value` | Number | 0.1 | Default zoom value update
+`zoom_last_value` | Number | 1 | Default zoom last value
+`draggable_inputs` | Boolean | true | Drag nodes on click inputs
 
 ### Reroute
 Active reroute connections. Use before `start` or `import`.
@@ -212,6 +249,7 @@ Mehtod | Description
 `getNodeFromId(id)` | Get Info of node. Ex: id: `5`
 `getNodesFromName(name)` | Return Array of nodes id. Ex: name: `telegram`
 `removeNodeId(id)` | Remove node. Ex id: `node-x`
+`updateNodeDataFromId` | Update data element. Ex: `5, { name: 'Drawflow' }`
 `addNodeInput(id)` | Add input to node. Ex id: `5`
 `addNodeOutput(id)` | Add output to node. Ex id: `5`
 `removeNodeInput(id, input_class)` | Remove input to node. Ex id: `5`, `input_2`
@@ -240,6 +278,7 @@ Event | Return | Description
   `nodeCreated` | id | `id` of Node
   `nodeRemoved` | id | `id` of Node
   `nodeSelected` | id | `id` of Node
+  `nodeUnselected` | true | Unselect node
   `nodeMoved` | id | `id` of Node
   `connectionCreated` | { output_id, input_id, output_class, input_class } | `id`'s of nodes and ouput/input selected
   `connectionRemoved` | { output_id, input_id, output_class, input_class } | `id`'s of nodes and ouput/input selected
@@ -248,10 +287,15 @@ Event | Return | Description
   `moduleCreated` | name | `name` of Module
   `moduleChanged` | name | `name` of Module
   `moduleRemoved` | name | `name` of Module
+  `click` | event | Click event
+  `clickEnd` | event | Once the click changes have been made
+  `contextmenu` | event | Click second button mouse event
   `mouseMove` | { x, y } | Position
+  `keydown` | event | Keydown event
   `zoom` | zoom_level | Level of zoom
   `translate` | { x, y } | Position translate editor
   `import` | `import` | Finish import
+  `export` | data | Data export
 
 ### Events example
 ```javascript
