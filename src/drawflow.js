@@ -215,11 +215,13 @@ export default class Drawflow {
         this.node_selected = this.ele_selected;
         this.node_selected.classList.add("selected");
         if(!this.draggable_inputs) {
-          if(e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA' && e.target.hasAttribute('contenteditable') !== true) {
+          if(e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA' && e.target.tagName !== 'SELECT' && e.target.hasAttribute('contenteditable') !== true) {
             this.drag = true;
           }
         } else {
-          this.drag = true;
+          if(e.target.tagName !== 'SELECT') {
+            this.drag = true;
+          }
         }
         break;
       case 'output':
