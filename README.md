@@ -282,6 +282,8 @@ Event | Return | Description
   `nodeMoved` | id | `id` of Node
   `connectionCreated` | { output_id, input_id, output_class, input_class } | `id`'s of nodes and ouput/input selected
   `connectionRemoved` | { output_id, input_id, output_class, input_class } | `id`'s of nodes and ouput/input selected
+  `connectionSelected` | { output_id, input_id, output_class, input_class } | `id`'s of nodes and ouput/input selected
+  `connectionUnselected` | true | Unselect connection
   `addReroute` | id | `id` of Node output
   `removeReroute` | id | `id` of Node output
   `moduleCreated` | name | `name` of Module
