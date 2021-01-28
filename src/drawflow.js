@@ -168,6 +168,7 @@ export default class Drawflow {
   }
 
   removeReouteConnectionSelected(){
+    this.dispatch('connectionUnselected', true);
     if(this.reroute_fix_curvature) {
       this.connection_selected.parentElement.querySelectorAll(".main-path").forEach((item, i) => {
         item.classList.remove("selected");
@@ -277,6 +278,8 @@ export default class Drawflow {
         }
         this.connection_selected = this.ele_selected;
         this.connection_selected.classList.add("selected");
+        const listclassConnection = this.connection_selected.parentElement.classList;
+        this.dispatch('connectionSelected', { output_id: listclassConnection[2].slice(14), input_id: listclassConnection[1].slice(13), output_class: listclassConnection[3], input_class: listclassConnection[4] });
         if(this.reroute_fix_curvature) {
           this.connection_selected.parentElement.querySelectorAll(".main-path").forEach((item, i) => {
             item.classList.add("selected");
