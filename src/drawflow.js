@@ -495,18 +495,21 @@ export default class Drawflow {
           this.dispatch('connectionCreated', { output_id: id_output, input_id: id_input, output_class:  output_class, input_class: input_class});
 
         } else {
+          this.dispatch('connectionCancel', true);
           this.connection_ele.remove();
         }
 
           this.connection_ele = null;
       } else {
         // Connection exists Remove Connection;
+        this.dispatch('connectionCancel', true);
         this.connection_ele.remove();
         this.connection_ele = null;
       }
 
       } else {
         // Remove Connection;
+        this.dispatch('connectionCancel', true);
         this.connection_ele.remove();
         this.connection_ele = null;
       }
@@ -668,6 +671,9 @@ export default class Drawflow {
     connection.classList.add("connection");
     connection.appendChild(path);
     this.precanvas.appendChild(connection);
+    var id_output = ele.parentElement.parentElement.id.slice(5);
+    var output_class = ele.classList[1];
+    this.dispatch('connectionStart', { output_id: id_output, output_class:  output_class });
 
   }
 
