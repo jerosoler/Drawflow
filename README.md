@@ -280,6 +280,8 @@ Event | Return | Description
   `nodeSelected` | id | `id` of Node
   `nodeUnselected` | true | Unselect node
   `nodeMoved` | id | `id` of Node
+  `connectionStart` | { output_id, output_class } | `id` of nodes and ouput selected
+  `connectionCancel` | true | Connection Cancel
   `connectionCreated` | { output_id, input_id, output_class, input_class } | `id`'s of nodes and ouput/input selected
   `connectionRemoved` | { output_id, input_id, output_class, input_class } | `id`'s of nodes and ouput/input selected
   `connectionSelected` | { output_id, input_id, output_class, input_class } | `id`'s of nodes and ouput/input selected
