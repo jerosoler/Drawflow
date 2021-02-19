@@ -163,6 +163,7 @@ Parameter | Type | Default | Description
 `zoom_value` | Number | 0.1 | Default zoom value update
 `zoom_last_value` | Number | 1 | Default zoom last value
 `draggable_inputs` | Boolean | true | Drag nodes on click inputs
+`useuuid` | Boolean | false | Use UUID as node ID instead of integer index. Only affect newly created nodes, do not affect imported nodes
 
 ### Reroute
 Active reroute connections. Use before `start` or `import`.

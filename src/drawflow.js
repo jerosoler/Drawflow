@@ -30,6 +30,7 @@ export default class Drawflow {
     this.first_click = null;
     this.force_first_input = false;
     this.draggable_inputs = true;
+    this.useuuid = false;
 
 
 
@@ -1324,12 +1325,17 @@ export default class Drawflow {
   }
 
   addNode (name, num_in, num_out, ele_pos_x, ele_pos_y, classoverride, data, html, typenode = false) {
+    if (this.useuuid) {
+      var newNodeId = this.getUuid();
+    } else {
+      var newNodeId = this.nodeId;
+    }
     const parent = document.createElement('div');
     parent.classList.add("parent-node");
 
     const node = document.createElement('div');
     node.innerHTML = "";
-    node.setAttribute("id", "node-"+this.nodeId);
+    node.setAttribute("id", "node-"+newNodeId);
     node.classList.add("drawflow-node");
     if(classoverride != '') {
       node.classList.add(classoverride);
@@ -1421,7 +1427,7 @@ export default class Drawflow {
     parent.appendChild(node);
     this.precanvas.appendChild(parent);
     var json = {
-      id: this.nodeId,
+      id: newNodeId,
       name: name,
       data: data,
       class: classoverride,
@@ -1432,11 +1438,12 @@ export default class Drawflow {
       pos_x: ele_pos_x,
       pos_y: ele_pos_y,
     }
-    this.drawflow.drawflow[this.module].data[this.nodeId] = json;
-    this.dispatch('nodeCreated', this.nodeId);
-    var nodeId = this.nodeId;
-    this.nodeId++;
-    return nodeId;
+    this.drawflow.drawflow[this.module].data[newNodeId] = json;
+    this.dispatch('nodeCreated', newNodeId);
+    if (!this.useuuid) { 
+      this.nodeId++;
+    }
+    return newNodeId;
   }
 
   addNodeImport (dataNode, precanvas) {
@@ -2050,5 +2057,20 @@ export default class Drawflow {
            listener(details);
        });
    }
+   
+    getUuid() {
+        // http://www.ietf.org/rfc/rfc4122.txt
+        var s = [];
+        var hexDigits = "0123456789abcdef";
+        for (var i = 0; i < 36; i++) {
+            s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1);
+        }
+        s[14] = "4";  // bits 12-15 of the time_hi_and_version field to 0010
+        s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1);  // bits 6-7 of the clock_seq_hi_and_reserved to 01
+        s[8] = s[13] = s[18] = s[23] = "-";
 
+        var uuid = s.join("");
+        return uuid;
+    }
+    
 }
