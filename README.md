@@ -72,6 +72,12 @@ Download or clone repository and copy the dist folder, CDN option Or npm.
 npm i drawflow
 ```
 
+### Typescript
+External package. More info [#119](https://github.com/jerosoler/Drawflow/issues/119)
+```javascript
+npm install -D @types/drawflow
+```
+
 #### Import
 ```javascript
 import Drawflow from 'drawflow'
