@@ -1479,7 +1479,7 @@ export default class Drawflow {
       const input = document.createElement('div');
       input.classList.add("input");
       input.classList.add(input_item);
-	  dataNode.inputs[input_item].type != "" && o.classList.add(dataNode.inputs[input_item].type);
+	  dataNode.inputs[input_item].type != "" && input.classList.add(dataNode.inputs[input_item].type);
       inputs.appendChild(input);
       Object.keys(dataNode.inputs[input_item].connections).map(function(output_item, index) {
 
@@ -1503,7 +1503,7 @@ export default class Drawflow {
 	Object.keys(dataNode.outputs).map((function (output_item, i) {
 		const output = document.createElement("div");
 		output.classList.add("output");
-		output.classList.add(n);
+		output.classList.add(output_item);
 		//Making sure to add the type
 		dataNode.outputs[output_item].type != "" && output.classList.add(dataNode.outputs[output_item].type);
 		outputs.appendChild(output);
