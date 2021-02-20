@@ -480,20 +480,26 @@ export default class Drawflow {
         if(output_id !== input_id && input_class !== false) {
 
           if(this.container.querySelectorAll('.connection.node_in_'+input_id+'.node_out_'+output_id+'.'+output_class+'.'+input_class).length === 0) {
-          // Conection no exist save connection
-
-          this.connection_ele.classList.add("node_in_"+input_id);
-          this.connection_ele.classList.add("node_out_"+output_id);
-          this.connection_ele.classList.add(output_class);
-          this.connection_ele.classList.add(input_class);
-          var id_input = input_id.slice(5);
-          var id_output = output_id.slice(5);
-
-          this.drawflow.drawflow[this.module].data[id_output].outputs[output_class].connections.push( {"node": id_input, "output": input_class});
-          this.drawflow.drawflow[this.module].data[id_input].inputs[input_class].connections.push( {"node": id_output, "input": output_class});
-          this.updateConnectionNodes('node-'+id_output);
-          this.updateConnectionNodes('node-'+id_input);
-          this.dispatch('connectionCreated', { output_id: id_output, input_id: id_input, output_class:  output_class, input_class: input_class});
+          // Conection no exist save connection		  
+		  this.connection_ele.classList.add("node_in_"+input_id);
+		  this.connection_ele.classList.add("node_out_"+output_id);
+		  this.connection_ele.classList.add(output_class);
+		  this.connection_ele.classList.add(input_class);
+		  var id_input = input_id.slice(5);
+		  var id_output = output_id.slice(5);
+		  // Check connection type matches between input and output
+		  if(this.drawflow.drawflow[this.module].data[id_output].outputs[output_class].type == this.drawflow.drawflow[this.module].data[id_input].inputs[input_class].type) {
+			  this.drawflow.drawflow[this.module].data[id_output].outputs[output_class].connections.push( {"node": id_input, "output": input_class});
+			  this.drawflow.drawflow[this.module].data[id_input].inputs[input_class].connections.push( {"node": id_output, "input": output_class});
+			  this.updateConnectionNodes('node-'+id_output);
+			  this.updateConnectionNodes('node-'+id_input);
+			  this.dispatch('connectionCreated', { output_id: id_output, input_id: id_input, output_class:  output_class, input_class: input_class});
+		  }
+		  else {
+			  console.log("Input and output type don't match");
+			  this.dispatch('connectionCancel', true);
+			  this.connection_ele.remove();
+		  }
 
         } else {
           this.dispatch('connectionCancel', true);
@@ -729,24 +735,29 @@ export default class Drawflow {
         this.drawflow.drawflow[nodeOneModule].data[id_input].inputs[input_class].connections.push( {"node": id_output.toString(), "input": output_class});
 
         if(this.module === nodeOneModule) {
-        //Draw connection
-          var connection = document.createElementNS('http://www.w3.org/2000/svg',"svg");
-          var path = document.createElementNS('http://www.w3.org/2000/svg',"path");
-          path.classList.add("main-path");
-          path.setAttributeNS(null, 'd', '');
-          // path.innerHTML = 'a';
-          connection.classList.add("connection");
-          connection.classList.add("node_in_node-"+id_input);
-          connection.classList.add("node_out_node-"+id_output);
-          connection.classList.add(output_class);
-          connection.classList.add(input_class);
-          connection.appendChild(path);
-          this.precanvas.appendChild(connection);
-          this.updateConnectionNodes('node-'+id_output);
-          this.updateConnectionNodes('node-'+id_input);
-        }
-
-        this.dispatch('connectionCreated', { output_id: id_output, input_id: id_input, output_class:  output_class, input_class: input_class});
+			// Check type matches
+			if(this.drawflow.drawflow[this.module].data[id_output].outputs[output_class].type == this.drawflow.drawflow[this.module].data[id_input].inputs[input_class].type) {
+				//Draw connection
+				var connection = document.createElementNS('http://www.w3.org/2000/svg',"svg");
+				var path = document.createElementNS('http://www.w3.org/2000/svg',"path");
+				path.classList.add("main-path");
+				path.setAttributeNS(null, 'd', '');
+				// path.innerHTML = 'a';
+				connection.classList.add("connection");
+				connection.classList.add("node_in_node-"+id_input);
+				connection.classList.add("node_out_node-"+id_output);
+				connection.classList.add(output_class);
+				connection.classList.add(input_class);
+				connection.appendChild(path);
+				this.precanvas.appendChild(connection);
+				this.updateConnectionNodes('node-'+id_output);
+				this.updateConnectionNodes('node-'+id_input);
+				
+				this.dispatch('connectionCreated', { output_id: id_output, input_id: id_input, output_class:  output_class, input_class: input_class});
+			 }
+			 else
+				 console.log("Input and ouput type don't match");
+		  }
       }
     }
   }
@@ -1468,6 +1479,7 @@ export default class Drawflow {
       const input = document.createElement('div');
       input.classList.add("input");
       input.classList.add(input_item);
+	  dataNode.inputs[input_item].type != "" && o.classList.add(dataNode.inputs[input_item].type);
       inputs.appendChild(input);
       Object.keys(dataNode.inputs[input_item].connections).map(function(output_item, index) {
 
@@ -1487,14 +1499,15 @@ export default class Drawflow {
 
       });
     });
-
-
-    for(var x = 0; x < Object.keys(dataNode.outputs).length; x++) {
-      const output = document.createElement('div');
-      output.classList.add("output");
-      output.classList.add("output_"+(x+1));
-      outputs.appendChild(output);
-    }
+	// Doing the same as for the inputs
+	Object.keys(dataNode.outputs).map((function (output_item, i) {
+		const output = document.createElement("div");
+		output.classList.add("output");
+		output.classList.add(n);
+		//Making sure to add the type
+		dataNode.outputs[output_item].type != "" && output.classList.add(dataNode.outputs[output_item].type);
+		outputs.appendChild(output);
+	}));
 
     const content = document.createElement('div');
     content.classList.add("drawflow_content_node");
