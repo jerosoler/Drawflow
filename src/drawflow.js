@@ -31,8 +31,8 @@ export default class Drawflow {
     this.force_first_input = false;
     this.draggable_inputs = true;
     this.useuuid = false;
-
-
+	this.checkInOutType = false;
+	this.singleConnectionForTypedInput = false;
 
     this.select_elements = null;
     this.noderegister = {};
@@ -478,33 +478,48 @@ export default class Drawflow {
        var output_class = this.ele_selected.classList[1];
 
         if(output_id !== input_id && input_class !== false) {
-
+		  // This checks if there is already a connection between the same ouput/input
           if(this.container.querySelectorAll('.connection.node_in_'+input_id+'.node_out_'+output_id+'.'+output_class+'.'+input_class).length === 0) {
-          // Conection no exist save connection		  
-		  this.connection_ele.classList.add("node_in_"+input_id);
-		  this.connection_ele.classList.add("node_out_"+output_id);
-		  this.connection_ele.classList.add(output_class);
-		  this.connection_ele.classList.add(input_class);
-		  var id_input = input_id.slice(5);
-		  var id_output = output_id.slice(5);
-		  // Check connection type matches between input and output
-		  if(this.drawflow.drawflow[this.module].data[id_output].outputs[output_class].type == this.drawflow.drawflow[this.module].data[id_input].inputs[input_class].type) {
-			  this.drawflow.drawflow[this.module].data[id_output].outputs[output_class].connections.push( {"node": id_input, "output": input_class});
-			  this.drawflow.drawflow[this.module].data[id_input].inputs[input_class].connections.push( {"node": id_output, "input": output_class});
-			  this.updateConnectionNodes('node-'+id_output);
-			  this.updateConnectionNodes('node-'+id_input);
-			  this.dispatch('connectionCreated', { output_id: id_output, input_id: id_input, output_class:  output_class, input_class: input_class});
-		  }
-		  else {
-			  console.log("Input and output type don't match");
+			  // Conection no exist save connection		  
+			  this.connection_ele.classList.add("node_in_"+input_id);
+			  this.connection_ele.classList.add("node_out_"+output_id);
+			  this.connection_ele.classList.add(output_class);
+			  this.connection_ele.classList.add(input_class);
+			  var id_input = input_id.slice(5);
+			  var id_output = output_id.slice(5);
+			  // Check connection type matches between input and output
+			  if(this.drawflow.drawflow[this.module].data[id_output].outputs[output_class].type == this.drawflow.drawflow[this.module].data[id_input].inputs[input_class].type || !this.checkInOutType) {
+				  var alreadyLinked = false;
+				  // If there is a type and singleConnectionForTypedInput = true, then we must check if there is already a link here
+				  if(this.drawflow.drawflow[this.module].data[id_input].inputs[input_class].type && this.singleConnectionForTypedInput) {
+					if(this.container.querySelectorAll('.node_in_'+input_id+'.'+input_class).length > 0)
+					  alreadyLinked = true;
+				  }
+				  // If not already linked to something, we can add the connection
+				  if(!alreadyLinked) {
+					  this.drawflow.drawflow[this.module].data[id_output].outputs[output_class].connections.push( {"node": id_input, "output": input_class});
+					  this.drawflow.drawflow[this.module].data[id_input].inputs[input_class].connections.push( {"node": id_output, "input": output_class});
+					  this.updateConnectionNodes('node-'+id_output);
+					  this.updateConnectionNodes('node-'+id_input);
+					  this.dispatch('connectionCreated', { output_id: id_output, input_id: id_input, output_class:  output_class, input_class: input_class});
+				  }
+				  else {
+					  console.log("There is already an output linked to the input: " + input_class + " for node: " + id_input);
+					  this.dispatch('connectionCancel', true);
+					  this.connection_ele.remove();
+				  }
+			  }
+			  else {
+				  console.log("Input and output type don't match");
+				  this.dispatch('connectionCancel', true);
+				  this.connection_ele.remove();
+			  }
+
+			} 
+			else {
 			  this.dispatch('connectionCancel', true);
 			  this.connection_ele.remove();
-		  }
-
-        } else {
-          this.dispatch('connectionCancel', true);
-          this.connection_ele.remove();
-        }
+			}
 
           this.connection_ele = null;
       } else {
@@ -736,7 +751,7 @@ export default class Drawflow {
 
         if(this.module === nodeOneModule) {
 			// Check type matches
-			if(this.drawflow.drawflow[this.module].data[id_output].outputs[output_class].type == this.drawflow.drawflow[this.module].data[id_input].inputs[input_class].type) {
+			if(this.drawflow.drawflow[this.module].data[id_output].outputs[output_class].type == this.drawflow.drawflow[this.module].data[id_input].inputs[input_class].type || !this.checkInOutType) {
 				//Draw connection
 				var connection = document.createElementNS('http://www.w3.org/2000/svg',"svg");
 				var path = document.createElementNS('http://www.w3.org/2000/svg',"path");
