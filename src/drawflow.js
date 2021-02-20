@@ -480,15 +480,10 @@ export default class Drawflow {
         if(output_id !== input_id && input_class !== false) {
 		  // This checks if there is already a connection between the same ouput/input
           if(this.container.querySelectorAll('.connection.node_in_'+input_id+'.node_out_'+output_id+'.'+output_class+'.'+input_class).length === 0) {
-			  // Conection no exist save connection		  
-			  this.connection_ele.classList.add("node_in_"+input_id);
-			  this.connection_ele.classList.add("node_out_"+output_id);
-			  this.connection_ele.classList.add(output_class);
-			  this.connection_ele.classList.add(input_class);
 			  var id_input = input_id.slice(5);
 			  var id_output = output_id.slice(5);
-			  // Check connection type matches between input and output
-			  if(this.drawflow.drawflow[this.module].data[id_output].outputs[output_class].type == this.drawflow.drawflow[this.module].data[id_input].inputs[input_class].type || !this.checkInOutType) {
+			  // Test connection type matches between input and output
+			  if((this.checkInOutType && this.checkConnectionTypes(id_input, input_class, id_output, output_class)) || !this.checkInOutType) {
 				  var alreadyLinked = false;
 				  // If there is a type and singleConnectionForTypedInput = true, then we must check if there is already a link here
 				  if(this.drawflow.drawflow[this.module].data[id_input].inputs[input_class].type && this.singleConnectionForTypedInput) {
@@ -497,6 +492,12 @@ export default class Drawflow {
 				  }
 				  // If not already linked to something, we can add the connection
 				  if(!alreadyLinked) {
+					  // Conection no exist save connection		  
+					  this.connection_ele.classList.add("node_in_"+input_id);
+					  this.connection_ele.classList.add("node_out_"+output_id);
+					  this.connection_ele.classList.add(output_class);
+					  this.connection_ele.classList.add(input_class);
+					  
 					  this.drawflow.drawflow[this.module].data[id_output].outputs[output_class].connections.push( {"node": id_input, "output": input_class});
 					  this.drawflow.drawflow[this.module].data[id_input].inputs[input_class].connections.push( {"node": id_output, "input": output_class});
 					  this.updateConnectionNodes('node-'+id_output);
@@ -542,8 +543,13 @@ export default class Drawflow {
     this.connection = false;
     this.ele_selected = null;
     this.editor_selected = false;
-
   }
+  
+  // Can be overriden inside typescript for example and do test on the back using a service
+  checkConnectionTypes(input_id, input_class, output_id, output_class) {
+	  return this.drawflow.drawflow[this.module].data[output_id].outputs[output_class].type == this.drawflow.drawflow[this.module].data[input_id].inputs[input_class].type;
+  }
+  
   contextmenu(e) {
     this.dispatch('contextmenu', e);
     e.preventDefault();
