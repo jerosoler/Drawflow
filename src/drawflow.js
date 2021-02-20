@@ -777,7 +777,7 @@ export default class Drawflow {
 				this.dispatch('connectionCreated', { output_id: id_output, input_id: id_input, output_class:  output_class, input_class: input_class});
 			 }
 			 else
-				 console.log("Input and ouput type don't match");
+				 console.log("Input " + id_input + input_class + " and ouput " + id_output + output_class + " types don't match");
 		  }
       }
     }
@@ -1703,6 +1703,10 @@ export default class Drawflow {
     }
     this.drawflow.drawflow[moduleName].data[id].inputs["input_"+(numInputs+1)] = { "connections": []};
   }
+  
+  changeNodeInputType(module, node_id, input_class, newType) {
+	  this.drawflow.drawflow[module].data[node_id].inputs[input_class].type = newType;
+  }
 
   addNodeOutput(id) {
     var moduleName = this.getModuleFromNodeId(id)
@@ -1719,6 +1723,10 @@ export default class Drawflow {
 
     }
     this.drawflow.drawflow[moduleName].data[id].outputs["output_"+(numOutputs+1)] = { "connections": []};
+  }
+  
+  changeNodeOutputType(module, node_id, output_class, newType) {
+	  this.drawflow.drawflow[module].data[node_id].outputs[output_class].type = newType;
   }
 
   removeNodeInput(id, input_class) {
