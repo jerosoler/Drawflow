@@ -1479,10 +1479,10 @@ export default class Drawflow {
       const input = document.createElement('div');
       input.classList.add("input");
       input.classList.add(input_item);
-	  dataNode.inputs[input_item].type != "" && input.classList.add(dataNode.inputs[input_item].type);
+	  if(dataNode.inputs[input_item].type != "")
+		  input.classList.add(dataNode.inputs[input_item].type);
       inputs.appendChild(input);
       Object.keys(dataNode.inputs[input_item].connections).map(function(output_item, index) {
-
         var connection = document.createElementNS('http://www.w3.org/2000/svg',"svg");
         var path = document.createElementNS('http://www.w3.org/2000/svg',"path");
         path.classList.add("main-path");
@@ -1505,7 +1505,8 @@ export default class Drawflow {
 		output.classList.add("output");
 		output.classList.add(output_item);
 		//Making sure to add the type
-		dataNode.outputs[output_item].type != "" && output.classList.add(dataNode.outputs[output_item].type);
+		if(dataNode.outputs[output_item].type != "")
+			output.classList.add(dataNode.outputs[output_item].type);
 		outputs.appendChild(output);
 	}));
 
