@@ -501,6 +501,15 @@ export default class Drawflow {
 					  
 					  this.drawflow.drawflow[this.module].data[id_output].outputs[output_class].connections.push( {"node": id_input, "output": input_class});
 					  this.drawflow.drawflow[this.module].data[id_input].inputs[input_class].connections.push( {"node": id_output, "input": output_class});
+					  
+					  // Add "linked" style to both input/output element
+					  var output = document.querySelector('#'+output_id+' .'+output_class);
+					  if(output && !output.classList.contains('linked'))
+						output.classList.add("linked");
+					  var input = document.querySelector('#'+input_id+' .'+input_class);
+					  if(input && !input.classList.contains('linked'))
+						input.classList.add("linked");
+					  
 					  this.updateConnectionNodes('node-'+id_output);
 					  this.updateConnectionNodes('node-'+id_input);
 					  this.dispatch('connectionCreated', { output_id: id_output, input_id: id_input, output_class:  output_class, input_class: input_class});
@@ -773,6 +782,15 @@ export default class Drawflow {
 				connection.classList.add(input_class);
 				connection.setAttribute("type", this.drawflow.drawflow[this.module].data[id_output].outputs[output_class].type);
 				connection.appendChild(path);
+				
+				// Add "linked" style to both input/output element
+				  var output = document.querySelector('#node-'+id_output+' .'+output_class);
+				  if(output && !output.classList.contains('linked'))
+					output.classList.add("linked");
+				  var input = document.querySelector('#node-'+id_input+' .'+input_class);
+				  if(input && !input.classList.contains('linked'))
+					input.classList.add("linked");
+				
 				this.precanvas.appendChild(connection);
 				this.updateConnectionNodes('node-'+id_output);
 				this.updateConnectionNodes('node-'+id_input);
@@ -1505,6 +1523,9 @@ export default class Drawflow {
       input.classList.add(input_item);
 	  if(dataNode.inputs[input_item].type != "")
 		  input.setAttribute("type", dataNode.inputs[input_item].type);
+	  // Test is there is a connection then add the "linked" class
+	  if(dataNode.inputs[input_item].connections.length > 0)
+		  input.classList.add("linked");
       inputs.appendChild(input);
       Object.keys(dataNode.inputs[input_item].connections).map(function(output_item, index) {
         var connection = document.createElementNS('http://www.w3.org/2000/svg',"svg");
@@ -1532,6 +1553,9 @@ export default class Drawflow {
 		//Making sure to add the type
 		if(dataNode.outputs[output_item].type != "")
 			output.setAttribute("type", dataNode.outputs[output_item].type);
+		// Test is there is a connection then add the "linked" class
+		if(dataNode.outputs[output_item].connections.length > 0)
+			output.classList.add("linked");
 		outputs.appendChild(output);
 	}));
 
@@ -1928,6 +1952,15 @@ export default class Drawflow {
         return item.node === listclass[2].slice(14) && item.input === listclass[3]
       });
       this.drawflow.drawflow[this.module].data[listclass[1].slice(13)].inputs[listclass[4]].connections.splice(index_in,1);
+	  
+	  // Retrieve output/input linked to the connection and remove "linked" class
+	  var output = document.querySelector('#node-'+ listclass[2].slice(14) + ' .' + listclass[3]);
+	  if(output && output.classList.contains('linked') && document.querySelectorAll('.node_out_node-'+ listclass[2].slice(14) + '.' + listclass[3]).length == 0)
+		output.classList.remove("linked");
+	  var input = document.querySelector('#node-' + listclass[1].slice(13) + ' .' + listclass[4]);
+	  if(input && input.classList.contains('linked') && document.querySelectorAll('.node_in_node-'+ listclass[1].slice(13) + '.' + listclass[4]).length == 0)
+		input.classList.remove("linked");
+	  
       this.dispatch('connectionRemoved', { output_id: listclass[2].slice(14), input_id: listclass[1].slice(13), output_class: listclass[3], input_class: listclass[4] } );
       this.connection_selected = null;
     }
