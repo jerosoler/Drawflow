@@ -1538,7 +1538,7 @@ export default class Drawflow {
         connection.classList.add("node_out_node-"+dataNode.inputs[input_item].connections[output_item].node);
         connection.classList.add(dataNode.inputs[input_item].connections[output_item].input);
         connection.classList.add(input_item);
-		connection.setAttribute("type", dataNode.outputs[output_item].type);
+		connection.setAttribute("type", dataNode.inputs[input_item].type);
 		
         connection.appendChild(path);
         precanvas.appendChild(connection);
