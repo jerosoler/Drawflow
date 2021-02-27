@@ -1408,16 +1408,18 @@ export default class Drawflow {
       } else {
         var object = object[name]
       }
-      Object.entries(object).forEach(function (key, value) {
-        if(typeof key[1] === "object") {
-          insertObjectkeys(object, key[0], name+'-'+key[0]);
-        } else {
-          var elems = content.querySelectorAll('[df-'+completname+'-'+key[0]+']');
-            for(var i = 0; i < elems.length; i++) {
-              elems[i].value = key[1];
-            }
-        }
-      });
+      if(object !== null) {
+        Object.entries(object).forEach(function (key, value) {
+          if(typeof key[1] === "object") {
+            insertObjectkeys(object, key[0], name+'-'+key[0]);
+          } else {
+            var elems = content.querySelectorAll('[df-'+completname+'-'+key[0]+']');
+              for(var i = 0; i < elems.length; i++) {
+                elems[i].value = key[1];
+              }
+          }
+        });
+      }
     }
     node.appendChild(inputs);
     node.appendChild(content);
@@ -1539,16 +1541,18 @@ export default class Drawflow {
       } else {
         var object = object[name]
       }
-      Object.entries(object).forEach(function (key, value) {
-        if(typeof key[1] === "object") {
-          insertObjectkeys(object, key[0], name+'-'+key[0]);
-        } else {
-          var elems = content.querySelectorAll('[df-'+completname+'-'+key[0]+']');
-            for(var i = 0; i < elems.length; i++) {
-              elems[i].value = key[1];
-            }
-        }
-      });
+      if(object !== null) {
+        Object.entries(object).forEach(function (key, value) {
+          if(typeof key[1] === "object") {
+            insertObjectkeys(object, key[0], name+'-'+key[0]);
+          } else {
+            var elems = content.querySelectorAll('[df-'+completname+'-'+key[0]+']');
+              for(var i = 0; i < elems.length; i++) {
+                elems[i].value = key[1];
+              }
+          }
+        });
+      }
     }
     node.appendChild(inputs);
     node.appendChild(content);
@@ -1637,16 +1641,18 @@ export default class Drawflow {
         } else {
           var object = object[name]
         }
-        Object.entries(object).forEach(function (key, value) {
-          if(typeof key[1] === "object") {
-            insertObjectkeys(object, key[0], name+'-'+key[0]);
-          } else {
-            var elems = content.querySelectorAll('[df-'+completname+'-'+key[0]+']');
-              for(var i = 0; i < elems.length; i++) {
-                elems[i].value = key[1];
-              }
-          }
-        });
+        if(object !== null) {
+          Object.entries(object).forEach(function (key, value) {
+            if(typeof key[1] === "object") {
+              insertObjectkeys(object, key[0], name+'-'+key[0]);
+            } else {
+              var elems = content.querySelectorAll('[df-'+completname+'-'+key[0]+']');
+                for(var i = 0; i < elems.length; i++) {
+                  elems[i].value = key[1];
+                }
+            }
+          });
+        }
       }
 
     }
