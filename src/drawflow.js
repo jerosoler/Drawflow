@@ -194,8 +194,9 @@ export default class Drawflow {
         this.contextmenuDel();
       }
 
-      if(e.target.closest(".drawflow_content_node") != null) {
-        this.ele_selected = e.target.closest(".drawflow_content_node").parentElement;
+	  // Closest element not output/input or connection, then select the node
+      if((e.target.closest(".output") == null && e.target.closest(".input") == null && e.target.closest(".connection") == null) && e.target.closest(".drawflow-node") != null) {
+        this.ele_selected = e.target.closest(".drawflow-node");
       }
     }
     switch (this.ele_selected.classList[0]) {
@@ -470,11 +471,12 @@ export default class Drawflow {
 
 
        } else {
-         // Fix connection;
-         var input_id = ele_last.parentElement.parentElement.id;
+         // Fix connection (get input node id if none)
+         var input_id = ele_last.closest('.drawflow-node').id;
          var input_class = ele_last.classList[1];
        }
-       var output_id = this.ele_selected.parentElement.parentElement.id;
+	   // Get ouput node id
+       var output_id = this.ele_selected.closest('.drawflow-node').id;
        var output_class = this.ele_selected.classList[1];
 
         if(output_id !== input_id && input_class !== false) {
@@ -555,7 +557,7 @@ export default class Drawflow {
     this.editor_selected = false;
   }
   
-  // Can be overriden inside typescript for example and do test on the back using a service
+  // Can be overriden with custom logic in order to constraint connection between outputs/inputs
   checkConnectionTypes(input_id, input_class, output_id, output_class) {
 	  return this.drawflow.drawflow[this.module].data[output_id].outputs[output_class].type == this.drawflow.drawflow[this.module].data[input_id].inputs[input_class].type;
   }
@@ -709,8 +711,10 @@ export default class Drawflow {
     connection.classList.add("connection");
     connection.appendChild(path);
     this.precanvas.appendChild(connection);
-    var id_output = ele.parentElement.parentElement.id.slice(5);
+	// Retrieve output node Id
+    var id_output = ele.closest('.drawflow-node').id.slice(5);
     var output_class = ele.classList[1];
+	// Apply same type to connection from 'output'
 	connection.setAttribute("type", this.drawflow.drawflow[this.module].data[id_output].outputs[output_class].type);
     this.dispatch('connectionStart', { output_id: id_output, output_class:  output_class });
 
@@ -768,7 +772,7 @@ export default class Drawflow {
 
         if(this.module === nodeOneModule) {
 			// Check type matches
-			if(this.drawflow.drawflow[this.module].data[id_output].outputs[output_class].type == this.drawflow.drawflow[this.module].data[id_input].inputs[input_class].type || !this.checkInOutType) {
+			if((this.checkInOutType && this.checkConnectionTypes(id_input, input_class, id_output, output_class)) || !this.checkInOutType) {
 				//Draw connection
 				var connection = document.createElementNS('http://www.w3.org/2000/svg',"svg");
 				var path = document.createElementNS('http://www.w3.org/2000/svg',"path");
@@ -780,15 +784,16 @@ export default class Drawflow {
 				connection.classList.add("node_out_node-"+id_output);
 				connection.classList.add(output_class);
 				connection.classList.add(input_class);
+				// Apply output type to connection
 				connection.setAttribute("type", this.drawflow.drawflow[this.module].data[id_output].outputs[output_class].type);
 				connection.appendChild(path);
 				
 				// Add "linked" style to both input/output element
-				  var output = document.querySelector('#node-'+id_output+' .'+output_class);
-				  if(output && !output.classList.contains('linked'))
+				var output = document.querySelector('#node-'+id_output+' .'+output_class);
+				if(output && !output.classList.contains('linked'))
 					output.classList.add("linked");
-				  var input = document.querySelector('#node-'+id_input+' .'+input_class);
-				  if(input && !input.classList.contains('linked'))
+				var input = document.querySelector('#node-'+id_input+' .'+input_class);
+				if(input && !input.classList.contains('linked'))
 					input.classList.add("linked");
 				
 				this.precanvas.appendChild(connection);
@@ -1376,8 +1381,33 @@ export default class Drawflow {
     });
     return nodes;
   }
-
+  
+  // DEPRECATED - please use the addNode below to use array of inputs/outputs and separated nodeContents
   addNode (name, num_in, num_out, ele_pos_x, ele_pos_y, classoverride, data, html, typenode = false) {
+	const json_inputs = [];
+    for(var x = 0; x < num_in; x++) {
+		json_inputs.push({'label' : '', 'type': undefined});
+    }
+
+    const json_outputs = [];
+    for(var x = 0; x < num_out; x++) {
+		json_outputs.push({'label' : '', 'type': undefined});
+    }
+	
+	const nodeContents = {};
+	nodeContents['headerContent'] = '';
+	nodeContents['html'] = html;
+	nodeContents['footerContent'] = '';
+	addNode(name, json_inputs, json_outputs, ele_pos_x, ele_pos_y, classoverride, data, nodeContents, typenode);
+  }
+
+  // New addNode that use array to define inputs/outputs + Array to defined individual node contents (header/middle content/footer)
+  // Inputs/Outputs data should be arrays using this data struct [{'keyname': 'test_input', 'label': '<p>Test input</p>', 'type': 'number'}, {...}]
+  // 'keyname' is a keyname that can be used for exemple to link a data value to an input inside the 'middle content' of the node
+  // 'label' is the label shown next to the input, 
+  // 'type' can be whatever you want in to order to constraint connections from output to input only to same type (see checkConnectionTypes() and checkInOutType bool)
+  // nodeContents should follow this data struct {'headerContent': '<p>Node title</p>', 'html': '<div>It s content</div>', 'footerContent': '<p>Node footer content</p>'}
+  addNode (name, inputsData, outputsData, ele_pos_x, ele_pos_y, classoverride, data, nodeContents, typenode = false) {
     if (this.useuuid) {
       var newNodeId = this.getUuid();
     } else {
@@ -1394,56 +1424,95 @@ export default class Drawflow {
       node.classList.add(classoverride);
     }
 
+	// HEADER - Can be used to define a node header
+	const nodeHeader = document.createElement('div');
+    nodeHeader.innerHTML = nodeContents.headerContent ? nodeContents.headerContent : "";
+	nodeHeader.classList.add("drawflow-node-header");
 
+	// CONTENT - flex column that contains inputs/outputs and content divs
+	const nodeContent = document.createElement('div');
+	nodeContent.classList.add("drawflow-node-content");
+
+	// Inputs div
     const inputs = document.createElement('div');
     inputs.classList.add("inputs");
 
+	// Outputs div
     const outputs = document.createElement('div');
     outputs.classList.add("outputs");
 
-
-
     const json_inputs = {}
-    for(var x = 0; x < num_in; x++) {
+    for(var x = 0; x < inputsData.length; x++) {
+	  const inputData = inputsData[x];
+	  // Input hook div
       const input = document.createElement('div');
       input.classList.add("input");
       input.classList.add("input_"+(x+1));
-      json_inputs["input_"+(x+1)] = { "connections": []};
+	  if(inputData.type != "")
+		  input.setAttribute("type", inputData.type);
+      json_inputs["input_"+(x+1)] = { "label": inputData.label, "type": inputData.type, "connections": []};
       inputs.appendChild(input);
+	  
+	  // Input label div
+	  const inputLabel = document.createElement('div');
+      inputLabel.classList.add("input-label");
+      inputLabel.classList.add("input-label_input_"+(x+1));
+	  if(inputData.type)
+		  inputLabel.setAttribute("type", inputData.type);
+	  if(inputData.label)
+		inputLabel.innerHTML = inputData.label;
+	  inputs.appendChild(inputLabel);
     }
 
     const json_outputs = {}
-    for(var x = 0; x < num_out; x++) {
+    for(var x = 0; x < outputsData.length; x++) {
+	  const outputData = outputsData[x];
+	  // Output label div
+	  const outputLabel = document.createElement('div');
+      outputLabel.classList.add("output-label");
+      outputLabel.classList.add("output-label_output_"+(x+1));
+	  if(outputData.type)
+		  outputLabel.setAttribute("type", outputData.type);
+	  if(outputData.label)
+		outputLabel.innerHTML = outputData.label;
+	  outputs.appendChild(outputLabel);
+	  
+	  // Output hook div
       const output = document.createElement('div');
       output.classList.add("output");
       output.classList.add("output_"+(x+1));
-      json_outputs["output_"+(x+1)] = { "connections": []};
+	  if(outputData.type)
+		  output.setAttribute("type", outputData.type);
+      json_outputs["output_"+(x+1)] = { "label": outputData.label, "type": outputData.type, "connections": []};
       outputs.appendChild(output);
     }
 
+    // Content in between inputs and outputs
     const content = document.createElement('div');
     content.classList.add("drawflow_content_node");
+	
     if(typenode === false) {
-      content.innerHTML = html;
+      content.innerHTML = nodeContents.html;
     } else if (typenode === true) {
-      content.appendChild(this.noderegister[html].html.cloneNode(true));
+      content.appendChild(this.noderegister[nodeContents.html].html.cloneNode(true));
     } else {
       if(parseInt(this.render.version) === 3 ) {
         //Vue 3
         let wrapper = this.render.createApp({
-          render: h => this.render.h(this.noderegister[html].html, this.noderegister[html].props, this.noderegister[html].options)
+          render: h => this.render.h(this.noderegister[nodeContents.html].html, this.noderegister[nodeContents.html].props, this.noderegister[nodeContents.html].options)
         }).mount(content)
       } else {
         // Vue 2
         let wrapper = new this.render({
-          render: h => h(this.noderegister[html].html, { props: this.noderegister[html].props }),
-          ...this.noderegister[html].options
+          render: h => h(this.noderegister[nodeContents.html].html, { props: this.noderegister[nodeContents.html].props }),
+          ...this.noderegister[nodeContents.html].options
         }).$mount()
         //
         content.appendChild(wrapper.$el);
       }
     }
 
+	// Handle any values that need to be assigned
     Object.entries(data).forEach(function (key, value) {
       if(typeof key[1] === "object") {
         insertObjectkeys(null, key[0], key[0]);
@@ -1454,7 +1523,6 @@ export default class Drawflow {
           }
       }
     })
-
     function insertObjectkeys(object, name, completname) {
       if(object === null) {
         var object = data[name];
@@ -1472,19 +1540,43 @@ export default class Drawflow {
         }
       });
     }
-    node.appendChild(inputs);
-    node.appendChild(content);
-    node.appendChild(outputs);
+	
+	// FOOTER - Can be used to define a node header
+	const nodeFooter = document.createElement('div');
+    nodeFooter.innerHTML = nodeContents.footerContent ? nodeContents.footerContent : "";
+	nodeFooter.classList.add("drawflow-node-footer");
+	
+	// Add header to node
+	node.appendChild(nodeHeader);
+	
+	// Add content to node
+	node.appendChild(nodeContent);
+	// Add inputs/ouputs and middle content to content div
+    nodeContent.appendChild(inputs);
+    nodeContent.appendChild(content);
+    nodeContent.appendChild(outputs);
+	
+	// Add footer to node
+	node.appendChild(nodeFooter);
+	
+	// Position node
     node.style.top = ele_pos_y + "px";
     node.style.left = ele_pos_x + "px";
+	
+	// Add node to parent-node div
     parent.appendChild(node);
+	// Add parent-node to drawflow div
     this.precanvas.appendChild(parent);
+	
+	// Save the node data in drawflow json
     var json = {
       id: newNodeId,
       name: name,
       data: data,
       class: classoverride,
-      html: html,
+	  headerContent: nodeContents.headerContent,
+      html: nodeContents.html,
+	  footerContent: nodeContents.footerContent,
       typenode: typenode,
       inputs: json_inputs,
       outputs: json_outputs,
@@ -1511,22 +1603,46 @@ export default class Drawflow {
       node.classList.add(dataNode.class);
     }
 
+	// HEADER - Can be used to define a node header
+	const nodeHeader = document.createElement('div');
+    nodeHeader.innerHTML = dataNode.headerContent ? dataNode.headerContent : "";
+	nodeHeader.classList.add("drawflow-node-header");
+
+	// CONTENT - flex column that contains inputs/outputs and content divs
+	const nodeContent = document.createElement('div');
+	nodeContent.classList.add("drawflow-node-content");
+
+	// Inputs div
     const inputs = document.createElement('div');
     inputs.classList.add("inputs");
 
+	// Outputs div
     const outputs = document.createElement('div');
     outputs.classList.add("outputs");
 
+	// Inputs parsing
     Object.keys(dataNode.inputs).map(function(input_item, index) {
+	  // Input hook div
       const input = document.createElement('div');
       input.classList.add("input");
       input.classList.add(input_item);
-	  if(dataNode.inputs[input_item].type != "")
+	  if(dataNode.inputs[input_item].type)
 		  input.setAttribute("type", dataNode.inputs[input_item].type);
 	  // Test is there is a connection then add the "linked" class
 	  if(dataNode.inputs[input_item].connections.length > 0)
 		  input.classList.add("linked");
       inputs.appendChild(input);
+	  
+	  // Input label div
+	  const inputLabel = document.createElement('div');
+      inputLabel.classList.add("input-label");
+      inputLabel.classList.add("input-label_input_"+(index));
+	  if(dataNode.inputs[input_item].type)
+		  inputLabel.setAttribute("type", dataNode.inputs[input_item].type);
+	  if(dataNode.inputs[input_item].label)
+		inputLabel.innerHTML = dataNode.inputs[input_item].label;
+	  inputs.appendChild(inputLabel);
+	  
       Object.keys(dataNode.inputs[input_item].connections).map(function(output_item, index) {
         var connection = document.createElementNS('http://www.w3.org/2000/svg',"svg");
         var path = document.createElementNS('http://www.w3.org/2000/svg',"path");
@@ -1545,23 +1661,43 @@ export default class Drawflow {
 
       });
     });
-	// Doing the same as for the inputs
+	// Add a dummy div to inputs to have min width on inputs grid
+	const inputDummy = document.createElement('div');
+	inputDummy.classList.add("input-dummy");
+	inputs.appendChild(inputDummy);
+	
+	// Outputs parsing
 	Object.keys(dataNode.outputs).map((function (output_item, i) {
+		// Output label div
+		const outputLabel = document.createElement('div');
+		outputLabel.classList.add("output-label");
+		outputLabel.classList.add("output-label_output_"+(i));
+		if(dataNode.outputs[output_item].type)
+			outputLabel.setAttribute("type", dataNode.outputs[output_item].type);
+		if(dataNode.outputs[output_item].label)
+			outputLabel.innerHTML = dataNode.outputs[output_item].label;
+		outputs.appendChild(outputLabel);
+		
+		// Output hook div
 		const output = document.createElement("div");
 		output.classList.add("output");
 		output.classList.add(output_item);
 		//Making sure to add the type
-		if(dataNode.outputs[output_item].type != "")
+		if(dataNode.outputs[output_item].type)
 			output.setAttribute("type", dataNode.outputs[output_item].type);
 		// Test is there is a connection then add the "linked" class
 		if(dataNode.outputs[output_item].connections.length > 0)
 			output.classList.add("linked");
 		outputs.appendChild(output);
 	}));
+	// Add a dummy div to outputs to have min width on outputs grid
+	const outputDummy = document.createElement('div');
+	outputDummy.classList.add("output-dummy");
+	outputs.appendChild(outputDummy);
 
+	// Content in between inputs and outputs
     const content = document.createElement('div');
     content.classList.add("drawflow_content_node");
-    //content.innerHTML = dataNode.html;
 
     if(dataNode.typenode === false) {
       content.innerHTML = dataNode.html;
@@ -1583,8 +1719,7 @@ export default class Drawflow {
       }
     }
 
-
-
+	// Handle any data values registered for this node
     Object.entries(dataNode.data).forEach(function (key, value) {
       if(typeof key[1] === "object") {
         insertObjectkeys(null, key[0], key[0]);
@@ -1595,7 +1730,6 @@ export default class Drawflow {
           }
       }
     })
-
     function insertObjectkeys(object, name, completname) {
       if(object === null) {
         var object = dataNode.data[name];
@@ -1613,12 +1747,32 @@ export default class Drawflow {
         }
       });
     }
-    node.appendChild(inputs);
-    node.appendChild(content);
-    node.appendChild(outputs);
+	
+	// FOOTER - Can be used to define a node header
+	const nodeFooter = document.createElement('div');
+    nodeFooter.innerHTML = dataNode.footerContent ? dataNode.footerContent : "";
+	nodeFooter.classList.add("drawflow-node-footer");
+	
+	// Add header to node
+	node.appendChild(nodeHeader);
+	
+	// Add content to node
+	node.appendChild(nodeContent);
+	// Add inputs/ouputs and middle content to content div
+    nodeContent.appendChild(inputs);
+    nodeContent.appendChild(content);
+    nodeContent.appendChild(outputs);
+	
+	// Add footer to node
+	node.appendChild(nodeFooter);
+	
+	// Move node to right positions
     node.style.top = dataNode.pos_y + "px";
     node.style.left = dataNode.pos_x + "px";
+	
+	// Add node to parent-node div
     parent.appendChild(node);
+	// Add parent-node to drawflow
     this.precanvas.appendChild(parent);
   }
 
@@ -1716,30 +1870,32 @@ export default class Drawflow {
   }
 
   addNodeInput(id) {
-      addNodeInput(id, undefined);
+    addNodeInput(id, undefined);
+  }
+  addNodeInput(id, type) {
+    addNodeInput(id, type, '');
+  }  
+  addNodeInput(id, type, label) {
+    var moduleName = this.getModuleFromNodeId(id)
+    const infoNode = this.getNodeFromId(id)
+    const numInputs = Object.keys(infoNode.inputs).length;
+    if(this.module === moduleName) {
+	  //Draw input
+	  const input = document.createElement('div');
+	  input.classList.add("input");
+	  input.classList.add("input_"+(numInputs+1));
+	  if(type)
+		  input.setAttribute("type", type);
+	  const parent = document.querySelector('#node-'+id+' .inputs');
+	  parent.appendChild(input);
+	  this.updateConnectionNodes('node-'+id);
     }
-    
-    addNodeInput(id, type) {
-      var moduleName = this.getModuleFromNodeId(id)
-      const infoNode = this.getNodeFromId(id)
-      const numInputs = Object.keys(infoNode.inputs).length;
-      if(this.module === moduleName) {
-        //Draw input
-        const input = document.createElement('div');
-        input.classList.add("input");
-        input.classList.add("input_"+(numInputs+1));
-        if(type)
-            input.setAttribute("type", type);
-        const parent = document.querySelector('#node-'+id+' .inputs');
-        parent.appendChild(input);
-        this.updateConnectionNodes('node-'+id);
-  
-      }
-      this.drawflow.drawflow[moduleName].data[id].inputs["input_"+(numInputs+1)] = {
-          "type": type,
-          "connections": []
-      };
-    }
+    this.drawflow.drawflow[moduleName].data[id].inputs["input_"+(numInputs+1)] = {
+	    "label": label,
+	    "type": type,
+	    "connections": []
+    };
+  }
   
   changeNodeInputType(module, node_id, input_class, newType) {
 	  this.drawflow.drawflow[module].data[node_id].inputs[input_class].type = newType;
@@ -1748,30 +1904,32 @@ export default class Drawflow {
   }
 
   addNodeOutput(id) {
-        addNodeOutput(id, undefined);
+      addNodeOutput(id, undefined);
+  }
+  addNodeOutput(id, type) {
+      addNodeOutput(id, type, '');
+  }
+  addNodeOutput(id, type, label) {
+    var moduleName = this.getModuleFromNodeId(id)
+    const infoNode = this.getNodeFromId(id)
+    const numOutputs = Object.keys(infoNode.outputs).length;
+    if(this.module === moduleName) {
+	  //Draw output
+	  const output = document.createElement('div');
+	  output.classList.add("output");
+	  output.classList.add("output_"+(numOutputs+1));
+	  if(type)
+		  output.setAttribute("type", type);
+	  const parent = document.querySelector('#node-'+id+' .outputs');
+	  parent.appendChild(output);
+	  this.updateConnectionNodes('node-'+id);
     }
-    
-    addNodeOutput(id, type) {
-      var moduleName = this.getModuleFromNodeId(id)
-      const infoNode = this.getNodeFromId(id)
-      const numOutputs = Object.keys(infoNode.outputs).length;
-      if(this.module === moduleName) {
-        //Draw output
-        const output = document.createElement('div');
-        output.classList.add("output");
-        output.classList.add("output_"+(numOutputs+1));
-        if(type)
-            output.setAttribute("type", type);
-        const parent = document.querySelector('#node-'+id+' .outputs');
-        parent.appendChild(output);
-        this.updateConnectionNodes('node-'+id);
-  
-      }
-      this.drawflow.drawflow[moduleName].data[id].outputs["output_"+(numOutputs+1)] = { 
-          "type": type,
-          "connections": []
-      };
-    }
+    this.drawflow.drawflow[moduleName].data[id].outputs["output_"+(numOutputs+1)] = { 
+		"label": label,
+		"type": type,
+		"connections": []
+    };
+  }
   
   changeNodeOutputType(module, node_id, output_class, newType) {
 	  this.drawflow.drawflow[module].data[node_id].outputs[output_class].type = newType;

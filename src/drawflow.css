@@ -19,17 +19,16 @@
 }
 
 .drawflow .drawflow-node {
-  display: flex;
-  align-items: center;
+  display: inline-flex;
+  flex-direction: column;
   position: absolute;
   background: cyan;
-  width: 160px;
   min-height: 40px;
   border-radius:4px;
   border: 2px solid black;
   color: black;
   z-index: 2;
-  padding: 15px;
+  min-width: 200px;
 }
 
 .drawflow .drawflow-node.selected {
@@ -39,8 +38,34 @@
   cursor: move;
 }
 
-.drawflow .drawflow-node .inputs, .drawflow .drawflow-node .outputs {
-  width: 0px;
+/* Collapse header over content */
+.drawflow .drawflow-node.collapsed-head .drawflow-node-header {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	display: grid;
+	align-items: center;
+	background-color: aqua;
+}
+
+.drawflow .drawflow-node .drawflow-node-content {
+	display: inline-flex;
+	flex-grow: 2;
+	max-width: 600px;
+}
+
+.drawflow .drawflow-node .inputs {
+	text-align: left;
+	padding: 10px 0 10px 0;
+	display: grid;
+	grid-template-columns: auto auto;
+}
+
+.drawflow .drawflow-node .outputs {
+	text-align: right;
+	padding: 10px 0 10px 0;
+	display: grid;
+	grid-template-columns: auto auto;
 }
 
 .drawflow .drawflow-node .drawflow_content_node {
@@ -48,8 +73,17 @@
   display: block;
 }
 
-.drawflow .drawflow-node .input, .drawflow .drawflow-node .output {
+.drawflow .drawflow-node .input-label, .drawflow .drawflow-node .output-label {
+  width: max-content;
+  z-index: 1;
+  padding-left: 5px;
+}
 
+.drawflow .drawflow-node .input-dummy, .drawflow .drawflow-node .output-dummy {
+	min-width: 15px;
+}
+
+.drawflow .drawflow-node .input, .drawflow .drawflow-node .output {
   position: relative;
   width: 20px;
   height: 20px;
@@ -62,12 +96,12 @@
 }
 
 .drawflow .drawflow-node .input {
-  left: -27px;
+  left: -10px;
   top: 2px;
   background: yellow;
 }
 .drawflow .drawflow-node .output {
-  right: -3px;
+  right: -10px;
   top: 2px;
 }
 
