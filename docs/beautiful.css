@@ -323,6 +323,25 @@ cursor: pointer;
   fill: #4ea9ff;
 }
 
+/* This aligns the input/content/output on top of the nodeHeader */
+.drawflow-node.collapsed-head .drawflow-node-header {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+}
+
+.drawflow-node.collapsed-head .title-box {
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.drawflow-node.collapsed-head .outputs,
+.drawflow-node.collapsed-head .inputs {
+    display: grid;
+    align-items: center;
+    min-height: 50px;
+}
 
 /* Modal */
 .modal {
