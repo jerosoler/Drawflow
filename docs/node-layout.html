@@ -1,0 +1,265 @@
+
+<!DOCTYPE html> 
+<html> 
+  
+<head> 
+    <title> 
+        Flexbox Node
+    </title> 
+  
+    <style>
+		.parent-node {
+			position: relative;
+		}
+		
+		.drawflow-node {
+			display: inline-flex;
+			flex-direction: column;
+			background-color: #ececec;
+			box-shadow: 10px 10px 10px black;
+			position: relative;
+		}
+		
+		.drawflow-node-header {
+			background-color: #a098ff;
+		}
+		
+		.drawflow-node-content {
+			display: flex;
+			flex-shrink: 2;
+			max-width: 600px;
+		}
+		
+		.inputs { 
+            background-color: #35cc27; 
+            color: white; 
+			margin: 6px;
+			text-align: left;
+			display: grid;
+			grid-template-columns: 5px auto;
+        } 
+
+		.inputs .input {
+			background-color: black;
+			height: 15px;
+			width: 15px;
+			border-radius: 30px;
+			position: relative;
+			left: -15px;
+		}
+		
+		.outputs .output {
+			background-color: red;
+			height: 15px;
+			width: 15px;
+			border-radius: 30px;
+			position: relative;
+			left: 5px;
+		}
+		
+        .drawflow_content_node { 
+            background-color: #6ba832; 
+            color: white;
+			margin: 6px;			
+        } 
+  
+        .outputs { 
+            background-color: green; 
+            color: white;
+			margin: 6px;
+			text-align: right;
+			display: grid;
+			grid-template-columns: auto 5px;
+        }
+		
+		.drawflow-node-footer {
+			flex-shrink: 2;
+		}
+		
+		/* Vertical Nodes Style */
+		.drawflow-node.vertical {
+			display: inline-flex;
+			flex-direction: row;
+		}
+		
+		.drawflow-node.vertical .drawflow-node-content {
+			display: flex;
+			flex-direction: column;
+			flex-shrink: 2;
+			max-width: 600px;
+		}
+		
+		.drawflow-node.vertical .inputs, .drawflow-node.vertical .outputs {
+			grid-template-columns: initial;
+			grid-auto-flow: column;
+			grid-template-rows: auto auto;
+		}
+		
+		.drawflow-node.vertical .input {
+			left: calc(50% - 8px);
+			top: -15px;
+		}
+		.drawflow-node.vertical .output {
+			left: calc(50% - 8px);
+			top: 15px;
+		}
+		
+		.drawflow-node.vertical .input-label, .drawflow-node.vertical .output-label {
+			text-align: center;
+		}
+		
+		/* Collapsed-head Style */
+		.drawflow-node.collapsed-head .drawflow-node-header {
+			position: absolute;
+			width: 100%;
+			height: 100%;
+			display: grid;
+			align-items: center;
+		}
+		
+		.drawflow-node.collapsed-head .inputs, .drawflow-node.collapsed-head .outputs {
+			position: relative;
+			align-items: center;
+		}
+    </style> 
+</head> 
+  
+<body> 
+    <center>
+		<h1>Classic node layout</h1>
+		<div class="parent-node">
+			<div class="drawflow-node">
+				<div class="drawflow-node-header">
+					<p>Node Header (.drawflow-node-header)</p>
+				</div>
+		  
+				<div class="drawflow-node-content">
+					<div class="inputs"> 
+						<div class="input"></div>
+						<div class="input-label"><label>Input1</label></div>
+						<div class="input"></div>
+						<div class="input-label"><label>Input2</label><input type="text"/></div>
+						<div class="input"></div>
+						<div class="input-label"><label>Input3<label><select><option>Test CB</option></select></div>
+						<div class="input"></div>
+						<div class="input-label"><label>Input4</label></div>
+					</div> 
+			  
+					<div class="drawflow_content_node"> 
+						(.drawflow_content_node)<br/><br/>
+						<p>Python is a dynamic, high level,  
+							open-source programming language.  
+							It is relatively a newer language 
+							in the world of programming  
+							languages and in AWS environment  
+							as well. This is the simplest  
+							language and beginners friendly.  
+						</p> 
+					</div> 
+			  
+					<div class="outputs">
+						<div class="output-label"><label>Output1</label></div>
+						<div class="output"></div>
+						<div class="output-label"><label>Output2</label></div>
+						<div class="output"></div>
+						<div class="output-label"><label>Output3WithBigName<label></div>
+						<div class="output"></div>
+						<div class="output-label"><label>Output4</label></div>
+						<div class="output"></div>						
+					</div>
+				</div>
+				
+				<div class="drawflow-node-footer">
+					<div>
+						Node Footer (.drawflow-node-footer)
+					</div>
+				</div>
+			</div>
+		</div>
+		<br/>
+		<h1>Vertical node layout example</h1>
+		<br/>
+		<div class="parent-node">
+			<div class="drawflow-node vertical">
+				<div class="drawflow-node-header">
+					<p>Node Header (.drawflow-node-header)</p>
+				</div>
+		  
+				<div class="drawflow-node-content">
+					<div class="inputs"> 
+						<div class="input"></div>
+						<div class="input-label"><label>Input1</label></div>
+						<div class="input"></div>
+						<div class="input-label"><label>Input2</label><input type="text"/></div>
+						<div class="input"></div>
+						<div class="input-label"><label>Input3<label><select><option>Test CB</option></select></div>
+						<div class="input"></div>
+						<div class="input-label"><label>Input4</label></div>
+					</div> 
+			  
+					<div class="drawflow_content_node"> 
+						(.drawflow_content_node)<br/><br/>
+						<p>Python is a dynamic, high level,  
+							open-source programming language.  
+							It is relatively a newer language 
+							in the world of programming  
+							languages and in AWS environment  
+							as well. This is the simplest  
+							language and beginners friendly.  
+						</p> 
+					</div> 
+			  
+					<div class="outputs">
+						<div class="output-label"><label>Output1</label></div>
+						<div class="output"></div>
+						<div class="output-label"><label>Output2</label></div>
+						<div class="output"></div>
+						<div class="output-label"><label>Output3WithBigName<label></div>
+						<div class="output"></div>
+						<div class="output-label"><label>Output4</label></div>
+						<div class="output"></div>						
+					</div>
+				</div>
+				
+				<div class="drawflow-node-footer">
+					<div>
+						Node Footer (.drawflow-node-footer)
+					</div>
+				</div>
+			</div>
+		</div>
+		<br/>
+		<h1>Collapsed classic node layout</h1>
+		<h2>Mean the header is on top of everything else (useful for small node)</h2>
+		<div class="parent-node">
+			<div class="drawflow-node collapsed-head">
+				<div class="drawflow-node-header">
+					<p>Node Header (.drawflow-node-header)</p>
+				</div>
+		  
+				<div class="drawflow-node-content">
+					<div class="inputs"> 
+						<div class="input"></div>
+						<div class="input-label"><label>Input1</label></div>
+					</div> 
+			  
+					<div class="drawflow_content_node"> 
+						(.drawflow_content_node)<br/><br/>
+						<p>Node Header (.drawflow-node-header) 
+						</p> 
+					</div> 
+			  
+					<div class="outputs"> 
+						<div class="output-label"><label>Output1</label></div>
+						<div class="output"></div>
+					</div> 
+				</div>
+				
+				<div class="drawflow-node-footer">
+				</div>
+			</div>
+		</div>
+    </center> 
+</body> 
+  
+</html> 
