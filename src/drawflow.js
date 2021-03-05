@@ -1892,8 +1892,19 @@ export default class Drawflow {
 	  input.classList.add("input_"+(numInputs+1));
 	  if(type)
 		  input.setAttribute("type", type);
+	  
+	  // Input label div
+	  const inputLabel = document.createElement('div');
+      inputLabel.classList.add("input-label");
+      inputLabel.classList.add("input-label_input_"+(numInputs+1));
+	  if(type)
+		  inputLabel.setAttribute("type", type);
+	  if(label)
+		inputLabel.innerHTML = label;
+	  
 	  const parent = document.querySelector('#node-'+id+' .inputs');
 	  parent.appendChild(input);
+	  parent.appendChild(inputLabel);
 	  this.updateConnectionNodes('node-'+id);
     }
     this.drawflow.drawflow[moduleName].data[id].inputs["input_"+(numInputs+1)] = {
@@ -1920,15 +1931,26 @@ export default class Drawflow {
     const infoNode = this.getNodeFromId(id)
     const numOutputs = Object.keys(infoNode.outputs).length;
     if(this.module === moduleName) {
-	  //Draw output
-	  const output = document.createElement('div');
-	  output.classList.add("output");
-	  output.classList.add("output_"+(numOutputs+1));
-	  if(type)
+		// Output label div
+		const outputLabel = document.createElement('div');
+		outputLabel.classList.add("output-label");
+		outputLabel.classList.add("output-label_output_"+(numOutputs+1));
+		if(type)
+			outputLabel.setAttribute("type", type);
+		if(label)
+			outputLabel.innerHTML = label;
+		
+		//Draw output
+		const output = document.createElement('div');
+		output.classList.add("output");
+		output.classList.add("output_"+(numOutputs+1));
+		if(type)
 		  output.setAttribute("type", type);
-	  const parent = document.querySelector('#node-'+id+' .outputs');
-	  parent.appendChild(output);
-	  this.updateConnectionNodes('node-'+id);
+	  
+		const parent = document.querySelector('#node-'+id+' .outputs');
+		parent.appendChild(outputLabel);
+		parent.appendChild(output);
+		this.updateConnectionNodes('node-'+id);
     }
     this.drawflow.drawflow[moduleName].data[id].outputs["output_"+(numOutputs+1)] = { 
 		"label": label,
