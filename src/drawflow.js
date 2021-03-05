@@ -1638,7 +1638,7 @@ export default class Drawflow {
 	  // Input label div
 	  const inputLabel = document.createElement('div');
       inputLabel.classList.add("input-label");
-      inputLabel.classList.add("input-label_input_"+(index));
+      inputLabel.classList.add("input-label_input_"+(index++));
 	  if(dataNode.inputs[input_item].type)
 		  inputLabel.setAttribute("type", dataNode.inputs[input_item].type);
 	  if(dataNode.inputs[input_item].label)
@@ -1673,7 +1673,7 @@ export default class Drawflow {
 		// Output label div
 		const outputLabel = document.createElement('div');
 		outputLabel.classList.add("output-label");
-		outputLabel.classList.add("output-label_output_"+(i));
+		outputLabel.classList.add("output-label_output_"+(i++));
 		if(dataNode.outputs[output_item].type)
 			outputLabel.setAttribute("type", dataNode.outputs[output_item].type);
 		if(dataNode.outputs[output_item].label)

@@ -54,18 +54,18 @@
 	max-width: 600px;
 }
 
-.drawflow .drawflow-node .inputs {
+.drawflow .drawflow-node .drawflow-node-content .inputs {
 	text-align: left;
 	padding: 10px 0 10px 0;
 	display: grid;
-	grid-template-columns: auto auto;
+	grid-template-columns: 15px auto;
 }
 
-.drawflow .drawflow-node .outputs {
+.drawflow .drawflow-node .drawflow-node-content .outputs {
 	text-align: right;
 	padding: 10px 0 10px 0;
 	display: grid;
-	grid-template-columns: auto auto;
+	grid-template-columns: auto 15px;
 }
 
 .drawflow .drawflow-node .drawflow_content_node {
@@ -73,10 +73,17 @@
   display: block;
 }
 
-.drawflow .drawflow-node .input-label, .drawflow .drawflow-node .output-label {
+.drawflow .drawflow-node .input-label {
   width: max-content;
   z-index: 1;
   padding-left: 5px;
+}
+
+.drawflow .drawflow-node .output-label {
+  width: max-content;
+  z-index: 1;
+  padding-right: 5px;
+  justify-self: end;
 }
 
 .drawflow .drawflow-node .input-dummy, .drawflow .drawflow-node .output-dummy {
