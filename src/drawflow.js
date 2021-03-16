@@ -757,6 +757,7 @@ export default class Drawflow {
     const idSearch = 'node_in_'+id;
     const idSearchOut = 'node_out_'+id;
     var line_path = this.line_path/2;
+    const container = this.container;
     const precanvas = this.precanvas;
     const curvature = this.curvature;
     const createCurvature = this.createCurvature;
@@ -770,17 +771,15 @@ export default class Drawflow {
     let precanvasHeightZoom = precanvas.clientHeight / (precanvas.clientHeight * zoom);
     precanvasHeightZoom = precanvasHeightZoom || 0;
 
-
-
-    const elemsOut = document.getElementsByClassName(idSearchOut);
+    const elemsOut = container.querySelectorAll(`.${idSearchOut}`);
 
     Object.keys(elemsOut).map(function(item, index) {
       if(elemsOut[item].querySelector('.point') === null) {
 
-        var elemtsearchId_out = document.getElementById(id);
+        var elemtsearchId_out = container.querySelector(`#${id}`);
 
         var id_search = elemsOut[item].classList[1].replace('node_in_', '');
-        var elemtsearchId = document.getElementById(id_search);
+        var elemtsearchId = container.querySelector(`#${id_search}`);
 
         var elemtsearch = elemtsearchId.querySelectorAll('.'+elemsOut[item].classList[4])[0]
 
@@ -788,7 +787,6 @@ export default class Drawflow {
         var eY = elemtsearch.offsetHeight/2 + line_path + elemtsearch.parentElement.parentElement.offsetTop + elemtsearch.offsetTop;*/
         var eX = elemtsearch.offsetWidth/2 + (elemtsearch.getBoundingClientRect().x - precanvas.getBoundingClientRect().x ) * precanvasWitdhZoom;
         var eY = elemtsearch.offsetHeight/2 + (elemtsearch.getBoundingClientRect().y - precanvas.getBoundingClientRect().y ) * precanvasHeightZoom;
-
 
         var elemtsearchOut = elemtsearchId_out.querySelectorAll('.'+elemsOut[item].classList[3])[0]
         /*var line_x = elemtsearchId_out.offsetLeft + elemtsearchId_out.querySelectorAll('.'+elemsOut[item].classList[3])[0].offsetLeft + elemtsearchId_out.querySelectorAll('.'+elemsOut[item].classList[3])[0].offsetWidth/2 + line_path;
@@ -815,7 +813,7 @@ export default class Drawflow {
         points.forEach((item, i) => {
           if(i === 0 && ((points.length -1) === 0)) {
             // M line_x line_y C hx1 line_y hx2 y x y
-            var elemtsearchId_out = document.getElementById(id);
+            var elemtsearchId_out = container.querySelector(`#${id}`);
             var elemtsearch = item;
 
             var eX =  (elemtsearch.getBoundingClientRect().x - precanvas.getBoundingClientRect().x ) * precanvasWitdhZoom + rerouteWidth;
@@ -840,9 +838,8 @@ export default class Drawflow {
             //var elemtsearchId_out = document.getElementById(id);
             var elemtsearchId_out = item;
             var id_search = item.parentElement.classList[1].replace('node_in_', '');
-            var elemtsearchId = document.getElementById(id_search);
+            var elemtsearchId = container.querySelector(`#${id_search}`);
             var elemtsearch = elemtsearchId.querySelectorAll('.'+item.parentElement.classList[4])[0]
-
 
             /*var eX = elemtsearch.offsetWidth/2 + line_path + elemtsearch.parentElement.parentElement.offsetLeft + elemtsearch.offsetLeft;
             var eY = elemtsearch.offsetHeight/2 + line_path + elemtsearch.parentElement.parentElement.offsetTop + elemtsearch.offsetTop;*/
@@ -869,7 +866,7 @@ export default class Drawflow {
             //console.log("Primero");
             // M line_x line_y C hx1 line_y hx2 y x y
             // FIRST
-            var elemtsearchId_out = document.getElementById(id);
+            var elemtsearchId_out = container.querySelector(`#${id}`);
             var elemtsearch = item;
 
             var eX = (elemtsearch.getBoundingClientRect().x - precanvas.getBoundingClientRect().x ) * precanvasWitdhZoom + rerouteWidth;
@@ -911,14 +908,12 @@ export default class Drawflow {
             linecurve += lineCurveSearch;
             reoute_fix.push(lineCurveSearch);
 
-
-
           } else if (i === (points.length -1)) {
             //console.log("Final");
             var elemtsearchId_out = item;
 
             var id_search = item.parentElement.classList[1].replace('node_in_', '');
-            var elemtsearchId = document.getElementById(id_search);
+            var elemtsearchId = container.querySelector(`#${id_search}`);
             var elemtsearch = elemtsearchId.querySelectorAll('.'+item.parentElement.classList[4])[0]
 
             /*var eX = elemtsearch.offsetWidth/2 + line_path + elemtsearch.parentElement.parentElement.offsetLeft + elemtsearch.offsetLeft;
@@ -973,15 +968,14 @@ export default class Drawflow {
       }
     })
 
-    const elems = document.getElementsByClassName(idSearch);
+    const elems = container.querySelectorAll(`.${idSearch}`);
     Object.keys(elems).map(function(item, index) {
       // console.log("In")
       if(elems[item].querySelector('.point') === null) {
-        var elemtsearchId_in = document.getElementById(id);
+        var elemtsearchId_in = container.querySelector(`#${id}`);
 
         var id_search = elems[item].classList[2].replace('node_out_', '');
-        var elemtsearchId = document.getElementById(id_search);
-
+        var elemtsearchId = container.querySelector(`#${id_search}`);
         var elemtsearch = elemtsearchId.querySelectorAll('.'+elems[item].classList[3])[0]
 
         /*var line_x = elemtsearch.offsetWidth/2 + line_path + elemtsearch.parentElement.parentElement.offsetLeft + elemtsearch.offsetLeft;
@@ -989,7 +983,6 @@ export default class Drawflow {
 
         var line_x = elemtsearch.offsetWidth/2 + (elemtsearch.getBoundingClientRect().x - precanvas.getBoundingClientRect().x ) * precanvasWitdhZoom;
         var line_y = elemtsearch.offsetHeight/2 + (elemtsearch.getBoundingClientRect().y - precanvas.getBoundingClientRect().y ) * precanvasHeightZoom;
-
 
         /*var x = elemtsearchId_in.offsetLeft + elemtsearchId_in.querySelectorAll('.'+elems[item].classList[4])[0].offsetLeft + elemtsearchId_in.querySelectorAll('.'+elems[item].classList[4])[0].offsetWidth/2 + line_path;
         var y = elemtsearchId_in.offsetTop + elemtsearchId_in.querySelectorAll('.'+elems[item].classList[4])[0].offsetTop + elemtsearchId_in.querySelectorAll('.'+elems[item].classList[4])[0].offsetHeight/2 + line_path;*/
@@ -1013,12 +1006,11 @@ export default class Drawflow {
         points.forEach((item, i) => {
           if(i === 0 && ((points.length -1) === 0)) {
             // M line_x line_y C hx1 line_y hx2 y x y
-            var elemtsearchId_out = document.getElementById(id);
+            var elemtsearchId_out = container.querySelector(`#${id}`);
             var elemtsearch = item;
 
             var line_x = (elemtsearch.getBoundingClientRect().x - precanvas.getBoundingClientRect().x ) * precanvasWitdhZoom + rerouteWidth;
             var line_y = (elemtsearch.getBoundingClientRect().y - precanvas.getBoundingClientRect().y ) * precanvasHeightZoom +rerouteWidth;
-
 
             var elemtsearchIn = elemtsearchId_out.querySelectorAll('.'+item.parentElement.classList[4])[0]
             var eX =  elemtsearchIn.offsetWidth/2 + (elemtsearchIn.getBoundingClientRect().x - precanvas.getBoundingClientRect().x ) * precanvasWitdhZoom;
@@ -1040,9 +1032,8 @@ export default class Drawflow {
 
             //var elemtsearchId_out = document.getElementById(id);
             var elemtsearchId_out = item;
-
             var id_search = item.parentElement.classList[2].replace('node_out_', '');
-            var elemtsearchId = document.getElementById(id_search);
+            var elemtsearchId = container.querySelector(`#${id_search}`);
             var elemtsearch = elemtsearchId.querySelectorAll('.'+item.parentElement.classList[3])[0]
 
             /*var line_x = elemtsearch.offsetWidth/2 + line_path + elemtsearch.parentElement.parentElement.offsetLeft + elemtsearch.offsetLeft;
@@ -1070,7 +1061,7 @@ export default class Drawflow {
             // FIRST
             var elemtsearchId_out = item;
             var id_search = item.parentElement.classList[2].replace('node_out_', '');
-            var elemtsearchId = document.getElementById(id_search);
+            var elemtsearchId = container.querySelector(`#${id_search}`);
             var elemtsearch = elemtsearchId.querySelectorAll('.'+item.parentElement.classList[3])[0]
 
             /*var line_x = elemtsearch.offsetWidth/2 + line_path + elemtsearch.parentElement.parentElement.offsetLeft + elemtsearch.offsetLeft;
@@ -1117,7 +1108,7 @@ export default class Drawflow {
             var elemtsearchId_out = item;
 
             var id_search = item.parentElement.classList[1].replace('node_in_', '');
-            var elemtsearchId = document.getElementById(id_search);
+            var elemtsearchId = container.querySelector(`#${id_search}`);
             var elemtsearch = elemtsearchId.querySelectorAll('.'+item.parentElement.classList[4])[0]
 
             /*var eX = elemtsearch.offsetWidth/2 + line_path + elemtsearch.parentElement.parentElement.offsetLeft + elemtsearch.offsetLeft;
@@ -1174,7 +1165,6 @@ export default class Drawflow {
       }
     })
   }
-
 
   dblclick(e) {
     if(this.connection_selected != null && this.reroute) {
@@ -1836,16 +1826,13 @@ export default class Drawflow {
     });
 
     this.updateConnectionNodes('node-'+id);
-
   }
-
-
 
   removeNodeId(id) {
     this.removeConnectionNodeId(id);
     var moduleName = this.getModuleFromNodeId(id.slice(5))
     if(this.module === moduleName) {
-      document.getElementById(id).remove();
+      this.container.querySelector(`#${id}`).remove();
     }
     delete this.drawflow.drawflow[moduleName].data[id.slice(5)];
     this.dispatch('nodeRemoved', id.slice(5));
@@ -1912,7 +1899,7 @@ export default class Drawflow {
     const idSearchIn = 'node_in_'+id;
     const idSearchOut = 'node_out_'+id;
 
-    const elemsOut = document.getElementsByClassName(idSearchOut);
+    const elemsOut = this.container.querySelectorAll(`.${idSearchOut}`);
     for(var i = elemsOut.length-1; i >= 0; i--) {
       var listclass = elemsOut[i].classList;
 
@@ -1931,7 +1918,7 @@ export default class Drawflow {
       this.dispatch('connectionRemoved', { output_id: listclass[2].slice(14), input_id: listclass[1].slice(13), output_class: listclass[3], input_class: listclass[4] } );
     }
 
-    const elemsIn = document.getElementsByClassName(idSearchIn);
+    const elemsIn = this.container.querySelectorAll(`.${idSearchIn}`);
     for(var i = elemsIn.length-1; i >= 0; i--) {
 
       var listclass = elemsIn[i].classList;
