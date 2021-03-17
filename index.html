@@ -7,7 +7,7 @@
   <title>Drawflow</title>
 </head>
 <body>
-  <script src="drawflow.min.js"></script>
+  <script src="dist/drawflow.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/js/all.min.js" integrity="sha256-KzZiKy0DWYsnwMF+X1DvQngQ2/FxF7MF3Ff72XcpuPs=" crossorigin="anonymous"></script>
   <link rel="stylesheet" type="text/css" href="src/drawflow.css" />
   <link rel="stylesheet" type="text/css" href="docs/beautiful.css" />

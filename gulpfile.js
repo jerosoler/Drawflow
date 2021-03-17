@@ -1,30 +1,24 @@
 const gulp = require('gulp');
-const minify = require('gulp-minify');
 const concat = require('gulp-concat');
 const minifyCSS = require('gulp-minify-css');
+const replace = require('gulp-replace');
 
-
-
-/*
-gulp.task('js', done => {
-   return gulp.src('src/*.js')
-  .pipe(minify({noSource: true}))
-  .pipe(concat('drawflow.min.js'))
+gulp.task('style', () => {
+  return gulp.src('dist/drawflow.min.css')
+  .pipe(replace(/^(.*)$/, 'import {css} from "lit-element"; export const style = css`$1`;'))
+  .pipe(concat('drawflow.style.js'))
   .pipe(gulp.dest('dist/'))
-
 });
-*/
 
-
-gulp.task('css', done => {
+gulp.task('css', () => {
   return gulp.src('src/*.css')
   .pipe(minifyCSS())
   .pipe(concat('drawflow.min.css'))
   .pipe(gulp.dest('dist/'))
 });
 
-gulp.task('default', gulp.parallel(
-        /*'js',*/
-        'css'
+gulp.task('default', gulp.series(
+    'css', 
+    'style'
   )
 );

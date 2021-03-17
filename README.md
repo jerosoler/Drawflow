@@ -387,7 +387,8 @@ Example of exported data:
 ```
 
 ## Example
-View the complete example in folder [docs](https://github.com/jerosoler/Drawflow/tree/master/docs).
+View the complete example in folder [docs](https://github.com/jerosoler/Drawflow/tree/master/docs).  
+There is also an [example](docs/drawflow-element.html) how to use Drawflow in a custom element. (based on [LitElement](https://lit-element.polymer-project.org)).  
 
 ## License
 MIT License
