@@ -4,7 +4,7 @@
   "description": "Simple flow library",
   "main": "dist/drawflow.min.js",
   "scripts": {
-    "dev": "es-dev-server --app-index index.html --node-resolve --open",
+    "dev": "webpack-dev-server --mode development --open --host 0.0.0.0",
     "build": "webpack --mode=production && gulp",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -40,7 +40,6 @@
     "webpack-cli": "^3.3.11"
   },
   "dependencies": {
-    "lit-element": "^2.4.0",
     "webpack": "^4.42.1"
   }
 }
