@@ -181,7 +181,7 @@ export default class Drawflow {
     this.dispatch('click', e);
     if(this.editor_mode === 'fixed') {
       //return false;
-       if(e.target.classList[0] === 'parent-drawflow' || e.target.classList[0] === 'drawflow') {
+       if(e.target.matches('.parent-drawflow') || e.target.matches('.drawflow')) {
          this.ele_selected = e.target.closest(".parent-drawflow");
        } else {
          return false;
@@ -198,7 +198,8 @@ export default class Drawflow {
         this.ele_selected = e.target.closest(".drawflow_content_node").parentElement;
       }
     }
-    switch (this.ele_selected.classList[0]) {
+    for (let element of this.ele_selected.classList.values()) {
+      switch (element) {
       case 'drawflow-node':
         if(this.node_selected != null) {
           this.node_selected.classList.remove("selected");
@@ -313,6 +314,7 @@ export default class Drawflow {
 
       break;
       default:
+    }
     }
     if (e.type === "touchstart") {
       this.pos_x = e.touches[0].clientX;
