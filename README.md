@@ -48,7 +48,7 @@ Installing only a javascript library and with four lines of code.
 - Zoom in / out
 - Clear data module
 - Support modules
-- Editor mode `fixed` and `edit`
+- Editor mode `edit`, `fixed` or `view`
 - Import / Export data
 - Events
 - Mobile support
@@ -162,7 +162,7 @@ Parameter | Type | Default | Description
 `reroute_width` | Number | 6 | Width of reroute
 `line_path` | Number | 5 | Width of line
 `force_first_input` | Boolean | false | Force the first input to drop the connection on top of the node
-`editor_mode` | Text | `edit` | `edit` or `fixed` mode
+`editor_mode` | Text | `edit` | `edit` for edit, `fixed` for nodes fixed but their input fields available, `view` for view only
 `zoom` | Number | 1 | Default zoom
 `zoom_max` | Number | 1.6 | Default zoom max
 `zoom_min` | Number | 0.5 | Default zoom min
