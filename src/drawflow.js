@@ -186,7 +186,11 @@ export default class Drawflow {
        } else {
          return false;
        }
-
+    } else if(this.editor_mode === 'view') {
+      if(e.target.closest(".drawflow") != null || e.target.matches('.parent-drawflow')) {
+        this.ele_selected = e.target.closest(".parent-drawflow");
+        e.preventDefault();
+      }
     } else {
       this.first_click = e.target;
       this.ele_selected = e.target;
@@ -526,7 +530,7 @@ export default class Drawflow {
   contextmenu(e) {
     this.dispatch('contextmenu', e);
     e.preventDefault();
-    if(this.editor_mode === 'fixed') {
+    if(this.editor_mode === 'fixed' || this.editor_mode === 'view') {
       return false;
     }
     if(this.precanvas.getElementsByClassName("drawflow-delete").length) {
@@ -559,7 +563,7 @@ export default class Drawflow {
 
   key(e) {
     this.dispatch('keydown', e);
-    if(this.editor_mode === 'fixed') {
+    if(this.editor_mode === 'fixed' || this.editor_mode === 'view') {
       return false;
     }
     if (e.key === 'Delete' || (e.key === 'Backspace' && e.metaKey)) {
