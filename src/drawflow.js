@@ -1405,7 +1405,7 @@ export default class Drawflow {
       if(object !== null) {
         Object.entries(object).forEach(function (key, value) {
           if(typeof key[1] === "object") {
-            insertObjectkeys(object, key[0], name+'-'+key[0]);
+            insertObjectkeys(object, key[0], completname+'-'+key[0]);
           } else {
             var elems = content.querySelectorAll('[df-'+completname+'-'+key[0]+']');
               for(var i = 0; i < elems.length; i++) {
@@ -1436,7 +1436,7 @@ export default class Drawflow {
     }
     this.drawflow.drawflow[this.module].data[newNodeId] = json;
     this.dispatch('nodeCreated', newNodeId);
-    if (!this.useuuid) { 
+    if (!this.useuuid) {
       this.nodeId++;
     }
     return newNodeId;
@@ -1538,7 +1538,7 @@ export default class Drawflow {
       if(object !== null) {
         Object.entries(object).forEach(function (key, value) {
           if(typeof key[1] === "object") {
-            insertObjectkeys(object, key[0], name+'-'+key[0]);
+            insertObjectkeys(object, key[0], completname+'-'+key[0]);
           } else {
             var elems = content.querySelectorAll('[df-'+completname+'-'+key[0]+']');
               for(var i = 0; i < elems.length; i++) {
@@ -1638,7 +1638,7 @@ export default class Drawflow {
         if(object !== null) {
           Object.entries(object).forEach(function (key, value) {
             if(typeof key[1] === "object") {
-              insertObjectkeys(object, key[0], name+'-'+key[0]);
+              insertObjectkeys(object, key[0], completname+'-'+key[0]);
             } else {
               var elems = content.querySelectorAll('[df-'+completname+'-'+key[0]+']');
                 for(var i = 0; i < elems.length; i++) {
@@ -2054,7 +2054,7 @@ export default class Drawflow {
            listener(details);
        });
    }
-   
+
     getUuid() {
         // http://www.ietf.org/rfc/rfc4122.txt
         var s = [];
@@ -2069,5 +2069,5 @@ export default class Drawflow {
         var uuid = s.join("");
         return uuid;
     }
-    
+
 }
