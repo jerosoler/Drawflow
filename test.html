@@ -111,6 +111,7 @@
   testNode.innerHTML = 'Hola caracola <input type="text" df-name>';
 
   const datatest = {
+          level0: 'test0',
           level1: {
            name1: 'TEST 1',
            level2: {
@@ -122,6 +123,7 @@
           }
          }
          const htmltest = `
+         <input type="text" df-level0>
          <input type="text" df-level1-name1>
          <input type="text" df-level1-level2-name2>
          <input type="text" df-level1-level2-level3-name3>

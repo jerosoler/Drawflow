@@ -1604,11 +1604,18 @@ export default class Drawflow {
 
   updateNodeValue(event) {
     var attr = event.target.attributes
-    for(var i= 0; i < attr.length; i++) {
-      if(attr[i].nodeName.startsWith('df-')) {
-        this.drawflow.drawflow[this.module].data[event.target.closest(".drawflow_content_node").parentElement.id.slice(5)].data[attr[i].nodeName.slice(3)] = event.target.value;
-      }
-
+    for (var i = 0; i < attr.length; i++) {
+            if (attr[i].nodeName.startsWith('df-')) {
+                var keys = attr[i].nodeName.slice(3).split("-");
+                var target = this.drawflow.drawflow[this.module].data[event.target.closest(".drawflow_content_node").parentElement.id.slice(5)].data;
+                for (var index = 0; index < keys.length - 1; index += 1) {
+                    if (target[keys[index]] == null) {
+                        target[keys[index]] = {};
+                    }
+                    target = target[keys[index]];
+                }
+                target[keys[keys.length - 1]] = event.target.value;
+          }
     }
   }
 
