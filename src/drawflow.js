@@ -485,13 +485,26 @@ export default class Drawflow {
 
           if(this.container.querySelectorAll('.connection.node_in_'+input_id+'.node_out_'+output_id+'.'+output_class+'.'+input_class).length === 0) {
           // Conection no exist save connection
+          var path_id = output_id+"_"+input_id+"_edge";			
 
+          this.connection_ele.childNodes[0].setAttributeNS(null, 'id', path_id);
           this.connection_ele.classList.add("node_in_"+input_id);
           this.connection_ele.classList.add("node_out_"+output_id);
           this.connection_ele.classList.add(output_class);
           this.connection_ele.classList.add(input_class);
           var id_input = input_id.slice(5);
           var id_output = output_id.slice(5);
+
+          /* Add text placeholder */
+          var text = document.createElementNS('http://www.w3.org/2000/svg', "text");
+          var textPath = document.createElementNS('http://www.w3.org/2000/svg', "textPath");		  			
+          textPath.setAttributeNS(null, 'startOffset', '50%');
+          textPath.setAttributeNS(null, 'text-anchor', 'middle');		  
+          textPath.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", "#"+path_id);
+          textPath.setAttributeNS(null, "id", path_id+"_text");	
+          text.setAttributeNS(null, "dy", -10);
+          text.appendChild(textPath);
+          this.connection_ele.appendChild(text);
 
           this.drawflow.drawflow[this.module].data[id_output].outputs[output_class].connections.push( {"node": id_input, "output": input_class});
           this.drawflow.drawflow[this.module].data[id_input].inputs[input_class].connections.push( {"node": id_output, "input": output_class});
@@ -713,7 +726,23 @@ export default class Drawflow {
 
   }
 
-  addConnection(id_output, id_input, output_class, input_class) {
+  updateConnectionText(id_output, id_input, output_class, input_class, value) {
+	var edgeText = document.getElementById("node-"+id_output+"_node-"+id_input+"_edge_text");	 
+	var data = document.createTextNode(value);
+	edgeText.appendChild(data);					 	 
+	 
+	this.drawflow.drawflow[this.module].data[id_output].outputs[output_class].connections[0].text = value;	 
+	this.drawflow.drawflow[this.module].data[id_input].inputs[input_class].connections[0].text = value;
+  }
+  
+  updateConnectionType(id_output, id_input, output_class, input_class, value) {
+	var edge = document.getElementById("node-"+id_output+"_node-"+id_input+"_edge");	
+	edge.classList.add(value);	 
+	this.drawflow.drawflow[this.module].data[id_output].outputs[output_class].connections[0].type = value
+	this.drawflow.drawflow[this.module].data[id_input].inputs[input_class].connections[0].type = value;	  
+  }
+  
+  addConnection(id_output, id_input, output_class, input_class, path_classes="", path_text="") {
     var nodeOneModule = this.getModuleFromNodeId(id_output);
     var nodeTwoModule = this.getModuleFromNodeId(id_input);
     if(nodeOneModule === nodeTwoModule) {
@@ -744,7 +773,30 @@ export default class Drawflow {
           connection.classList.add("node_out_node-"+id_output);
           connection.classList.add(output_class);
           connection.classList.add(input_class);
+		  
+          if(path_text != null && path_text != "") {	
+            connection.classList.add(path_classes);
+          }
+		  
           connection.appendChild(path);
+		  	  
+          if(path_text != null && path_text != "") {			
+            /* Add text placeholder */
+            var path_id = id_output+"_"+id_input+"_edge";	
+            var text = document.createElementNS('http://www.w3.org/2000/svg', "text");
+            var textPath = document.createElementNS('http://www.w3.org/2000/svg', "textPath");		  			
+            textPath.setAttributeNS(null, 'startOffset', '50%');
+            textPath.setAttributeNS(null, 'text-anchor', 'middle');		  
+            textPath.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", "#"+path_id);
+            textPath.setAttributeNS(null, "id", path_id+"_text");	
+            text.setAttributeNS(null, "dy", -10);			
+            var data = document.createTextNode(path_text);
+            textPath.appendChild(data);
+            text.appendChild(textPath);
+            connection.appendChild(text);			
+          }
+		  
+		  
           this.precanvas.appendChild(connection);
           this.updateConnectionNodes('node-'+id_output);
           this.updateConnectionNodes('node-'+id_input);
@@ -1469,8 +1521,11 @@ export default class Drawflow {
 
         var connection = document.createElementNS('http://www.w3.org/2000/svg',"svg");
         var path = document.createElementNS('http://www.w3.org/2000/svg',"path");
+        var path_id = "node-"+dataNode.id+"_"+"node-"+dataNode.inputs[input_item].connections[output_item].node+"_edge";		
         path.classList.add("main-path");
         path.setAttributeNS(null, 'd', '');
+        path.classList.add(dataNode.inputs[input_item].connections[output_item].type);
+        path.setAttributeNS(null, 'id', path_id);
         // path.innerHTML = 'a';
         connection.classList.add("connection");
         connection.classList.add("node_in_node-"+dataNode.id);
@@ -1479,6 +1534,20 @@ export default class Drawflow {
         connection.classList.add(input_item);
 
         connection.appendChild(path);
+
+        var text = document.createElementNS('http://www.w3.org/2000/svg', "text");
+        var textPath = document.createElementNS('http://www.w3.org/2000/svg', "textPath");		  			
+        textPath.setAttributeNS(null, 'startOffset', '50%');
+        textPath.setAttributeNS(null, 'text-anchor', 'middle');		  
+        textPath.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", "#"+path_id);
+        textPath.setAttributeNS(null, "id", path_id+"_text");	
+        text.setAttributeNS(null, "dy", -10);			
+        var data = document.createTextNode(dataNode.inputs[input_item].connections[output_item].text);
+        textPath.appendChild(data);
+        text.appendChild(textPath);
+        connection.appendChild(text);
+        	
+        
         precanvas.appendChild(connection);
 
       });
