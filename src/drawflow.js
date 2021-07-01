@@ -1369,20 +1369,20 @@ export default class Drawflow {
     } else if (typenode === true) {
       content.appendChild(this.noderegister[html].html.cloneNode(true));
     } else {
+      let wrapper
       if(parseInt(this.render.version) === 3 ) {
         //Vue 3
-        let wrapper = this.render.createApp({
+        wrapper = this.render.createApp({
           render: h => this.render.h(this.noderegister[html].html, this.noderegister[html].props, this.noderegister[html].options)
         }).mount(content)
       } else {
         // Vue 2
-        let wrapper = new this.render({
+        wrapper = new this.render({
           render: h => h(this.noderegister[html].html, { props: this.noderegister[html].props }),
           ...this.noderegister[html].options
         }).$mount()
-        //
-        content.appendChild(wrapper.$el);
       }
+      content.appendChild(wrapper.$el);
     }
 
     Object.entries(data).forEach(function (key, value) {
