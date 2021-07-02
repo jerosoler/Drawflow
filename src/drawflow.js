@@ -1560,7 +1560,7 @@ export default class Drawflow {
   addRerouteImport(dataNode) {
     const reroute_width = this.reroute_width
     const reroute_fix_curvature = this.reroute_fix_curvature
-
+    const container = this.container;
     Object.keys(dataNode.outputs).map(function(output_item, index) {
       Object.keys(dataNode.outputs[output_item].connections).map(function(input_item, index) {
         const points = dataNode.outputs[output_item].connections[input_item].points
@@ -1570,7 +1570,7 @@ export default class Drawflow {
             const input_id = dataNode.outputs[output_item].connections[input_item].node;
             const input_class = dataNode.outputs[output_item].connections[input_item].output;
             //console.log('.connection.node_in_'+input_id+'.node_out_'+dataNode.id+'.'+output_item+'.'+input_class);
-            const ele = document.querySelector('.connection.node_in_node-'+input_id+'.node_out_node-'+dataNode.id+'.'+output_item+'.'+input_class);
+            const ele = container.querySelector('.connection.node_in_node-'+input_id+'.node_out_node-'+dataNode.id+'.'+output_item+'.'+input_class);
 
             if(reroute_fix_curvature) {
               if(i === 0) {
@@ -1623,7 +1623,7 @@ export default class Drawflow {
     var moduleName = this.getModuleFromNodeId(id)
     this.drawflow.drawflow[moduleName].data[id].data = data;
     if(this.module === moduleName) {
-      const content = document.querySelector('#node-'+id);
+      const content = this.container.querySelector('#node-'+id);
 
       Object.entries(data).forEach(function (key, value) {
         if(typeof key[1] === "object") {
@@ -1668,7 +1668,7 @@ export default class Drawflow {
       const input = document.createElement('div');
       input.classList.add("input");
       input.classList.add("input_"+(numInputs+1));
-      const parent = document.querySelector('#node-'+id+' .inputs');
+      const parent = this.container.querySelector('#node-'+id+' .inputs');
       parent.appendChild(input);
       this.updateConnectionNodes('node-'+id);
 
@@ -1685,7 +1685,7 @@ export default class Drawflow {
       const output = document.createElement('div');
       output.classList.add("output");
       output.classList.add("output_"+(numOutputs+1));
-      const parent = document.querySelector('#node-'+id+' .outputs');
+      const parent = this.container.querySelector('#node-'+id+' .outputs');
       parent.appendChild(output);
       this.updateConnectionNodes('node-'+id);
 
@@ -1697,7 +1697,7 @@ export default class Drawflow {
     var moduleName = this.getModuleFromNodeId(id)
     const infoNode = this.getNodeFromId(id)
     if(this.module === moduleName) {
-      document.querySelector('#node-'+id+' .inputs .input.'+input_class).remove();
+      this.container.querySelector('#node-'+id+' .inputs .input.'+input_class).remove();
     }
     const removeInputs = [];
     Object.keys(infoNode.inputs[input_class].connections).map(function(key, index) {
@@ -1731,7 +1731,7 @@ export default class Drawflow {
     nodeUpdates = Array.from(nodeUpdates).map(e => JSON.parse(e));
 
     if(this.module === moduleName) {
-      const eles = document.querySelectorAll("#node-"+id +" .inputs .input");
+      const eles = this.container.querySelectorAll("#node-"+id +" .inputs .input");
       eles.forEach((item, i) => {
         const id_class = item.classList[1].slice(6);
         if(parseInt(input_class_id) < parseInt(id_class)) {
@@ -1748,7 +1748,7 @@ export default class Drawflow {
             const output_id = itemz.output.slice(6);
             if(parseInt(input_class_id) < parseInt(output_id)) {
               if(this.module === moduleName) {
-                const ele = document.querySelector(".connection.node_in_node-"+id+".node_out_node-"+itemx.node+"."+itemx.input+".input_"+output_id);
+                const ele = this.container.querySelector(".connection.node_in_node-"+id+".node_out_node-"+itemx.node+"."+itemx.input+".input_"+output_id);
                 ele.classList.remove('input_'+output_id);
                 ele.classList.add('input_'+(output_id-1));
               }
@@ -1768,7 +1768,7 @@ export default class Drawflow {
     var moduleName = this.getModuleFromNodeId(id)
     const infoNode = this.getNodeFromId(id)
     if(this.module === moduleName) {
-      document.querySelector('#node-'+id+' .outputs .output.'+output_class).remove();
+      this.container.querySelector('#node-'+id+' .outputs .output.'+output_class).remove();
     }
     const removeOutputs = [];
     Object.keys(infoNode.outputs[output_class].connections).map(function(key, index) {
@@ -1802,7 +1802,7 @@ export default class Drawflow {
     nodeUpdates = Array.from(nodeUpdates).map(e => JSON.parse(e));
 
     if(this.module === moduleName) {
-      const eles = document.querySelectorAll("#node-"+id +" .outputs .output");
+      const eles = this.container.querySelectorAll("#node-"+id +" .outputs .output");
       eles.forEach((item, i) => {
         const id_class = item.classList[1].slice(7);
         if(parseInt(output_class_id) < parseInt(id_class)) {
@@ -1820,7 +1820,7 @@ export default class Drawflow {
             if(parseInt(output_class_id) < parseInt(input_id)) {
               if(this.module === moduleName) {
 
-                const ele = document.querySelector(".connection.node_in_node-"+itemx.node+".node_out_node-"+id+".output_"+input_id+"."+itemx.output);
+                const ele = this.container.querySelector(".connection.node_in_node-"+itemx.node+".node_out_node-"+id+".output_"+input_id+"."+itemx.output);
                 ele.classList.remove('output_'+input_id);
                 ele.classList.remove(itemx.output);
                 ele.classList.add('output_'+(input_id-1));
@@ -1882,7 +1882,7 @@ export default class Drawflow {
 
         if(this.module === nodeOneModule) {
           // In same module with view.
-          document.querySelector('.connection.node_in_node-'+id_input+'.node_out_node-'+id_output+'.'+output_class+'.'+input_class).remove();
+          this.container.querySelector('.connection.node_in_node-'+id_input+'.node_out_node-'+id_output+'.'+output_class+'.'+input_class).remove();
         }
 
         var index_out = this.drawflow.drawflow[nodeOneModule].data[id_output].outputs[output_class].connections.findIndex(function(item,i) {
