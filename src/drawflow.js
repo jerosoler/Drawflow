@@ -617,53 +617,51 @@ export default class Drawflow {
     }
   }
 
-  createCurvature(start_pos_x, start_pos_y, end_pos_x, end_pos_y, curvature_value, type) {
+  createCurvature(start_pos_x, start_pos_y, end_pos_x, end_pos_y, curvature_value, type, toFro) {
     var line_x = start_pos_x;
     var line_y = start_pos_y;
     var x = end_pos_x;
     var y = end_pos_y;
-    var curvature = curvature_value;
-    //type openclose open close other
-    switch (type) {
-      case 'open':
-        if(start_pos_x >= end_pos_x) {
-          var hx1 = line_x + Math.abs(x - line_x) * curvature;
-          var hx2 = x - Math.abs(x - line_x) * (curvature*-1);
-        } else {
-          var hx1 = line_x + Math.abs(x - line_x) * curvature;
-          var hx2 = x - Math.abs(x - line_x) * curvature;
-        }
-        return ' M '+ line_x +' '+ line_y +' C '+ hx1 +' '+ line_y +' '+ hx2 +' ' + y +' ' + x +'  ' + y;
 
-        break
-      case 'close':
-        if(start_pos_x >= end_pos_x) {
-          var hx1 = line_x + Math.abs(x - line_x) * (curvature*-1);
-          var hx2 = x - Math.abs(x - line_x) * curvature;
-        } else {
-          var hx1 = line_x + Math.abs(x - line_x) * curvature;
-          var hx2 = x - Math.abs(x - line_x) * curvature;
-        }
-        return ' M '+ line_x +' '+ line_y +' C '+ hx1 +' '+ line_y +' '+ hx2 +' ' + y +' ' + x +'  ' + y;
-        break;
-      case 'other':
-        if(start_pos_x >= end_pos_x) {
-          var hx1 = line_x + Math.abs(x - line_x) * (curvature*-1);
-          var hx2 = x - Math.abs(x - line_x) * (curvature*-1);
-        } else {
-          var hx1 = line_x + Math.abs(x - line_x) * curvature;
-          var hx2 = x - Math.abs(x - line_x) * curvature;
-        }
-        return ' M '+ line_x +' '+ line_y +' C '+ hx1 +' '+ line_y +' '+ hx2 +' ' + y +' ' + x +'  ' + y;
-        break;
-      default:
-
-        var hx1 = line_x + Math.abs(x - line_x) * curvature;
-        var hx2 = x - Math.abs(x - line_x) * curvature;
-
-        return ' M '+ line_x +' '+ line_y +' C '+ hx1 +' '+ line_y +' '+ hx2 +' ' + y +' ' + x +'  ' + y;
+    const regular = (
+      start_pos_x,
+      start_pos_y,
+      end_pos_x,
+      end_pos_y
+    ) => {
+      var centerY = ((end_pos_y - start_pos_y) / 2) + start_pos_y
+      return (
+        ' M ' + start_pos_x + ' ' + start_pos_y + ' L ' + start_pos_x + ' ' + centerY + ' L ' + end_pos_x + ' ' + centerY + ' L ' + end_pos_x + ' ' + end_pos_y
+      )
     }
 
+    const conditional = (
+      start_pos_x,
+      start_pos_y,
+      end_pos_x,
+      end_pos_y,
+    ) => {
+      return (
+        ' M ' + start_pos_x + ' ' + start_pos_y + ' L ' + end_pos_x + ' ' + start_pos_y + ' L ' + end_pos_x + ' ' + end_pos_y
+      )
+    }
+
+    if (toFro.to.classList[0] === "drawflow") {
+      return regular(line_x, line_y, x, y)
+    }
+
+    const fromIsOutput = Array.from(toFro.from.classList).includes("output")
+    const fromBelongsToIf = Array.from(toFro.from.closest(".drawflow-node").classList).includes("if-step")
+
+    const toIsOutput = Array.from(toFro.to.classList).includes("output")
+    const toBelongsToIf = Array.from(toFro.to.closest(".drawflow-node").classList).includes("if-step")
+
+
+    if (fromIsOutput && fromBelongsToIf || toIsOutput && toBelongsToIf) {
+      return conditional(line_x, line_y, x, y)
+    } else {
+      return regular(line_x, line_y, x, y)
+    }
   }
 
   drawConnection(ele) {
@@ -708,7 +706,7 @@ export default class Drawflow {
 
     //path.setAttributeNS(null, 'd', 'M '+ line_x +' '+ line_y +' C '+ hx1 +' '+ line_y +' '+ hx2 +' ' + y +' ' + x +'  ' + y);
     var curvature = this.curvature;
-    var lineCurve = this.createCurvature(line_x, line_y, x, y, curvature, 'openclose');
+    var lineCurve = this.createCurvature(line_x, line_y, x, y, curvature, 'openclose', { from: this.ele_selected, to: this.precanvas });
     path.setAttributeNS(null, 'd', lineCurve);
 
   }
@@ -756,7 +754,6 @@ export default class Drawflow {
   }
 
   updateConnectionNodes(id) {
-
     // Aquí nos quedamos;
     const idSearch = 'node_in_'+id;
     const idSearchOut = 'node_out_'+id;
@@ -808,7 +805,7 @@ export default class Drawflow {
         elemsOut[item].children[0].setAttributeNS(null, 'd', 'M '+ line_x +' '+ line_y +' C '+ hx1 +' '+ line_y +' '+ hx2 +' ' + y +' ' + x +'  ' + y );
         */
 
-        const lineCurve = createCurvature(line_x, line_y, x, y, curvature, 'openclose');
+        const lineCurve = createCurvature(line_x, line_y, x, y, curvature, 'openclose', { from: elemtsearch, to: elemtsearchOut });
         elemsOut[item].children[0].setAttributeNS(null, 'd', lineCurve );
       } else {
         const points = elemsOut[item].querySelectorAll('.point');
@@ -835,7 +832,7 @@ export default class Drawflow {
             var hx1 = line_x + Math.abs(x - line_x) * curvature;
             var hx2 = x - Math.abs(x - line_x) * curvature;
             linecurve += ' M '+ line_x +' '+ line_y +' C '+ hx1 +' '+ line_y +' '+ hx2 +' ' + y +' ' + x +'  ' + y;*/
-            var lineCurveSearch = createCurvature(line_x, line_y, x, y, reroute_curvature_start_end, 'open');
+            var lineCurveSearch = createCurvature(line_x, line_y, x, y, reroute_curvature_start_end, 'open', { from: elemtsearch, to: elemtsearchOut });
             linecurve += lineCurveSearch;
             reoute_fix.push(lineCurveSearch);
 
@@ -862,7 +859,7 @@ export default class Drawflow {
             var hx2 = x - Math.abs(x - line_x) * curvature;
             linecurve += ' M '+ line_x +' '+ line_y +' C '+ hx1 +' '+ line_y +' '+ hx2 +' ' + y +' ' + x +'  ' + y;
             */
-            var lineCurveSearch = createCurvature(line_x, line_y, x, y, reroute_curvature_start_end, 'close');
+            var lineCurveSearch = createCurvature(line_x, line_y, x, y, reroute_curvature_start_end, 'close', { from: elemtsearch, to: elemtsearchId_out });
             linecurve += lineCurveSearch;
             reoute_fix.push(lineCurveSearch);
 
@@ -889,7 +886,7 @@ export default class Drawflow {
             var hx1 = line_x + Math.abs(x - line_x) * curvature;
             var hx2 = x - Math.abs(x - line_x) * curvature;
             linecurve += ' M '+ line_x +' '+ line_y +' C '+ hx1 +' '+ line_y +' '+ hx2 +' ' + y +' ' + x +'  ' + y;*/
-            var lineCurveSearch = createCurvature(line_x, line_y, x, y, reroute_curvature_start_end, 'open');
+            var lineCurveSearch = createCurvature(line_x, line_y, x, y, reroute_curvature_start_end, 'open', { from: elemtsearch, to: elemtsearchOut });
             linecurve += lineCurveSearch;
             reoute_fix.push(lineCurveSearch);
 
@@ -908,7 +905,7 @@ export default class Drawflow {
             var hx1 = line_x + Math.abs(x - line_x) * curvature;
             var hx2 = x - Math.abs(x - line_x) * curvature;
             linecurve += ' M '+ line_x +' '+ line_y +' C '+ hx1 +' '+ line_y +' '+ hx2 +' ' + y +' ' + x +'  ' + y;*/
-            var lineCurveSearch = createCurvature(line_x, line_y, x, y, reroute_curvature, 'other');
+            var lineCurveSearch = createCurvature(line_x, line_y, x, y, reroute_curvature, 'other', { from: elemtsearch, to: elemtsearchId_out });
             linecurve += lineCurveSearch;
             reoute_fix.push(lineCurveSearch);
 
@@ -935,7 +932,7 @@ export default class Drawflow {
             var hx1 = line_x + Math.abs(x - line_x) * curvature;
             var hx2 = x - Math.abs(x - line_x) * curvature;
             linecurve += ' M '+ line_x +' '+ line_y +' C '+ hx1 +' '+ line_y +' '+ hx2 +' ' + y +' ' + x +'  ' + y;*/
-            var lineCurveSearch = createCurvature(line_x, line_y, x, y, reroute_curvature_start_end, 'close');
+            var lineCurveSearch = createCurvature(line_x, line_y, x, y, reroute_curvature_start_end, 'close', { from: elemtsearch, to: elemtsearchId_out });
             linecurve += lineCurveSearch;
             reoute_fix.push(lineCurveSearch);
 
@@ -954,7 +951,7 @@ export default class Drawflow {
             var hx1 = line_x + Math.abs(x - line_x) * curvature;
             var hx2 = x - Math.abs(x - line_x) * curvature;
             linecurve += ' M '+ line_x +' '+ line_y +' C '+ hx1 +' '+ line_y +' '+ hx2 +' ' + y +' ' + x +'  ' + y;*/
-            var lineCurveSearch = createCurvature(line_x, line_y, x, y, reroute_curvature, 'other');
+            var lineCurveSearch = createCurvature(line_x, line_y, x, y, reroute_curvature, 'other', { from: elemtsearch, to: elemtsearchId_out });
             linecurve += lineCurveSearch;
             reoute_fix.push(lineCurveSearch);
           }
@@ -1000,7 +997,7 @@ export default class Drawflow {
         var hx2 = x - Math.abs(x - line_x) * curvature;
         // console.log('M '+ line_x +' '+ line_y +' C '+ hx1 +' '+ line_y +' '+ hx2 +' ' + y +' ' + x +'  ' + y );
         elems[item].children[0].setAttributeNS(null, 'd', 'M '+ line_x +' '+ line_y +' C '+ hx1 +' '+ line_y +' '+ hx2 +' ' + y +' ' + x +'  ' + y );*/
-        const lineCurve = createCurvature(line_x, line_y, x, y, curvature, 'openclose');
+        const lineCurve = createCurvature(line_x, line_y, x, y, curvature, 'openclose', { from: elemtsearch, to: elemtsearchId_in });
         elems[item].children[0].setAttributeNS(null, 'd', lineCurve );
 
       } else {
@@ -1030,7 +1027,7 @@ export default class Drawflow {
             var hx1 = line_x + Math.abs(x - line_x) * curvature;
             var hx2 = x - Math.abs(x - line_x) * curvature;
             linecurve += ' M '+ line_x +' '+ line_y +' C '+ hx1 +' '+ line_y +' '+ hx2 +' ' + y +' ' + x +'  ' + y;*/
-            var lineCurveSearch = createCurvature(line_x, line_y, x, y, reroute_curvature_start_end, 'close');
+            var lineCurveSearch = createCurvature(line_x, line_y, x, y, reroute_curvature_start_end, 'close', { from: elemtsearch, to: elemtsearchIn });
             linecurve += lineCurveSearch;
             reoute_fix.push(lineCurveSearch);
 
@@ -1055,7 +1052,7 @@ export default class Drawflow {
             var hx1 = line_x + Math.abs(x - line_x) * curvature;
             var hx2 = x - Math.abs(x - line_x) * curvature;
             linecurve += ' M '+ line_x +' '+ line_y +' C '+ hx1 +' '+ line_y +' '+ hx2 +' ' + y +' ' + x +'  ' + y;*/
-            var lineCurveSearch = createCurvature(line_x, line_y, x, y, reroute_curvature_start_end, 'open');
+            var lineCurveSearch = createCurvature(line_x, line_y, x, y, reroute_curvature_start_end, 'open', { from: elemtsearchOut, to: elemtsearchId_out });
             linecurve += lineCurveSearch;
             reoute_fix.push(lineCurveSearch);
 
@@ -1083,7 +1080,7 @@ export default class Drawflow {
             var hx1 = line_x + Math.abs(x - line_x) * curvature;
             var hx2 = x - Math.abs(x - line_x) * curvature;
             linecurve += ' M '+ line_x +' '+ line_y +' C '+ hx1 +' '+ line_y +' '+ hx2 +' ' + y +' ' + x +'  ' + y;*/
-            var lineCurveSearch = createCurvature(line_x, line_y, x, y, reroute_curvature_start_end, 'open');
+            var lineCurveSearch = createCurvature(line_x, line_y, x, y, reroute_curvature_start_end, 'open', { from: elemtsearchOut, to: elemtsearchId_out });
             linecurve += lineCurveSearch;
             reoute_fix.push(lineCurveSearch);
 
@@ -1103,7 +1100,7 @@ export default class Drawflow {
             var hx1 = line_x + Math.abs(x - line_x) * curvature;
             var hx2 = x - Math.abs(x - line_x) * curvature;
             linecurve += ' M '+ line_x +' '+ line_y +' C '+ hx1 +' '+ line_y +' '+ hx2 +' ' + y +' ' + x +'  ' + y;*/
-            var lineCurveSearch = createCurvature(line_x, line_y, x, y, reroute_curvature, 'other');
+            var lineCurveSearch = createCurvature(line_x, line_y, x, y, reroute_curvature, 'other', { from: elemtsearchId_out, to: elemtsearch, });
             linecurve += lineCurveSearch;
             reoute_fix.push(lineCurveSearch);
 
@@ -1130,7 +1127,7 @@ export default class Drawflow {
             var hx1 = line_x + Math.abs(x - line_x) * curvature;
             var hx2 = x - Math.abs(x - line_x) * curvature;
             linecurve += ' M '+ line_x +' '+ line_y +' C '+ hx1 +' '+ line_y +' '+ hx2 +' ' + y +' ' + x +'  ' + y;*/
-            var lineCurveSearch = createCurvature(line_x, line_y, x, y, reroute_curvature_start_end, 'close');
+            var lineCurveSearch = createCurvature(line_x, line_y, x, y, reroute_curvature_start_end, 'close', { from: elemtsearchId_out, to: elemtsearchIn });
             linecurve += lineCurveSearch;
             reoute_fix.push(lineCurveSearch);
 
@@ -1151,7 +1148,7 @@ export default class Drawflow {
             var hx2 = x - Math.abs(x - line_x) * curvature;
             linecurve += ' M '+ line_x +' '+ line_y +' C '+ hx1 +' '+ line_y +' '+ hx2 +' ' + y +' ' + x +'  ' + y;
             */
-            var lineCurveSearch = createCurvature(line_x, line_y, x, y, reroute_curvature, 'other');
+            var lineCurveSearch = createCurvature(line_x, line_y, x, y, reroute_curvature, 'other', { from: elemtsearchId_out, to: elemtsearch });
             linecurve += lineCurveSearch;
             reoute_fix.push(lineCurveSearch);
           }
