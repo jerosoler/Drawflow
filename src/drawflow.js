@@ -651,10 +651,10 @@ export default class Drawflow {
     }
 
     const fromIsOutput = Array.from(toFro.from.classList).includes("output")
-    const fromBelongsToIf = Array.from(toFro.from.closest(".drawflow-node").classList).includes("if-step")
+    const fromBelongsToIf = Array.from(toFro.from.closest(".drawflow-node").classList).includes("two-output-step")
 
     const toIsOutput = Array.from(toFro.to.classList).includes("output")
-    const toBelongsToIf = Array.from(toFro.to.closest(".drawflow-node").classList).includes("if-step")
+    const toBelongsToIf = Array.from(toFro.to.closest(".drawflow-node").classList).includes("two-output-step")
 
 
     if (fromIsOutput && fromBelongsToIf || toIsOutput && toBelongsToIf) {
