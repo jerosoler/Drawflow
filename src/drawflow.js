@@ -646,12 +646,16 @@ export default class Drawflow {
       )
     }
 
-    if (toFro.to.classList[0] === "drawflow") {
-      return regular(line_x, line_y, x, y)
-    }
-
     const fromIsOutput = Array.from(toFro.from.classList).includes("output")
     const fromBelongsToIf = Array.from(toFro.from.closest(".drawflow-node").classList).includes("two-output-step")
+
+    if (toFro.to.classList[0] === "drawflow") {
+      if (fromIsOutput && fromBelongsToIf) {
+        return conditional(line_x, line_y, x, y)
+      } else {
+        return regular(line_x, line_y, x, y)
+      }
+    }
 
     const toIsOutput = Array.from(toFro.to.classList).includes("output")
     const toBelongsToIf = Array.from(toFro.to.closest(".drawflow-node").classList).includes("two-output-step")
