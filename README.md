@@ -105,13 +105,14 @@ Parameter | Type | Description
 --- | --- | ---
 `id` | Object | Name of module
 `render` | Object | It's for `Vue`.
+`parent` | Object | It's for `Vue`. The parent Instance
 
 ### For vue 2 example.
 ```javascript
 import Vue from 'vue'
 
 // Pass render Vue
-this.editor = new Drawflow(id, Vue);
+this.editor = new Drawflow(id, Vue, this);
 ```
 
 ### For vue 3 example.
@@ -119,7 +120,7 @@ this.editor = new Drawflow(id, Vue);
 import * as Vue from 'vue'
 
 // Pass render Vue
-this.editor = new Drawflow(id, Vue);
+this.editor = new Drawflow(id, Vue, this);
 ```
 
 ### Nuxt
