@@ -183,7 +183,7 @@ export default class Drawflow {
     this.dispatch('click', e);
     if(this.editor_mode === 'fixed') {
       //return false;
-       if(e.target.classList[0] === 'parent-drawflow' || e.target.classList[0] === 'drawflow') {
+       if(e.target.matches('.parent-drawflow') || e.target.matches('.drawflow')) {
          this.ele_selected = e.target.closest(".parent-drawflow");
        } else {
          return false;
@@ -204,121 +204,123 @@ export default class Drawflow {
         this.ele_selected = e.target.closest(".drawflow_content_node").parentElement;
       }
     }
-    switch (this.ele_selected.classList[0]) {
-      case 'drawflow-node':
-        if(this.node_selected != null) {
-          this.node_selected.classList.remove("selected");
+    for (let element of this.ele_selected.classList.values()) {
+      switch (element) {
+        case 'drawflow-node':
+          if(this.node_selected != null) {
+            this.node_selected.classList.remove("selected");
+            if(this.node_selected != this.ele_selected) {
+              this.dispatch('nodeUnselected', true);
+            }
+          }
+          if(this.connection_selected != null) {
+            this.connection_selected.classList.remove("selected");
+            this.removeReouteConnectionSelected();
+            this.connection_selected = null;
+          }
           if(this.node_selected != this.ele_selected) {
+            this.dispatch('nodeSelected', this.ele_selected.id.slice(5));
+          }
+          this.node_selected = this.ele_selected;
+          this.node_selected.classList.add("selected");
+          if(!this.draggable_inputs) {
+            if(e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA' && e.target.tagName !== 'SELECT' && e.target.hasAttribute('contenteditable') !== true) {
+              this.drag = true;
+            }
+          } else {
+            if(e.target.tagName !== 'SELECT') {
+              this.drag = true;
+            }
+          }
+          break;
+        case 'output':
+          this.connection = true;
+          if(this.node_selected != null) {
+            this.node_selected.classList.remove("selected");
+            this.node_selected = null;
             this.dispatch('nodeUnselected', true);
           }
-        }
-        if(this.connection_selected != null) {
-          this.connection_selected.classList.remove("selected");
-          this.removeReouteConnectionSelected();
-          this.connection_selected = null;
-        }
-        if(this.node_selected != this.ele_selected) {
-          this.dispatch('nodeSelected', this.ele_selected.id.slice(5));
-        }
-        this.node_selected = this.ele_selected;
-        this.node_selected.classList.add("selected");
-        if(!this.draggable_inputs) {
-          if(e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA' && e.target.tagName !== 'SELECT' && e.target.hasAttribute('contenteditable') !== true) {
-            this.drag = true;
+          if(this.connection_selected != null) {
+            this.connection_selected.classList.remove("selected");
+            this.removeReouteConnectionSelected();
+            this.connection_selected = null;
           }
-        } else {
-          if(e.target.tagName !== 'SELECT') {
-            this.drag = true;
+          this.drawConnection(e.target);
+          break;
+        case 'parent-drawflow':
+          if(this.node_selected != null) {
+            this.node_selected.classList.remove("selected");
+            this.node_selected = null;
+            this.dispatch('nodeUnselected', true);
           }
-        }
-        break;
-      case 'output':
-        this.connection = true;
-        if(this.node_selected != null) {
-          this.node_selected.classList.remove("selected");
-          this.node_selected = null;
-          this.dispatch('nodeUnselected', true);
-        }
-        if(this.connection_selected != null) {
-          this.connection_selected.classList.remove("selected");
-          this.removeReouteConnectionSelected();
-          this.connection_selected = null;
-        }
-        this.drawConnection(e.target);
-        break;
-      case 'parent-drawflow':
-        if(this.node_selected != null) {
-          this.node_selected.classList.remove("selected");
-          this.node_selected = null;
-          this.dispatch('nodeUnselected', true);
-        }
-        if(this.connection_selected != null) {
-          this.connection_selected.classList.remove("selected");
-          this.removeReouteConnectionSelected();
-          this.connection_selected = null;
-        }
-        this.editor_selected = true;
-        break;
-      case 'drawflow':
-        if(this.node_selected != null) {
-          this.node_selected.classList.remove("selected");
-          this.node_selected = null;
-          this.dispatch('nodeUnselected', true);
-        }
-        if(this.connection_selected != null) {
-          this.connection_selected.classList.remove("selected");
-          this.removeReouteConnectionSelected();
-          this.connection_selected = null;
-        }
-        this.editor_selected = true;
-        break;
-      case 'main-path':
-        if(this.node_selected != null) {
-          this.node_selected.classList.remove("selected");
-          this.node_selected = null;
-          this.dispatch('nodeUnselected', true);
-        }
-        if(this.connection_selected != null) {
-          this.connection_selected.classList.remove("selected");
-          this.removeReouteConnectionSelected();
-          this.connection_selected = null;
-        }
-        this.connection_selected = this.ele_selected;
-        this.connection_selected.classList.add("selected");
-        const listclassConnection = this.connection_selected.parentElement.classList;
-        this.dispatch('connectionSelected', { output_id: listclassConnection[2].slice(14), input_id: listclassConnection[1].slice(13), output_class: listclassConnection[3], input_class: listclassConnection[4] });
-        if(this.reroute_fix_curvature) {
-          this.connection_selected.parentElement.querySelectorAll(".main-path").forEach((item, i) => {
-            item.classList.add("selected");
-          });
-        }
-      break;
-      case 'point':
-        this.drag_point = true;
-        this.ele_selected.classList.add("selected");
-      break;
-      case 'drawflow-delete':
-        if(this.node_selected ) {
-          this.removeNodeId(this.node_selected.id);
-        }
+          if(this.connection_selected != null) {
+            this.connection_selected.classList.remove("selected");
+            this.removeReouteConnectionSelected();
+            this.connection_selected = null;
+          }
+          this.editor_selected = true;
+          break;
+        case 'drawflow':
+          if(this.node_selected != null) {
+            this.node_selected.classList.remove("selected");
+            this.node_selected = null;
+            this.dispatch('nodeUnselected', true);
+          }
+          if(this.connection_selected != null) {
+            this.connection_selected.classList.remove("selected");
+            this.removeReouteConnectionSelected();
+            this.connection_selected = null;
+          }
+          this.editor_selected = true;
+          break;
+        case 'main-path':
+          if(this.node_selected != null) {
+            this.node_selected.classList.remove("selected");
+            this.node_selected = null;
+            this.dispatch('nodeUnselected', true);
+          }
+          if(this.connection_selected != null) {
+            this.connection_selected.classList.remove("selected");
+            this.removeReouteConnectionSelected();
+            this.connection_selected = null;
+          }
+          this.connection_selected = this.ele_selected;
+          this.connection_selected.classList.add("selected");
+          const listclassConnection = this.connection_selected.parentElement.classList;
+          this.dispatch('connectionSelected', {output_id: listclassConnection[2].slice(14), input_id: listclassConnection[1].slice(13), output_class: listclassConnection[3], input_class: listclassConnection[4]});
+          if(this.reroute_fix_curvature) {
+            this.connection_selected.parentElement.querySelectorAll(".main-path").forEach((item, i) => {
+              item.classList.add("selected");
+            });
+          }
+          break;
+        case 'point':
+          this.drag_point = true;
+          this.ele_selected.classList.add("selected");
+          break;
+        case 'drawflow-delete':
+          if(this.node_selected) {
+            this.removeNodeId(this.node_selected.id);
+          }
 
-        if(this.connection_selected) {
-          this.removeConnection()
-        }
+          if(this.connection_selected) {
+            this.removeConnection()
+          }
 
-        if(this.node_selected != null) {
-          this.node_selected.classList.remove("selected");
-          this.node_selected = null;
-          this.dispatch('nodeUnselected', true);
-        }
-        if(this.connection_selected != null) {
-          this.connection_selected.classList.remove("selected");
-          this.removeReouteConnectionSelected();
-          this.connection_selected = null;
-        }
+          if(this.node_selected != null) {
+            this.node_selected.classList.remove("selected");
+            this.node_selected = null;
+            this.dispatch('nodeUnselected', true);
+          }
+          if(this.connection_selected != null) {
+            this.connection_selected.classList.remove("selected");
+            this.removeReouteConnectionSelected();
+            this.connection_selected = null;
+          }
 
-      break;
-      default:
+          break;
+        default:
+      }
     }
     if (e.type === "touchstart") {
       this.pos_x = e.touches[0].clientX;
