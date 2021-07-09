@@ -1977,7 +1977,7 @@ export default class Drawflow {
     this.zoom = 1;
     this.zoom_last_value = 1;
     this.precanvas.style.transform = '';
-    this.import(this.drawflow);
+    this.import(this.drawflow, false);
   }
 
   removeModule(name) {
@@ -2003,11 +2003,13 @@ export default class Drawflow {
     return dataExport;
   }
 
-  import (data) {
+  import (data, notifi = true) {
     this.clear();
     this.drawflow = JSON.parse(JSON.stringify(data));
     this.load();
-    this.dispatch('import', 'import');
+    if(notifi) {
+      this.dispatch('import', 'import');
+    }
   }
 
   /* Events */
