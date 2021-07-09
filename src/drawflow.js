@@ -385,7 +385,6 @@ export default class Drawflow {
 
       if(this.reroute_fix_curvature) {
         const numberMainPath = this.ele_selected.parentElement.querySelectorAll(".main-path").length-1;
-
         numberPointPosition -= numberMainPath;
         if(numberPointPosition < 0) {
           numberPointPosition = 0;
@@ -430,6 +429,9 @@ export default class Drawflow {
 
     if(this.drag_point) {
       this.ele_selected.classList.remove("selected");
+        if(this.pos_x_start != e_pos_x || this.pos_y_start != e_pos_y) {
+          this.dispatch('rerouteMoved', this.ele_selected.parentElement.classList[2].slice(14));
+        }
     }
 
     if(this.editor_selected) {

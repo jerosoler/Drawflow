@@ -254,6 +254,10 @@ editor.updateNodeDataFromId(1, datatest2);
     editor.on("import", function() {
       console.log("import");
     })
+
+    editor.on("rerouteMoved", function(id) {
+      console.log("Moved reroute " + id);
+    })
 /*
 /*
     var id = document.getElementById("drawflow");
