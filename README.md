@@ -296,6 +296,7 @@ Event | Return | Description
   `connectionUnselected` | true | Unselect connection
   `addReroute` | id | `id` of Node output
   `removeReroute` | id | `id` of Node output
+  `rerouteMoved` | id | `id` of Node output
   `moduleCreated` | name | `name` of Module
   `moduleChanged` | name | `name` of Module
   `moduleRemoved` | name | `name` of Module
