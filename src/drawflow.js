@@ -33,10 +33,6 @@ export default class Drawflow {
     this.useuuid = false;
     this.parent = parent
 
-
-
-
-    this.select_elements = null;
     this.noderegister = {};
     this.render = render;
     this.drawflow = { "drawflow": { "Home": { "data": {} }}};
@@ -428,11 +424,6 @@ export default class Drawflow {
   }
 
   dragEnd(e) {
-    if(this.select_elements != null) {
-      this.select_elements.remove();
-      this.select_elements = null;
-    }
-
     if (e.type === "touchend") {
       var e_pos_x = this.mouse_x;
       var e_pos_y = this.mouse_y;
