@@ -288,6 +288,7 @@ Event | Return | Description
 --- | --- | ---
   `nodeCreated` | id | `id` of Node
   `nodeRemoved` | id | `id` of Node
+  `nodeDataChanged` | id | `id` of Node df-* attributes changed.
   `nodeSelected` | id | `id` of Node
   `nodeUnselected` | true | Unselect node
   `nodeMoved` | id | `id` of Node

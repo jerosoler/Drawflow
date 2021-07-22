@@ -1463,6 +1463,7 @@ export default class Drawflow {
                     target = target[keys[index]];
                 }
                 target[keys[keys.length - 1]] = event.target.value;
+                this.dispatch('nodeDataChanged', event.target.closest(".drawflow_content_node").parentElement.id.slice(5));
           }
     }
   }
