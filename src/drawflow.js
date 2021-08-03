@@ -1337,12 +1337,19 @@ export default class Drawflow {
       });
     });
 
-    for(var x = 0; x < Object.keys(dataNode.outputs).length; x++) {
-      const output = document.createElement('div');
-      output.classList.add("output");
-      output.classList.add("output_"+(x+1));
-      outputs.appendChild(output);
-    }
+    let idOutput = 0;
+    Object.keys(dataNode.outputs).map(function (output_item) {
+        const output = document.createElement('div');
+        output.classList.add("output");
+        var splitted = output_item.split('_');
+        if (splitted.length == 2) {
+            idOutput = splitted[1];
+        } else {
+            idOutput + 1
+        }
+        output.classList.add("output_" + idOutput);
+        outputs.appendChild(output);
+    });
 
     const content = document.createElement('div');
     content.classList.add("drawflow_content_node");
