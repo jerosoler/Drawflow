@@ -110,19 +110,6 @@
   stroke-width: 5px;
   stroke: steelblue;
 }
-.drawflow .selectbox {
-  z-index: 3;
-  position: absolute;
-  transform: translate(9999px, 9999px);
-}
-.drawflow .selectbox rect {
-  fill: blue;
-  opacity: 0.5;
-  stroke: yellow;
-  stroke-width: 5;
-  stroke-opacity: 0.5;
-  transform: translate(-9999px, -9999px);
-}
 
 .drawflow-delete {
   position: absolute;
