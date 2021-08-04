@@ -17,81 +17,7 @@
         border: 1px solid red;
       }
 
-      .drawflow .drawflow-node {
-        opacity: 0.3;
-      }
 
-    /*  .drawflow .parent-node .custom-node-1 .inputs {
-    position: absolute;
-    top: -10px;
-    padding-left: 50%;
-  }
-
-  .drawflow .parent-node .custom-node-2 .outputs {
-    position: absolute;
-    bottom: -10px;
-    padding-left: 50%;
-  }
-
-  .drawflow .parent-node .custom-node-3 .inputs {
-    position: absolute;
-    right: 0px;
-  }
-
-  .drawflow .parent-node .custom-node-4 .outputs {
-    position: absolute;
-    left: 0px;
-  } */
-
-  .drawflow .parent-node .custom-node-2 .outputs {
-    position:relative;
-    left: 50px;
-  }
-
-  .drawflow .parent-node .custom-node-2 .outputs .output_2 {
-    position:relative;
-    left: 50px;
-  }
-
-  .drawflow .parent-node .romb {
-    transform: rotate(45deg);
-    width: 50px;
-    height: 50px;
-  }
-  .drawflow .parent-node .romb .drawflow_content_node {
-    transform: rotate(-45deg);
-  }
-  .drawflow .parent-node .romb .input_1 {
-    transform: rotate(-45deg);
-    position: relative;
-    top: 40px;
-    right: 25px;
-  }
-
-  .drawflow .parent-node .romb .output_1 {
-    transform: rotate(-45deg);
-    position: relative;
-    top: -5px;
-    right: 75px;
-  }
-
-  .drawflow .parent-node .romb .output_2 {
-    transform: rotate(-45deg);
-    position: relative;
-    top: -35px;
-    right: 0px;
-  }
-
-  .drawflow .parent-node .romb .output_3 {
-    transform: rotate(-45deg);
-    position: relative;
-    top: 10px;
-    right: 0px;
-  }
-
-  .drawflow svg {
-      z-index: 0;
-    }
     </style>
 </head>
 <body>
@@ -157,7 +83,7 @@
   var testNode = document.createElement("div");
   testNode.innerHTML = 'Hola caracola <input type="text" df-name>';
 
-  const datatest = {
+  /*const datatest = {
           level0: 'test0',
           level1: {
            name1: 'TEST 1',
@@ -183,16 +109,10 @@
 
   //editor.addNode('github', 0, 1, 150, 300, 'github', data, html);
 
-  editor.addNode('github', 0, 2, 200, 250, 'github', data, "testNode", true);
-  /*setTimeout(function() {
-    editor.addNode('github', 1, 1, 300, 350, 'github', data, "testNode", true);
-      setTimeout(function() {
-    editor.addNode('github', 1, 1, 350, 350, 'github', data, "testNode", true);
-  }, 1000);
-}, 1000);*/
+  editor.addNode('github', 1, 2, 400, 250, 'github', data, "testNode", true);
 
 
-  editor.addNode('github', 0, 1, 0, 375, 'github', data, "<b>Holaaa</b>");
+  editor.addNode('github', 1, 1, 400, 375, 'github', data, "<b>Holaaa</b>");
   editor.addNode('github', 0, 1, 100, 400, 'github', data, "<b>Adios</b>");
 
   editor.addNode('github', 0, 1, 0, 375, 'github', data, '<div>Hey<div id="test" contenteditable="true" df-name></div></div>');
@@ -204,6 +124,8 @@
   editor.addNode('github', 1, 2, 500, 175, 'custom-node-2', data, "<b>Holaaa</b>");
   editor.addNode('github', 1, 1, 300, 375, 'custom-node-3', data, "<b>Holaaa</b>");
   editor.addNode('github', 1, 1, 0, 375, 'custom-node-4', data, "<b>Holaaa</b>");
+
+ editor.addConnection(1,2,'output_1','input_1');
 
   editor.addNodeInput(1);
   editor.addNodeOutput(1);
@@ -227,7 +149,7 @@
 editor.updateNodeDataFromId(1, datatest2);
   editor.addConnection(6,7,'output_1', 'input_1');
 
-  editor.removeSingleConnection(6,7,'output_1', 'input_1');
+  editor.removeSingleConnection(6,7,'output_1', 'input_1'); */
 
     var exportvalue = null;
     function export2(){
@@ -307,7 +229,7 @@ editor.updateNodeDataFromId(1, datatest2);
 
 
 
-
+  editor.import(caracola);
   //console.log(editor.drawflow);
   //console.log(editor.export());
   </script>
