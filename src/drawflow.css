@@ -78,12 +78,13 @@
 }
 .drawflow .connection {
   position: absolute;
-  z-index: -1;
+  pointer-events: none;
 }
 .drawflow .connection .main-path {
   fill: none;
   stroke-width: 5px;
   stroke: steelblue;
+  pointer-events: all;
 }
 .drawflow .connection .main-path:hover {
   stroke: #1266ab;
@@ -99,6 +100,7 @@
   stroke: black;
   stroke-width: 2;
   fill: white;
+  pointer-events: all;
 }
 
 .drawflow .connection .point.selected, .drawflow .connection .point:hover {
