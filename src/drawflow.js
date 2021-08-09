@@ -1386,36 +1386,38 @@ export default class Drawflow {
       }
     }
 
-    Object.entries(data).forEach(function (key, value) {
-      if(typeof key[1] === "object") {
-        insertObjectkeys(null, key[0], key[0]);
-      } else {
-        var elems = content.querySelectorAll('[df-'+key[0]+']');
-          for(var i = 0; i < elems.length; i++) {
-            elems[i].value = key[1];
-          }
-      }
-    })
+    // do not associate data with input elements
+    // Object.entries(data).forEach(function (key, value) {
+    //   if(typeof key[1] === "object") {
+    //     insertObjectkeys(null, key[0], key[0]);
+    //   } else {
+    //     var elems = content.querySelectorAll('[df-'+key[0]+']');
+    //       for(var i = 0; i < elems.length; i++) {
+    //         elems[i].value = key[1];
+    //       }
+    //   }
+    // })
 
-    function insertObjectkeys(object, name, completname) {
-      if(object === null) {
-        var object = data[name];
-      } else {
-        var object = object[name]
-      }
-      if(object !== null) {
-        Object.entries(object).forEach(function (key, value) {
-          if(typeof key[1] === "object") {
-            insertObjectkeys(object, key[0], completname+'-'+key[0]);
-          } else {
-            var elems = content.querySelectorAll('[df-'+completname+'-'+key[0]+']');
-              for(var i = 0; i < elems.length; i++) {
-                elems[i].value = key[1];
-              }
-          }
-        });
-      }
-    }
+    // function insertObjectkeys(object, name, completname) {
+    //   if(object === null) {
+    //     var object = data[name];
+    //   } else {
+    //     var object = object[name]
+    //   }
+    //   if(object !== null) {
+    //     Object.entries(object).forEach(function (key, value) {
+    //       if(typeof key[1] === "object") {
+    //         insertObjectkeys(object, key[0], completname+'-'+key[0]);
+    //       } else {
+    //         var elems = content.querySelectorAll('[df-'+completname+'-'+key[0]+']');
+    //           for(var i = 0; i < elems.length; i++) {
+    //             elems[i].value = key[1];
+    //           }
+    //       }
+    //     });
+    //   }
+    // }
+
     node.appendChild(inputs);
     node.appendChild(content);
     node.appendChild(outputs);
