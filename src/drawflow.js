@@ -591,17 +591,9 @@ export default class Drawflow {
       //this.precanvas.style.transform = "translate("+this.canvas_x+"px, "+this.canvas_y+"px) scale("+this.zoom+")";
     } else {
       if (event.shiftKey) {
-        if (event.deltaY < 0){
-          this.canvas_x += event.deltaY*-1;
-        } else if (event.deltaY > 0) {
-          this.canvas_x -= event.deltaY;
-        }
+        this.canvas_x = (event.deltaY < 0) ? this.canvas_x + (event.deltaY*-1) : this.canvas_x - event.deltaY;
       } else {
-        if (event.deltaY < 0){
-          this.canvas_y += event.deltaY*-1;
-        } else if (event.deltaY > 0) {
-          this.canvas_y -= event.deltaY;
-        }
+        this.canvas_y = (event.deltaY < 0) ? this.canvas_y + (event.deltaY*-1) : this.canvas_y - event.deltaY;
       }
       this.precanvas.style.transform = "translate("+this.canvas_x+"px, "+this.canvas_y+"px) scale("+this.zoom+")";
     }
