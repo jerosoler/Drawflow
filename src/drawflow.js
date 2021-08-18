@@ -580,8 +580,8 @@ export default class Drawflow {
 
   zoom_enter(event, delta) {
     if (event.ctrlKey) {
-      event.preventDefault()
-      if(event.deltaY > 0) {
+      event.preventDefault();
+      if (event.deltaY > 0) {
         // Zoom Out
         this.zoom_out();
       } else {
@@ -589,6 +589,21 @@ export default class Drawflow {
         this.zoom_in();
       }
       //this.precanvas.style.transform = "translate("+this.canvas_x+"px, "+this.canvas_y+"px) scale("+this.zoom+")";
+    } else {
+      if (event.shiftKey) {
+        if (event.deltaY < 0){
+          this.canvas_x += event.deltaY*-1;
+        } else if (event.deltaY > 0) {
+          this.canvas_x -= event.deltaY;
+        }
+      } else {
+        if (event.deltaY < 0){
+          this.canvas_y += event.deltaY*-1;
+        } else if (event.deltaY > 0) {
+          this.canvas_y -= event.deltaY;
+        }
+      }
+      this.precanvas.style.transform = "translate("+this.canvas_x+"px, "+this.canvas_y+"px) scale("+this.zoom+")";
     }
   }
   zoom_refresh(){
