@@ -211,7 +211,7 @@ Parameter | Type | Description
 `html` | text | HTML drawn on node or `name` of register node.
 `typenode` | boolean & text | Default `false`, `true` for Object HTML, `vue` for vue
 
-You can use the attribute `df-*` in **inputs, textarea or select** to synchronize with the node data.
+You can use the attribute `df-*` in **inputs, textarea or select** to synchronize with the node data and **contenteditable**.
 
 Atrributs multiples parents support `df-*-*...`
 
