@@ -232,6 +232,9 @@ editor.updateNodeDataFromId(1, datatest2);
   editor.import(caracola);
   //console.log(editor.drawflow);
   //console.log(editor.export());
+  var data = { "name": 'hola', "name2": { "name3": "Hola caracola "} };
+  editor.addNode('github', 0, 1, 100, 500, 'github', data, '<div>Hey<input type="text"  df-name></div>');
+  editor.addNode('github', 0, 1, 0, 375, 'github', data, '<div>Hey<div id="test" contenteditable="true" df-name2-name3></div></div>');
   </script>
 
 

@@ -1245,6 +1245,9 @@ export default class Drawflow {
         var elems = content.querySelectorAll('[df-'+key[0]+']');
           for(var i = 0; i < elems.length; i++) {
             elems[i].value = key[1];
+            if(elems[i].isContentEditable) {
+              elems[i].innerText = key[1];
+            }
           }
       }
     })
@@ -1263,6 +1266,9 @@ export default class Drawflow {
             var elems = content.querySelectorAll('[df-'+completname+'-'+key[0]+']');
               for(var i = 0; i < elems.length; i++) {
                 elems[i].value = key[1];
+                if(elems[i].isContentEditable) {
+                  elems[i].innerText = key[1];
+                }
               }
           }
         });
@@ -1376,6 +1382,9 @@ export default class Drawflow {
         var elems = content.querySelectorAll('[df-'+key[0]+']');
           for(var i = 0; i < elems.length; i++) {
             elems[i].value = key[1];
+            if(elems[i].isContentEditable) {
+              elems[i].innerText = key[1];
+            }
           }
       }
     })
@@ -1394,6 +1403,9 @@ export default class Drawflow {
             var elems = content.querySelectorAll('[df-'+completname+'-'+key[0]+']');
               for(var i = 0; i < elems.length; i++) {
                 elems[i].value = key[1];
+                if(elems[i].isContentEditable) {
+                  elems[i].innerText = key[1];
+                }
               }
           }
         });
@@ -1463,6 +1475,9 @@ export default class Drawflow {
                     target = target[keys[index]];
                 }
                 target[keys[keys.length - 1]] = event.target.value;
+                if(event.target.isContentEditable) {
+                  target[keys[keys.length - 1]] = event.target.innerText;
+                }
                 this.dispatch('nodeDataChanged', event.target.closest(".drawflow_content_node").parentElement.id.slice(5));
           }
     }
@@ -1481,6 +1496,9 @@ export default class Drawflow {
           var elems = content.querySelectorAll('[df-'+key[0]+']');
             for(var i = 0; i < elems.length; i++) {
               elems[i].value = key[1];
+              if(elems[i].isContentEditable) {
+                elems[i].innerText = key[1];
+              }
             }
         }
       })
@@ -1499,6 +1517,9 @@ export default class Drawflow {
               var elems = content.querySelectorAll('[df-'+completname+'-'+key[0]+']');
                 for(var i = 0; i < elems.length; i++) {
                   elems[i].value = key[1];
+                  if(elems[i].isContentEditable) {
+                    elems[i].innerText = key[1];
+                  }
                 }
             }
           });
