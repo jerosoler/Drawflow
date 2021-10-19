@@ -1,6 +1,6 @@
 {
   "name": "drawflow",
-  "version": "0.0.49",
+  "version": "0.0.50",
   "description": "Simple flow library",
   "main": "dist/drawflow.min.js",
   "scripts": {
