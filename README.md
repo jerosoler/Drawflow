@@ -120,10 +120,13 @@ this.editor = new Drawflow(id, Vue, this);
 
 ### For vue 3 example.
 ```javascript
-import * as Vue from 'vue'
+import { h, getCurrentInstance, render } from 'vue'
+const Vue = { version: 3, h, render };
 
-// Pass render Vue
-this.editor = new Drawflow(id, Vue, this);
+this.editor = new Drawflow(id, Vue);
+// Pass render Vue 3 Instance
+const internalInstance = getCurrentInstance()
+editor.value = new Drawflow(id, Vue, internalInstance.appContext.app._context);
 ```
 
 ### Nuxt
