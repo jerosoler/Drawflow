@@ -311,6 +311,7 @@ Event | Return | Description
   `clickEnd` | event | Once the click changes have been made
   `contextmenu` | event | Click second button mouse event
   `mouseMove` | { x, y } | Position
+  `mouseUp` | event | MouseUp Event
   `keydown` | event | Keydown event
   `zoom` | zoom_level | Level of zoom
   `translate` | { x, y } | Position translate editor
