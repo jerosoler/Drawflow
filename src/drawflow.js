@@ -508,6 +508,7 @@ export default class Drawflow {
     this.ele_selected = null;
     this.editor_selected = false;
 
+    this.dispatch('mouseUp', e);
   }
   contextmenu(e) {
     this.dispatch('contextmenu', e);
