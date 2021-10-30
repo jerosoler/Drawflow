@@ -180,7 +180,7 @@ Active reroute connections. Use before `start` or `import`.
 ```javascript
 editor.reroute = true;
 ```
-Create point with doble click on line connection. Doble click on point for remove.
+Create point with double click on line connection. Double click on point for remove.
 
 ## Modules
 Separate your flows in different editors.
@@ -292,11 +292,11 @@ Event | Return | Description
   `nodeSelected` | id | `id` of Node
   `nodeUnselected` | true | Unselect node
   `nodeMoved` | id | `id` of Node
-  `connectionStart` | { output_id, output_class } | `id` of nodes and ouput selected
+  `connectionStart` | { output_id, output_class } | `id` of nodes and output selected
   `connectionCancel` | true | Connection Cancel
-  `connectionCreated` | { output_id, input_id, output_class, input_class } | `id`'s of nodes and ouput/input selected
-  `connectionRemoved` | { output_id, input_id, output_class, input_class } | `id`'s of nodes and ouput/input selected
-  `connectionSelected` | { output_id, input_id, output_class, input_class } | `id`'s of nodes and ouput/input selected
+  `connectionCreated` | { output_id, input_id, output_class, input_class } | `id`'s of nodes and output/input selected
+  `connectionRemoved` | { output_id, input_id, output_class, input_class } | `id`'s of nodes and output/input selected
+  `connectionSelected` | { output_id, input_id, output_class, input_class } | `id`'s of nodes and output/input selected
   `connectionUnselected` | true | Unselect connection
   `addReroute` | id | `id` of Node output
   `removeReroute` | id | `id` of Node output
