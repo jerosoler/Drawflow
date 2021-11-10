@@ -48,6 +48,8 @@ export default class Drawflow {
     // Mobile
     this.evCache = new Array();
     this.prevDiff = -1;
+
+    this.nodesContainer = null;
   }
 
   start () {
@@ -57,6 +59,10 @@ export default class Drawflow {
     this.precanvas = document.createElement('div');
     this.precanvas.classList.add("drawflow");
     this.container.appendChild(this.precanvas);
+
+    this.nodesContainer = document.createElement('div');
+    this.nodesContainer.classList.add('drawflow');
+    this.container.appendChild(this.nodesContainer);
 
     /* Mouse and Touch Actions */
     this.container.addEventListener('mouseup', this.dragEnd.bind(this));
@@ -346,6 +352,7 @@ export default class Drawflow {
       y = this.canvas_y + (-(this.pos_y - e_pos_y))
       this.dispatch('translate', { x: x, y: y});
       this.precanvas.style.transform = "translate("+x+"px, "+y+"px) scale("+this.zoom+")";
+      this.nodesContainer.style.transform = "translate("+x+"px, "+y+"px) scale("+this.zoom+")";
     }
     if(this.drag) {
 
@@ -579,6 +586,7 @@ export default class Drawflow {
     this.canvas_y = (this.canvas_y / this.zoom_last_value) * this.zoom;
     this.zoom_last_value = this.zoom;
     this.precanvas.style.transform = "translate("+this.canvas_x+"px, "+this.canvas_y+"px) scale("+this.zoom+")";
+    this.nodesContainer.style.transform = "translate("+this.canvas_x+"px, "+this.canvas_y+"px) scale("+this.zoom+")";
   }
   zoom_in() {
     if(this.zoom < this.zoom_max) {
@@ -1281,7 +1289,7 @@ export default class Drawflow {
     node.style.top = ele_pos_y + "px";
     node.style.left = ele_pos_x + "px";
     parent.appendChild(node);
-    this.precanvas.appendChild(parent);
+    this.nodesContainer.appendChild(parent);
     var json = {
       id: newNodeId,
       name: name,
@@ -1313,6 +1321,7 @@ export default class Drawflow {
     if(dataNode.class != '') {
       node.classList.add(dataNode.class);
     }
+
 
     const inputs = document.createElement('div');
     inputs.classList.add("inputs");
@@ -1418,7 +1427,7 @@ export default class Drawflow {
     node.style.top = dataNode.pos_y + "px";
     node.style.left = dataNode.pos_x + "px";
     parent.appendChild(node);
-    this.precanvas.appendChild(parent);
+    this.nodesContainer.appendChild(parent);
   }
 
   addRerouteImport(dataNode) {
