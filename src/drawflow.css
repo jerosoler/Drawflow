@@ -10,7 +10,7 @@
   height: 100%;
   position: relative;
   user-select: none;
-
+  perspective: 0;
 }
 
 .drawflow .parent-node {
