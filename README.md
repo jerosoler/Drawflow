@@ -209,7 +209,7 @@ Parameter | Type | Description
 `outputs` | number | Number of de outputs
 `pos_x` | number | Position on start node left
 `pos_y` | number | Position on start node top
-`class` | text | Added classname to de node
+`class` | text | Added classname to de node. Multiple classnames separated by space
 `data` | json | Data passed to node
 `html` | text | HTML drawn on node or `name` of register node.
 `typenode` | boolean & text | Default `false`, `true` for Object HTML, `vue` for vue
