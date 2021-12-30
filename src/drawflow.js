@@ -1,3 +1,7 @@
+function replaceIllegalDomCharacters(txt) {
+  return txt.replace(/,/g, '\\,').replace(/\|/g, '\\|')
+}
+
 export default class Drawflow {
   constructor(container, render = null, parent = null) {
     this.events = {};
@@ -1243,7 +1247,7 @@ export default class Drawflow {
       if(typeof key[1] === "object") {
         insertObjectkeys(null, key[0], key[0]);
       } else {
-        var elems = content.querySelectorAll('[df-'+key[0]+']');
+        var elems = content.querySelectorAll('[df-'+replaceIllegalDomCharacters(key[0])+']');
           for(var i = 0; i < elems.length; i++) {
             elems[i].value = key[1];
             if(elems[i].isContentEditable) {
@@ -1264,7 +1268,7 @@ export default class Drawflow {
           if(typeof key[1] === "object") {
             insertObjectkeys(object, key[0], completname+'-'+key[0]);
           } else {
-            var elems = content.querySelectorAll('[df-'+completname+'-'+key[0]+']');
+            var elems = content.querySelectorAll('[df-'+replaceIllegalDomCharacters(completname)+'-'+replaceIllegalDomCharacters(key[0])+']');
               for(var i = 0; i < elems.length; i++) {
                 elems[i].value = key[1];
                 if(elems[i].isContentEditable) {
@@ -1380,7 +1384,7 @@ export default class Drawflow {
       if(typeof key[1] === "object") {
         insertObjectkeys(null, key[0], key[0]);
       } else {
-        var elems = content.querySelectorAll('[df-'+key[0]+']');
+        var elems = content.querySelectorAll('[df-'+replaceIllegalDomCharacters(key[0])+']');
           for(var i = 0; i < elems.length; i++) {
             elems[i].value = key[1];
             if(elems[i].isContentEditable) {
@@ -1401,7 +1405,7 @@ export default class Drawflow {
           if(typeof key[1] === "object") {
             insertObjectkeys(object, key[0], completname+'-'+key[0]);
           } else {
-            var elems = content.querySelectorAll('[df-'+completname+'-'+key[0]+']');
+            var elems = content.querySelectorAll('[df-'+replaceIllegalDomCharacters(completname)+'-'+replaceIllegalDomCharacters(key[0])+']');
               for(var i = 0; i < elems.length; i++) {
                 elems[i].value = key[1];
                 if(elems[i].isContentEditable) {
@@ -1494,7 +1498,7 @@ export default class Drawflow {
         if(typeof key[1] === "object") {
           insertObjectkeys(null, key[0], key[0]);
         } else {
-          var elems = content.querySelectorAll('[df-'+key[0]+']');
+          var elems = content.querySelectorAll('[df-'+replaceIllegalDomCharacters(key[0])+']');
             for(var i = 0; i < elems.length; i++) {
               elems[i].value = key[1];
               if(elems[i].isContentEditable) {
@@ -1515,7 +1519,7 @@ export default class Drawflow {
             if(typeof key[1] === "object") {
               insertObjectkeys(object, key[0], completname+'-'+key[0]);
             } else {
-              var elems = content.querySelectorAll('[df-'+completname+'-'+key[0]+']');
+              var elems = content.querySelectorAll('[df-'+replaceIllegalDomCharacters(completname)+'-'+replaceIllegalDomCharacters(key[0])+']');
                 for(var i = 0; i < elems.length; i++) {
                   elems[i].value = key[1];
                   if(elems[i].isContentEditable) {
@@ -1929,18 +1933,18 @@ export default class Drawflow {
        });
    }
 
-    getUuid() {
-        // http://www.ietf.org/rfc/rfc4122.txt
-        var s = [];
-        var hexDigits = "0123456789abcdef";
-        for (var i = 0; i < 36; i++) {
-            s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1);
-        }
-        s[14] = "4";  // bits 12-15 of the time_hi_and_version field to 0010
-        s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1);  // bits 6-7 of the clock_seq_hi_and_reserved to 01
-        s[8] = s[13] = s[18] = s[23] = "-";
+  getUuid() {
+      // http://www.ietf.org/rfc/rfc4122.txt
+      var s = [];
+      var hexDigits = "0123456789abcdef";
+      for (var i = 0; i < 36; i++) {
+          s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1);
+      }
+      s[14] = "4";  // bits 12-15 of the time_hi_and_version field to 0010
+      s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1);  // bits 6-7 of the clock_seq_hi_and_reserved to 01
+      s[8] = s[13] = s[18] = s[23] = "-";
 
-        var uuid = s.join("");
-        return uuid;
-    }
+      var uuid = s.join("");
+      return uuid;
+  }
 }
