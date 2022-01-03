@@ -1908,14 +1908,14 @@ export default class Drawflow {
    }
 
    removeListener (event, callback) {
-       // Check if this event not exists
-       if (this.events[event] === undefined) {
-           //console.error(`This event: ${event} does not exist`);
-           return false;
-       }
-     this.events[event].listeners = this.events[event].listeners.filter(listener => {
-         return listener.toString() !== callback.toString();
-     });
+      // Check if this event not exists
+
+      if (!this.events[event]) return false
+
+      const listeners = this.events[event].listeners
+      const listenerIndex = listeners.indexOf(callback)
+      const hasListener = listenerIndex > -1
+      if (hasListener) listeners.splice(listenerIndex, 1)
    }
 
    dispatch (event, details) {
