@@ -1103,8 +1103,8 @@ export default class Drawflow {
       }
 
       if(this.reroute_fix_curvature) {
-        //console.log(position_add_array_point)
-        if(position_add_array_point > 0) {
+        
+        if(position_add_array_point > 0 || this.drawflow.drawflow[this.module].data[nodeId].outputs[output_class].connections[searchConnection].points !== []) {
           this.drawflow.drawflow[this.module].data[nodeId].outputs[output_class].connections[searchConnection].points.splice(position_add_array_point, 0, { pos_x: pos_x, pos_y: pos_y });
         } else {
           this.drawflow.drawflow[this.module].data[nodeId].outputs[output_class].connections[searchConnection].points.push({ pos_x: pos_x, pos_y: pos_y });
@@ -1128,22 +1128,21 @@ export default class Drawflow {
     const output_class = ele.parentElement.classList[3];
     const input_class = ele.parentElement.classList[4];
 
-
-    let numberPointPosition = Array.from(ele.parentElement.children).indexOf(ele)-1;
-
+    let numberPointPosition = Array.from(ele.parentElement.children).indexOf(ele);    
     const nodeId = nodeUpdate.slice(5);
     const searchConnection = this.drawflow.drawflow[this.module].data[nodeId].outputs[output_class].connections.findIndex(function(item,i) {
       return item.node ===  nodeUpdateIn && item.output === input_class;
     });
 
     if(this.reroute_fix_curvature) {
-
        const numberMainPath = ele.parentElement.querySelectorAll(".main-path").length
        ele.parentElement.children[numberMainPath-1].remove();
        numberPointPosition -= numberMainPath;
        if(numberPointPosition < 0) {
          numberPointPosition = 0;
        }
+    } else {
+      numberPointPosition--;
     }
     this.drawflow.drawflow[this.module].data[nodeId].outputs[output_class].connections[searchConnection].points.splice(numberPointPosition,1);
 
