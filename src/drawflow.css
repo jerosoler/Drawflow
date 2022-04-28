@@ -79,6 +79,7 @@
 .drawflow .connection {
   position: absolute;
   pointer-events: none;
+  aspect-ratio: 1 / 1;
 }
 .drawflow .connection .main-path {
   fill: none;
