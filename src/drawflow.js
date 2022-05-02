@@ -177,6 +177,7 @@ export default class Drawflow {
     this.dispatch('click', e);
     if(this.editor_mode === 'fixed') {
       //return false;
+       e.preventDefault();
        if(e.target.classList[0] === 'parent-drawflow' || e.target.classList[0] === 'drawflow') {
          this.ele_selected = e.target.closest(".parent-drawflow");
        } else {
@@ -197,6 +198,9 @@ export default class Drawflow {
       if(e.target.closest(".drawflow_content_node") != null) {
         this.ele_selected = e.target.closest(".drawflow_content_node").parentElement;
       }
+    }
+    if (['input','output','main-path'].includes(this.ele_selected.classList[0])) {
+      e.preventDefault();
     }
     switch (this.ele_selected.classList[0]) {
       case 'drawflow-node':
