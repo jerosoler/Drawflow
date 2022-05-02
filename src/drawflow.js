@@ -177,6 +177,7 @@ export default class Drawflow {
     this.dispatch('click', e);
     if(this.editor_mode === 'fixed') {
       //return false;
+       e.preventDefault();
        if(e.target.classList[0] === 'parent-drawflow' || e.target.classList[0] === 'drawflow') {
          this.ele_selected = e.target.closest(".parent-drawflow");
        } else {
@@ -324,6 +325,9 @@ export default class Drawflow {
       this.pos_x_start = e.clientX;
       this.pos_y = e.clientY;
       this.pos_y_start = e.clientY;
+    }
+    if (this.drag || ['input','output','main-path'].includes(this.ele_selected.classList[0])) {
+      e.preventDefault();
     }
     this.dispatch('clickEnd', e);
   }
