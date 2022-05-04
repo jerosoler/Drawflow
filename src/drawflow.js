@@ -326,7 +326,7 @@ export default class Drawflow {
       this.pos_y = e.clientY;
       this.pos_y_start = e.clientY;
     }
-    if (this.drag || ['input','output','main-path'].includes(this.ele_selected.classList[0])) {
+    if (['input','output','main-path'].includes(this.ele_selected.classList[0])) {
       e.preventDefault();
     }
     this.dispatch('clickEnd', e);
@@ -352,7 +352,7 @@ export default class Drawflow {
       this.precanvas.style.transform = "translate("+x+"px, "+y+"px) scale("+this.zoom+")";
     }
     if(this.drag) {
-
+      e.preventDefault();
       var x = (this.pos_x - e_pos_x) * this.precanvas.clientWidth / (this.precanvas.clientWidth * this.zoom);
       var y = (this.pos_y - e_pos_y) * this.precanvas.clientHeight / (this.precanvas.clientHeight * this.zoom);
       this.pos_x = e_pos_x;
@@ -1107,7 +1107,7 @@ export default class Drawflow {
       }
 
       if(this.reroute_fix_curvature) {
-        
+
         if(position_add_array_point > 0 || this.drawflow.drawflow[this.module].data[nodeId].outputs[output_class].connections[searchConnection].points !== []) {
           this.drawflow.drawflow[this.module].data[nodeId].outputs[output_class].connections[searchConnection].points.splice(position_add_array_point, 0, { pos_x: pos_x, pos_y: pos_y });
         } else {
@@ -1132,7 +1132,7 @@ export default class Drawflow {
     const output_class = ele.parentElement.classList[3];
     const input_class = ele.parentElement.classList[4];
 
-    let numberPointPosition = Array.from(ele.parentElement.children).indexOf(ele);    
+    let numberPointPosition = Array.from(ele.parentElement.children).indexOf(ele);
     const nodeId = nodeUpdate.slice(5);
     const searchConnection = this.drawflow.drawflow[this.module].data[nodeId].outputs[output_class].connections.findIndex(function(item,i) {
       return item.node ===  nodeUpdateIn && item.output === input_class;
