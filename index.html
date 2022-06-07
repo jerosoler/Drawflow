@@ -59,6 +59,15 @@
       <div class="drag-drawflow" draggable="true" ondragstart="drag(event)" data-node="dbclick">
         <i class="fas fa-mouse"></i><span> DBClick!</span>
       </div>
+      <div class="drag-drawflow" draggable="true" ondragstart="drag(event)" data-node="dog">
+        <i class="fas fa-dog"></i><span> Dog</span>
+      </div>
+      <div class="drag-drawflow" draggable="true" ondragstart="drag(event)" data-node="bone">
+        <i class="fas fa-bone"></i><span> Bone</span>
+      </div>
+      <div class="drag-drawflow" draggable="true" ondragstart="drag(event)" data-node="cat">
+        <i class="fas fa-cat"></i><span> Cat</span>
+      </div>
 
 
     </div>
@@ -390,6 +399,33 @@
             `;
             editor.addNode('dbclick', 1, 1, pos_x, pos_y, 'dbclick', { name: ''}, dbclick );
             break;
+        case 'dog':
+          var dog = `
+            <div>
+              <div class="title-box"><i class="fas fa-dog"></i> Dog</div>
+            </div>
+            `;
+          editor.addNode('dog', 0, [{dataTypes: ['dog'], maxConnections: 1}], pos_x, pos_y, 'dog', {}, dog );
+          break;
+        case 'bone':
+          var bone = `
+            <div>
+              <div class="title-box"><i class="fas fa-bone"></i> Bone</div>
+              <div class="box">
+                Can eat from one dog
+              </div>
+            </div>
+            `;
+          editor.addNode('bone', [{dataTypes: ['dog'], maxConnections: 1}], 0, pos_x, pos_y, 'bone', {}, bone );
+          break;
+        case 'cat':
+          var cat = `
+            <div>
+              <div class="title-box"><i class="fas fa-cat"></i> Cat</div>
+            </div>
+            `;
+          editor.addNode('cat', 0, [{dataTypes: ['cat']}], pos_x, pos_y, 'cat', {}, cat );
+          break;
 
         default:
       }
