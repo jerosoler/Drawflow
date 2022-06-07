@@ -239,7 +239,8 @@ export default class Drawflow {
           this.removeReouteConnectionSelected();
           this.connection_selected = null;
         }
-        this.drawConnection(e.target);
+        if (!this.drawConnection(e.target))
+          this.connection = false;
         break;
       case 'parent-drawflow':
         if(this.node_selected != null) {
@@ -468,8 +469,40 @@ export default class Drawflow {
        }
        var output_id = this.ele_selected.parentElement.parentElement.id;
        var output_class = this.ele_selected.classList[1];
+       // Check allow datatype
+       var dataTypeAllow = true;
+       var maxConnections = 0;
+       for (var d = 2; d < ele_last.classList.length; d++) {
+         if (ele_last.classList[d].startsWith('dataType_')) {
+           dataTypeAllow = false;
+           if (this.ele_selected.classList.length > 2) {
+             for (var o = 2; o < this.ele_selected.classList.length; o++) {
+               if (ele_last.classList[d] === this.ele_selected.classList[o]) {
+                 dataTypeAllow = true;
+                 break;
+               }
+             }
+             if (dataTypeAllow)
+               break;
+           }
+         }
+       }
+       if (dataTypeAllow) {
+         if (ele_last.classList.value.includes("maxConnections_")) {
+           for (var d = 2; d < ele_last.classList.length; d++) {
+             if (ele_last.classList[d].startsWith('maxConnections_')) {
+               maxConnections = parseInt(ele_last.classList[d].substring(ele_last.classList[d].lastIndexOf('_') + 1), 10);
+               break;
+             }
+           }
+           var id_input = input_id.slice(5);
+           if (maxConnections > 0 && this.drawflow.drawflow[this.module].data[id_input].inputs[input_class].connections.length >= maxConnections)
+             dataTypeAllow = false;
+         }
+       }
 
-        if(output_id !== input_id && input_class !== false) {
+
+        if(output_id !== input_id && input_class !== false && dataTypeAllow) {
 
           if(this.container.querySelectorAll('.connection.node_in_'+input_id+'.node_out_'+output_id+'.'+output_class+'.'+input_class).length === 0) {
           // Conection no exist save connection
@@ -655,6 +688,19 @@ export default class Drawflow {
   }
 
   drawConnection(ele) {
+    var id_output = ele.parentElement.parentElement.id.slice(5);
+    var output_class = ele.classList[1];
+    var maxConnections = 0;
+    if (ele.classList.value.includes("maxConnections_")) {
+      for (var d = 2; d < ele.classList.length; d++) {
+        if (ele.classList[d].startsWith('maxConnections_')) {
+          maxConnections = parseInt(ele.classList[d].substring(ele.classList[d].lastIndexOf('_') + 1), 10);
+          break;
+        }
+      }
+      if (maxConnections > 0 && this.drawflow.drawflow[this.module].data[id_output].outputs[output_class].connections.length >= maxConnections)
+        return false;
+    }
     var connection = document.createElementNS('http://www.w3.org/2000/svg',"svg");
     this.connection_ele = connection;
     var path = document.createElementNS('http://www.w3.org/2000/svg',"path");
@@ -664,10 +710,8 @@ export default class Drawflow {
     connection.classList.add("connection");
     connection.appendChild(path);
     this.precanvas.appendChild(connection);
-    var id_output = ele.parentElement.parentElement.id.slice(5);
-    var output_class = ele.classList[1];
     this.dispatch('connectionStart', { output_id: id_output, output_class:  output_class });
-
+    return true;
   }
 
   updateConnection(eX, eY) {
@@ -1202,21 +1246,57 @@ export default class Drawflow {
     outputs.classList.add("outputs");
 
     const json_inputs = {}
-    for(var x = 0; x < num_in; x++) {
-      const input = document.createElement('div');
-      input.classList.add("input");
-      input.classList.add("input_"+(x+1));
-      json_inputs["input_"+(x+1)] = { "connections": []};
-      inputs.appendChild(input);
+    if (typeof num_in === 'number') {
+      for (var x = 0; x < num_in; x++) {
+        const input = document.createElement('div');
+        input.classList.add("input");
+        input.classList.add("input_" + (x + 1));
+        json_inputs["input_" + (x + 1)] = {"connections": []};
+        inputs.appendChild(input);
+      }
+    } else {
+      for (var x = 0; x < num_in.length; x++) {
+        const row = num_in[x];
+        const input = document.createElement('div');
+        input.classList.add("input");
+        input.classList.add("input_" + (x + 1));
+        if (row.dataTypes) {
+          for (var d of row.dataTypes)
+            input.classList.add("dataType_" + d);
+        }
+        if (row.maxConnections) {
+          input.classList.add("maxConnections_" + row.maxConnections);
+        }
+        json_inputs["input_" + (x + 1)] = {"connections": [], "dataTypes": row.dataTypes, "maxConnections": row.maxConnections};
+        inputs.appendChild(input);
+      }
     }
 
     const json_outputs = {}
-    for(var x = 0; x < num_out; x++) {
-      const output = document.createElement('div');
-      output.classList.add("output");
-      output.classList.add("output_"+(x+1));
-      json_outputs["output_"+(x+1)] = { "connections": []};
-      outputs.appendChild(output);
+    if (typeof num_out === 'number') {
+      for (var x = 0; x < num_out; x++) {
+        const output = document.createElement('div');
+        output.classList.add("output");
+        output.classList.add("output_" + (x + 1));
+        json_outputs["output_" + (x + 1)] = {"connections": []};
+        outputs.appendChild(output);
+      }
+    } else {
+      for (var x = 0; x < num_out.length; x++) {
+        const row = num_out[x];
+        const output = document.createElement('div');
+        output.classList.add("output");
+        output.classList.add("output_" + (x + 1));
+        if (row.dataTypes) {
+          for (var d of row.dataTypes)
+            output.classList.add("dataType_" + d);
+        }
+        if (row.maxConnections) {
+          output.classList.add("maxConnections_" + row.maxConnections);
+        }
+        json_outputs["output_" + (x + 1)] = {"connections": [], "dataTypes": row.dataTypes, "maxConnections": row.maxConnections};
+        outputs.appendChild(output);
+      }
     }
 
     const content = document.createElement('div');
@@ -1329,6 +1409,13 @@ export default class Drawflow {
       const input = document.createElement('div');
       input.classList.add("input");
       input.classList.add(input_item);
+      if (dataNode.inputs[input_item].dataTypes) {
+        for (var d of dataNode.inputs[input_item].dataTypes)
+          input.classList.add("dataType_" + d);
+      }
+      if (dataNode.inputs[input_item].maxConnections) {
+        input.classList.add("maxConnections_" + dataNode.inputs[input_item].maxConnections);
+      }
       inputs.appendChild(input);
       Object.keys(dataNode.inputs[input_item].connections).map(function(output_item, index) {
 
@@ -1353,6 +1440,13 @@ export default class Drawflow {
       const output = document.createElement('div');
       output.classList.add("output");
       output.classList.add("output_"+(x+1));
+      if (dataNode.outputs["output_"+(x+1)].dataTypes) {
+        for (var d of dataNode.inputs["output_"+(x+1)].dataTypes)
+          output.classList.add("dataType_" + d);
+      }
+      if (dataNode.outputs["output_"+(x+1)].maxConnections) {
+        output.classList.add("maxConnections_" + dataNode.outputs["output_"+(x+1)].maxConnections);
+      }
       outputs.appendChild(output);
     }
 
@@ -1535,7 +1629,7 @@ export default class Drawflow {
     }
   }
 
-  addNodeInput(id) {
+  addNodeInput(id, inputData) {
     var moduleName = this.getModuleFromNodeId(id)
     const infoNode = this.getNodeFromId(id)
     const numInputs = Object.keys(infoNode.inputs).length;
@@ -1544,15 +1638,29 @@ export default class Drawflow {
       const input = document.createElement('div');
       input.classList.add("input");
       input.classList.add("input_"+(numInputs+1));
+      if (inputData && inputData.dataTypes) {
+        for (var d of inputData.dataTypes)
+          input.classList.add("dataType_" + d);
+      }
+      if (inputData && inputData.maxConnections) {
+        input.classList.add("maxConnections_" + inputData.maxConnections);
+      }
       const parent = this.container.querySelector('#node-'+id+' .inputs');
       parent.appendChild(input);
       this.updateConnectionNodes('node-'+id);
 
     }
-    this.drawflow.drawflow[moduleName].data[id].inputs["input_"+(numInputs+1)] = { "connections": []};
+    const doc = { "connections": []};
+    if (inputData) {
+      if (inputData.dataTypes)
+        doc.dataTypes = inputData.dataTypes;
+      if (inputData.maxConnections)
+        doc.maxConnections = inputData.maxConnections;
+    }
+    this.drawflow.drawflow[moduleName].data[id].inputs["input_"+(numInputs+1)] = doc;
   }
 
-  addNodeOutput(id) {
+  addNodeOutput(id, outputData) {
     var moduleName = this.getModuleFromNodeId(id)
     const infoNode = this.getNodeFromId(id)
     const numOutputs = Object.keys(infoNode.outputs).length;
@@ -1561,12 +1669,26 @@ export default class Drawflow {
       const output = document.createElement('div');
       output.classList.add("output");
       output.classList.add("output_"+(numOutputs+1));
+      if (outputData && outputData.dataTypes) {
+        for (var d of outputData.dataTypes)
+          output.classList.add("dataType_" + d);
+      }
+      if (outputData && outputData.maxConnections) {
+        output.classList.add("maxConnections_" + outputData.maxConnections);
+      }
       const parent = this.container.querySelector('#node-'+id+' .outputs');
       parent.appendChild(output);
       this.updateConnectionNodes('node-'+id);
 
     }
-    this.drawflow.drawflow[moduleName].data[id].outputs["output_"+(numOutputs+1)] = { "connections": []};
+    const doc = { "connections": []};
+    if (outputData) {
+      if (outputData.dataTypes)
+        doc.dataTypes = outputData.dataTypes;
+      if (outputData.maxConnections)
+        doc.maxConnections = outputData.maxConnections;
+    }
+    this.drawflow.drawflow[moduleName].data[id].outputs["output_"+(numOutputs+1)] = doc;
   }
 
   removeNodeInput(id, input_class) {

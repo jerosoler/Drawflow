@@ -202,17 +202,24 @@ Adding a node is simple.
 ```javascript
 editor.addNode(name, inputs, outputs, posx, posy, class, data, html);
 ```
+Parameter | Type            | Description                                                       
+--- |-----------------|-------------------------------------------------------------------
+`name` | text            | Name of module                                                    
+`inputs` | number or array | Number of de inputs or Array of Input/Output-Type
+`outputs` | number or array | Number of de outputs or Array of Input/Output-Type
+`pos_x` | number          | Position on start node left                                       
+`pos_y` | number          | Position on start node top                                        
+`class` | text            | Added classname to de node. Multiple classnames separated by space 
+`data` | json            | Data passed to node                                               
+`html` | text            | HTML drawn on node or `name` of register node.                    
+`typenode` | boolean & text  | Default `false`, `true` for Object HTML, `vue` for vue            
+
+Input/Output-Type
+
 Parameter | Type | Description
---- | --- | ---
-`name` | text | Name of module
-`inputs` | number | Number of de inputs
-`outputs` | number | Number of de outputs
-`pos_x` | number | Position on start node left
-`pos_y` | number | Position on start node top
-`class` | text | Added classname to de node. Multiple classnames separated by space
-`data` | json | Data passed to node
-`html` | text | HTML drawn on node or `name` of register node.
-`typenode` | boolean & text | Default `false`, `true` for Object HTML, `vue` for vue
+---|-------|--------
+`dataTypes` | array of string | Optional list of own data types. On input who's allow, on output which are provided.
+`maxConnections` | number  | Optional maximum number of connections for this input / output.
 
 You can use the attribute `df-*` in **inputs, textarea or select** to synchronize with the node data and **contenteditable**.
 
@@ -264,8 +271,8 @@ Mehtod | Description
 `getNodesFromName(name)` | Return Array of nodes id. Ex: name: `telegram`
 `removeNodeId(id)` | Remove node. Ex id: `node-x`
 `updateNodeDataFromId` | Update data element. Ex: `5, { name: 'Drawflow' }`
-`addNodeInput(id)` | Add input to node. Ex id: `5`
-`addNodeOutput(id)` | Add output to node. Ex id: `5`
+`addNodeInput(id, inputData)` | Add input to node. Ex id: `5`. The second parameter is optional and is an Input/Output-Type
+`addNodeOutput(id, outputData)` | Add output to node. Ex id: `5`. The second parameter is optional and is an Input/Output-Type
 `removeNodeInput(id, input_class)` | Remove input to node. Ex id: `5`, `input_2`
 `removeNodeOutput(id, output_class)` | Remove output to node. Ex id: `5`, `output_2`
 `addConnection(id_output, id_input, output_class, input_class)` | Add connection. Ex: `15,16,'output_1','input_1'`
