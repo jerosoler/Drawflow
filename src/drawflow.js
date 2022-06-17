@@ -1391,6 +1391,10 @@ export default class Drawflow {
             if(elems[i].isContentEditable) {
               elems[i].innerText = key[1];
             }
+            else if (elems[i].tagName.toLowerCase() === 'input' && elems[i].getAttribute('type') === 'checkbox') {
+              elems[i].checked = key[1];
+              //console.log('✅ element is a checkbox');
+            } 
           }
       }
     })
