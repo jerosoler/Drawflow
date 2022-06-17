@@ -1441,7 +1441,7 @@ export default class Drawflow {
       output.classList.add("output");
       output.classList.add("output_"+(x+1));
       if (dataNode.outputs["output_"+(x+1)].dataTypes) {
-        for (var d of dataNode.inputs["output_"+(x+1)].dataTypes)
+        for (var d of dataNode.outputs["output_"+(x+1)].dataTypes)
           output.classList.add("dataType_" + d);
       }
       if (dataNode.outputs["output_"+(x+1)].maxConnections) {
