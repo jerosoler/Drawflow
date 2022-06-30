@@ -63,11 +63,12 @@ Download or clone repository and copy the dist folder, CDN option Or npm.
 
 #### CDN
 ```html
+# Last
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jerosoler/Drawflow/dist/drawflow.min.css">
 <script src="https://cdn.jsdelivr.net/gh/jerosoler/Drawflow/dist/drawflow.min.js"></script>
-# or
-<link rel="stylesheet" href="https://unpkg.com/drawflow@0.0.45/dist/drawflow.min.css" />
-<script src="https://unpkg.com/drawflow@0.0.45/dist/drawflow.min.js"></script>
+# or version view releases https://github.com/jerosoler/Drawflow/releases
+<link rel="stylesheet" href="https://unpkg.com/drawflow@x.x.xx/dist/drawflow.min.css" />
+<script src="https://unpkg.com/drawflow@x.x.xx/dist/drawflow.min.js"></script>
 ```
 
 #### NPM
