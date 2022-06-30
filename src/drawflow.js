@@ -322,6 +322,8 @@ export default class Drawflow {
       this.pos_x_start = e.touches[0].clientX;
       this.pos_y = e.touches[0].clientY;
       this.pos_y_start = e.touches[0].clientY;
+      this.mouse_x = e.touches[0].clientX;
+      this.mouse_y = e.touches[0].clientY;
     } else {
       this.pos_x = e.clientX;
       this.pos_x_start = e.clientX;
