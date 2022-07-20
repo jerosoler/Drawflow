@@ -1230,7 +1230,7 @@ export default class Drawflow {
     } else {
       if(parseInt(this.render.version) === 3 ) {
         //Vue 3
-        let wrapper = this.render.h(this.noderegister[html].html, this.noderegister[html].props, this.noderegister[html].options);
+        let wrapper = this.render.h(this.noderegister[html].html, {...this.noderegister[html].props, ...data}, this.noderegister[html].options);
         wrapper.appContext = this.parent;
         this.render.render(wrapper,content);
 
@@ -1238,7 +1238,7 @@ export default class Drawflow {
         // Vue 2
         let wrapper = new this.render({
           parent: this.parent,
-          render: h => h(this.noderegister[html].html, { props: this.noderegister[html].props }),
+          render: h => h(this.noderegister[html].html, { props: {...this.noderegister[html].props, ...data} }),
           ...this.noderegister[html].options
         }).$mount()
         //
