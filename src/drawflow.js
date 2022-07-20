@@ -1479,19 +1479,21 @@ export default class Drawflow {
       }
     }
 
-    Object.entries(dataNode.data).forEach(function (key, value) {
-      if(typeof key[1] === "object") {
-        insertObjectkeys(null, key[0], key[0]);
-      } else {
-        var elems = content.querySelectorAll('[df-'+key[0]+']');
-          for(var i = 0; i < elems.length; i++) {
+    if (dataNode.data) {
+      Object.entries(dataNode.data).forEach(function (key, value) {
+        if (typeof key[1] === "object") {
+          insertObjectkeys(null, key[0], key[0]);
+        } else {
+          var elems = content.querySelectorAll('[df-' + key[0] + ']');
+          for (var i = 0; i < elems.length; i++) {
             elems[i].value = key[1];
-            if(elems[i].isContentEditable) {
+            if (elems[i].isContentEditable) {
               elems[i].innerText = key[1];
             }
           }
-      }
-    })
+        }
+      });
+    }
 
     function insertObjectkeys(object, name, completname) {
       if(object === null) {
