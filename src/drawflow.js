@@ -1405,49 +1405,53 @@ export default class Drawflow {
     const outputs = document.createElement('div');
     outputs.classList.add("outputs");
 
-    Object.keys(dataNode.inputs).map(function(input_item, index) {
-      const input = document.createElement('div');
-      input.classList.add("input");
-      input.classList.add(input_item);
-      if (dataNode.inputs[input_item].dataTypes) {
-        for (var d of dataNode.inputs[input_item].dataTypes)
-          input.classList.add("dataType_" + d);
-      }
-      if (dataNode.inputs[input_item].maxConnections) {
-        input.classList.add("maxConnections_" + dataNode.inputs[input_item].maxConnections);
-      }
-      inputs.appendChild(input);
-      Object.keys(dataNode.inputs[input_item].connections).map(function(output_item, index) {
+    if (dataNode.inputs) {
+      Object.keys(dataNode.inputs).map(function (input_item, index) {
+        const input = document.createElement('div');
+        input.classList.add("input");
+        input.classList.add(input_item);
+        if (dataNode.inputs[input_item].dataTypes) {
+          for (var d of dataNode.inputs[input_item].dataTypes)
+            input.classList.add("dataType_" + d);
+        }
+        if (dataNode.inputs[input_item].maxConnections) {
+          input.classList.add("maxConnections_" + dataNode.inputs[input_item].maxConnections);
+        }
+        inputs.appendChild(input);
+        Object.keys(dataNode.inputs[input_item].connections).map(function (output_item, index) {
 
-        var connection = document.createElementNS('http://www.w3.org/2000/svg',"svg");
-        var path = document.createElementNS('http://www.w3.org/2000/svg',"path");
-        path.classList.add("main-path");
-        path.setAttributeNS(null, 'd', '');
-        // path.innerHTML = 'a';
-        connection.classList.add("connection");
-        connection.classList.add("node_in_node-"+dataNode.id);
-        connection.classList.add("node_out_node-"+dataNode.inputs[input_item].connections[output_item].node);
-        connection.classList.add(dataNode.inputs[input_item].connections[output_item].input);
-        connection.classList.add(input_item);
+          var connection = document.createElementNS('http://www.w3.org/2000/svg', "svg");
+          var path = document.createElementNS('http://www.w3.org/2000/svg', "path");
+          path.classList.add("main-path");
+          path.setAttributeNS(null, 'd', '');
+          // path.innerHTML = 'a';
+          connection.classList.add("connection");
+          connection.classList.add("node_in_node-" + dataNode.id);
+          connection.classList.add("node_out_node-" + dataNode.inputs[input_item].connections[output_item].node);
+          connection.classList.add(dataNode.inputs[input_item].connections[output_item].input);
+          connection.classList.add(input_item);
 
-        connection.appendChild(path);
-        precanvas.appendChild(connection);
+          connection.appendChild(path);
+          precanvas.appendChild(connection);
 
+        });
       });
-    });
+    }
 
-    for(var x = 0; x < Object.keys(dataNode.outputs).length; x++) {
-      const output = document.createElement('div');
-      output.classList.add("output");
-      output.classList.add("output_"+(x+1));
-      if (dataNode.outputs["output_"+(x+1)].dataTypes) {
-        for (var d of dataNode.outputs["output_"+(x+1)].dataTypes)
-          output.classList.add("dataType_" + d);
+    if (dataNode.outputs) {
+      for (var x = 0; x < Object.keys(dataNode.outputs).length; x++) {
+        const output = document.createElement('div');
+        output.classList.add("output");
+        output.classList.add("output_" + (x + 1));
+        if (dataNode.outputs["output_" + (x + 1)].dataTypes) {
+          for (var d of dataNode.outputs["output_" + (x + 1)].dataTypes)
+            output.classList.add("dataType_" + d);
+        }
+        if (dataNode.outputs["output_" + (x + 1)].maxConnections) {
+          output.classList.add("maxConnections_" + dataNode.outputs["output_" + (x + 1)].maxConnections);
+        }
+        outputs.appendChild(output);
       }
-      if (dataNode.outputs["output_"+(x+1)].maxConnections) {
-        output.classList.add("maxConnections_" + dataNode.outputs["output_"+(x+1)].maxConnections);
-      }
-      outputs.appendChild(output);
     }
 
     const content = document.createElement('div');
@@ -1475,19 +1479,21 @@ export default class Drawflow {
       }
     }
 
-    Object.entries(dataNode.data).forEach(function (key, value) {
-      if(typeof key[1] === "object") {
-        insertObjectkeys(null, key[0], key[0]);
-      } else {
-        var elems = content.querySelectorAll('[df-'+key[0]+']');
-          for(var i = 0; i < elems.length; i++) {
+    if (dataNode.data) {
+      Object.entries(dataNode.data).forEach(function (key, value) {
+        if (typeof key[1] === "object") {
+          insertObjectkeys(null, key[0], key[0]);
+        } else {
+          var elems = content.querySelectorAll('[df-' + key[0] + ']');
+          for (var i = 0; i < elems.length; i++) {
             elems[i].value = key[1];
-            if(elems[i].isContentEditable) {
+            if (elems[i].isContentEditable) {
               elems[i].innerText = key[1];
             }
           }
-      }
-    })
+        }
+      });
+    }
 
     function insertObjectkeys(object, name, completname) {
       if(object === null) {
@@ -1524,42 +1530,44 @@ export default class Drawflow {
     const reroute_width = this.reroute_width
     const reroute_fix_curvature = this.reroute_fix_curvature
     const container = this.container;
-    Object.keys(dataNode.outputs).map(function(output_item, index) {
-      Object.keys(dataNode.outputs[output_item].connections).map(function(input_item, index) {
-        const points = dataNode.outputs[output_item].connections[input_item].points
-        if(points !== undefined) {
+    if (dataNode.outputs) {
+      Object.keys(dataNode.outputs).map(function (output_item, index) {
+        Object.keys(dataNode.outputs[output_item].connections).map(function (input_item, index) {
+          const points = dataNode.outputs[output_item].connections[input_item].points
+          if (points !== undefined) {
 
-          points.forEach((item, i) => {
-            const input_id = dataNode.outputs[output_item].connections[input_item].node;
-            const input_class = dataNode.outputs[output_item].connections[input_item].output;
-            const ele = container.querySelector('.connection.node_in_node-'+input_id+'.node_out_node-'+dataNode.id+'.'+output_item+'.'+input_class);
+            points.forEach((item, i) => {
+              const input_id = dataNode.outputs[output_item].connections[input_item].node;
+              const input_class = dataNode.outputs[output_item].connections[input_item].output;
+              const ele = container.querySelector('.connection.node_in_node-' + input_id + '.node_out_node-' + dataNode.id + '.' + output_item + '.' + input_class);
 
-            if(reroute_fix_curvature) {
-              if(i === 0) {
-                for (var z = 0; z < points.length; z++) {
-                  var path = document.createElementNS('http://www.w3.org/2000/svg',"path");
-                  path.classList.add("main-path");
-                  path.setAttributeNS(null, 'd', '');
-                  ele.appendChild(path);
+              if (reroute_fix_curvature) {
+                if (i === 0) {
+                  for (var z = 0; z < points.length; z++) {
+                    var path = document.createElementNS('http://www.w3.org/2000/svg', "path");
+                    path.classList.add("main-path");
+                    path.setAttributeNS(null, 'd', '');
+                    ele.appendChild(path);
 
+                  }
                 }
               }
-            }
 
-            const point = document.createElementNS('http://www.w3.org/2000/svg',"circle");
-            point.classList.add("point");
-            var pos_x = item.pos_x;
-            var pos_y = item.pos_y;
+              const point = document.createElementNS('http://www.w3.org/2000/svg', "circle");
+              point.classList.add("point");
+              var pos_x = item.pos_x;
+              var pos_y = item.pos_y;
 
-            point.setAttributeNS(null, 'cx', pos_x);
-            point.setAttributeNS(null, 'cy', pos_y);
-            point.setAttributeNS(null, 'r', reroute_width);
+              point.setAttributeNS(null, 'cx', pos_x);
+              point.setAttributeNS(null, 'cy', pos_y);
+              point.setAttributeNS(null, 'r', reroute_width);
 
-            ele.appendChild(point);
-          });
-        };
+              ele.appendChild(point);
+            });
+          }
+        });
       });
-    });
+    }
   }
 
   updateNodeValue(event) {
