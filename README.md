@@ -178,6 +178,7 @@ Parameter | Type | Default | Description
 `zoom_last_value` | Number | 1 | Default zoom last value
 `draggable_inputs` | Boolean | true | Drag nodes on click inputs
 `useuuid` | Boolean | false | Use UUID as node ID instead of integer index. Only affect newly created nodes, do not affect imported nodes
+`removeConfirmation` | Boolean | false | If true, `nodeRemovingRequest` event is fired instead of removing the node. It allows developper to create a confirmation message and cancel the operation or confirm it with the `removeNodeId()` method
 
 ### Reroute
 Active reroute connections. Use before `start` or `import`.
@@ -292,6 +293,7 @@ Event | Return | Description
 --- | --- | ---
   `nodeCreated` | id | `id` of Node
   `nodeRemoved` | id | `id` of Node
+  `nodeRemovingRequest` | id | Only if `removeConfirmation` is set to true. It returns the `id` of Node.
   `nodeDataChanged` | id | `id` of Node df-* attributes changed.
   `nodeSelected` | id | `id` of Node
   `nodeUnselected` | true | Unselect node

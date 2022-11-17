@@ -44,6 +44,7 @@ export default class Drawflow {
     this.zoom_min = 0.5;
     this.zoom_value = 0.1;
     this.zoom_last_value = 1;
+    this.removeConfirmation = false;
 
     // Mobile
     this.evCache = new Array();
@@ -295,6 +296,10 @@ export default class Drawflow {
         this.ele_selected.classList.add("selected");
       break;
       case 'drawflow-delete':
+        if (this.removeConfirmation) {
+          this.dispatch('nodeRemovingRequest', this.node_selected.id);
+          break;
+        }
         if(this.node_selected ) {
           this.removeNodeId(this.node_selected.id);
         }
