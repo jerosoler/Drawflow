@@ -1846,7 +1846,7 @@ export default class Drawflow {
     this.dispatch('moduleCreated', name);
   }
   changeModule(name) {
-    this.dispatch('moduleChanged', name);
+    this.dispatch('moduleChanging', name)
     this.module = name;
     this.precanvas.innerHTML = "";
     this.canvas_x = 0;
@@ -1859,6 +1859,7 @@ export default class Drawflow {
     this.zoom_last_value = 1;
     this.precanvas.style.transform = '';
     this.import(this.drawflow, false);
+    this.dispatch('moduleChanged', name);
   }
 
   removeModule(name) {
