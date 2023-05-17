@@ -48,6 +48,9 @@ export default class Drawflow {
     // Mobile
     this.evCache = new Array();
     this.prevDiff = -1;
+
+    // Vue
+    this.vueInstances = []
   }
 
   start () {
@@ -1242,6 +1245,7 @@ export default class Drawflow {
           ...this.noderegister[html].options
         }).$mount()
         //
+        this.vueInstances.push(wrapper)
         content.appendChild(wrapper.$el);
       }
     }
@@ -1877,6 +1881,9 @@ export default class Drawflow {
   clear () {
     this.precanvas.innerHTML = "";
     this.drawflow = { "drawflow": { "Home": { "data": {} }}};
+
+    this.vueInstances.forEach(instance => instance.$destroy())
+    this.vueInstances = []
   }
   export () {
     const dataExport = JSON.parse(JSON.stringify(this.drawflow));
