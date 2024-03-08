@@ -213,7 +213,7 @@ export default class Drawflow {
           this.connection_selected = null;
         }
         if(this.node_selected != this.ele_selected) {
-          this.dispatch('nodeSelected', this.ele_selected.id.slice(5));
+          this.dispatch('nodeSelected', Number(this.ele_selected.id.slice(5)));
         }
         this.node_selected = this.ele_selected;
         this.node_selected.classList.add("selected");
@@ -431,7 +431,7 @@ export default class Drawflow {
 
     if(this.drag) {
       if(this.pos_x_start != e_pos_x || this.pos_y_start != e_pos_y) {
-        this.dispatch('nodeMoved', this.ele_selected.id.slice(5));
+        this.dispatch('nodeMoved', Number(this.ele_selected.id.slice(5)));
       }
     }
 
@@ -1486,7 +1486,7 @@ export default class Drawflow {
                 if(event.target.isContentEditable) {
                   target[keys[keys.length - 1]] = event.target.innerText;
                 }
-                this.dispatch('nodeDataChanged', event.target.closest(".drawflow_content_node").parentElement.id.slice(5));
+                this.dispatch('nodeDataChanged', Number(event.target.closest(".drawflow_content_node").parentElement.id.slice(5)));
           }
     }
   }
@@ -1724,7 +1724,7 @@ export default class Drawflow {
       this.container.querySelector(`#${id}`).remove();
     }
     delete this.drawflow.drawflow[moduleName].data[id.slice(5)];
-    this.dispatch('nodeRemoved', id.slice(5));
+    this.dispatch('nodeRemoved', Number(id.slice(5)));
   }
 
   removeConnection() {
