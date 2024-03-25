@@ -1950,4 +1950,19 @@ export default class Drawflow {
         var uuid = s.join("");
         return uuid;
     }
+
+    clearNodeData (id) {
+      var moduleName = this.getModuleFromNodeId(id)
+      this.drawflow.drawflow[moduleName].data[id].data = {};
+      if(this.module === moduleName) {
+        const content = this.container.querySelector('#node-'+id);
+        const contentData = content.querySelectorAll('[df-field]');
+        contentData.forEach((item, i) => {
+          item.value = '';
+          if(item.isContentEditable) {
+            item.innerText = '';
+          }
+        });
+      }
+    }
 }
