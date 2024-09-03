@@ -530,7 +530,7 @@ export default class Drawflow {
     if(this.node_selected || this.connection_selected) {
       var deletebox = document.createElement('div');
       deletebox.classList.add("drawflow-delete");
-      deletebox.innerHTML = "x";
+      deletebox.innerHTML = "✕";
       if(this.node_selected) {
         this.node_selected.appendChild(deletebox);
 
