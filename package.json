@@ -30,7 +30,7 @@
     "babel-loader": "^8.1.0",
     "babel-polyfill": "^6.26.0",
     "babel-preset-es2015": "^6.24.1",
-    "css-loader": "^3.5.2",
+    "css-loader": "^7.1.2",
     "es-dev-server": "^2.1.0",
     "gulp": "^4.0.2",
     "gulp-concat": "^2.6.1",
