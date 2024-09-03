@@ -177,9 +177,9 @@ export default class Drawflow {
     this.dispatch('click', e);
     if(this.editor_mode === 'fixed') {
       //return false;
-       e.preventDefault();
        if(e.target.classList[0] === 'parent-drawflow' || e.target.classList[0] === 'drawflow') {
          this.ele_selected = e.target.closest(".parent-drawflow");
+         e.preventDefault();
        } else {
          return false;
        }
