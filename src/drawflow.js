@@ -693,7 +693,7 @@ export default class Drawflow {
 
   }
 
-  addConnection(id_output, id_input, output_class, input_class) {
+  addConnection(id_output, id_input, output_class, input_class, labels) {
     var nodeOneModule = this.getModuleFromNodeId(id_output);
     var nodeTwoModule = this.getModuleFromNodeId(id_input);
     if(nodeOneModule === nodeTwoModule) {
@@ -725,6 +725,10 @@ export default class Drawflow {
           connection.classList.add(output_class);
           connection.classList.add(input_class);
           connection.appendChild(path);
+          if (labels) {
+            var connectionLabel = this.buildConnectionLabels(labels, id_input, id_output)
+            connection.appendChild(connectionLabel);
+          }
           this.precanvas.appendChild(connection);
           this.updateConnectionNodes('node-'+id_output);
           this.updateConnectionNodes('node-'+id_input);
@@ -733,6 +737,35 @@ export default class Drawflow {
         this.dispatch('connectionCreated', { output_id: id_output, input_id: id_input, output_class:  output_class, input_class: input_class});
       }
     }
+  }
+
+  buildConnectionLabels(labels, id_input, id_output) {
+    var foreignObject = document.createElementNS('http://www.w3.org/2000/svg', "foreignObject");
+    if (!labels || labels.length == 0) {
+      return foreignObject;
+    }
+    foreignObject.setAttributeNS(null, 'width', '100%');
+    foreignObject.setAttributeNS(null, 'height', '100%');
+    foreignObject.style['overflow'] = 'visible';
+    var div = document.createElement('div');
+    labels.forEach((labelHtml) => {
+      var template = document.createElement('template');
+      labelHtml = labelHtml.trim();
+      template.innerHTML = labelHtml;
+      div.appendChild(template.content.firstChild);
+    })
+    div.classList.add("connection-label-container");
+    div.setAttribute('node_in', id_input);
+    div.setAttribute('node_out', id_output);
+    foreignObject.appendChild(div);
+    return foreignObject;
+  }
+
+  updateConnectionLabels(labelFOContainer, start_pos_x, start_pos_y, end_pos_x, end_pos_y) {
+    var xMid = start_pos_x + (end_pos_x - start_pos_x) / 2
+    var yMid = start_pos_y + (end_pos_y - start_pos_y) / 2
+    labelFOContainer.setAttributeNS(null, 'x', xMid);
+    labelFOContainer.setAttributeNS(null, 'y', yMid);
   }
 
   updateConnectionNodes(id) {
@@ -745,6 +778,7 @@ export default class Drawflow {
     const precanvas = this.precanvas;
     const curvature = this.curvature;
     const createCurvature = this.createCurvature;
+    const updateConnectionLabels = this.updateConnectionLabels;
     const reroute_curvature = this.reroute_curvature;
     const reroute_curvature_start_end = this.reroute_curvature_start_end;
     const reroute_fix_curvature = this.reroute_fix_curvature;
@@ -780,6 +814,9 @@ export default class Drawflow {
 
         const lineCurve = createCurvature(line_x, line_y, x, y, curvature, 'openclose');
         elemsOut[item].children[0].setAttributeNS(null, 'd', lineCurve );
+        if (elemsOut[item].children[1]) {
+          updateConnectionLabels(elemsOut[item].children[1], line_x, line_y, x, y);
+        }
       } else {
         const points = elemsOut[item].querySelectorAll('.point');
         let linecurve = '';
@@ -924,6 +961,9 @@ export default class Drawflow {
 
         const lineCurve = createCurvature(line_x, line_y, x, y, curvature, 'openclose');
         elems[item].children[0].setAttributeNS(null, 'd', lineCurve );
+        if (elems[item].children[1]) {
+          updateConnectionLabels(elems[item].children[1], line_x, line_y, x, y);
+        }
 
       } else {
         const points = elems[item].querySelectorAll('.point');
@@ -1310,6 +1350,7 @@ export default class Drawflow {
   }
 
   addNodeImport (dataNode, precanvas) {
+    const buildConnectionLabels = this.buildConnectionLabels;
     const parent = document.createElement('div');
     parent.classList.add("parent-node");
 
@@ -1346,6 +1387,11 @@ export default class Drawflow {
         connection.classList.add(input_item);
 
         connection.appendChild(path);
+        var labels = dataNode.inputs[input_item].connections[output_item].labels
+        if (labels) {
+          var connectionLabel = buildConnectionLabels(labels, dataNode.id, dataNode.inputs[input_item].connections[output_item].node)
+          connection.appendChild(connectionLabel);
+        }
         precanvas.appendChild(connection);
 
       });
