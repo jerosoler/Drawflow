@@ -1879,7 +1879,7 @@ export default class Drawflow {
     this.drawflow = { "drawflow": { "Home": { "data": {} }}};
   }
   export () {
-    const dataExport = JSON.parse(JSON.stringify(this.drawflow));
+    const dataExport = this.getReorderedFlow(JSON.parse(JSON.stringify(this.drawflow)));
     this.dispatch('export', dataExport);
     return dataExport;
   }
@@ -1950,4 +1950,78 @@ export default class Drawflow {
         var uuid = s.join("");
         return uuid;
     }
+
+  //returns the correct order of the json for exporting; when the order of the nodes are changed
+  getReorderedFlow(flowJson){
+    // Parse the JSON string to an object
+    const flowData = flowJson;
+    
+    // Get the nodes from the flow data
+    const nodes = flowData.drawflow.Home.data;
+    
+    // Create a map to store each node's output connection
+    const outputMap = {};
+
+    let startingNode; //node id of the first node from where the flow is started
+
+
+    
+    // Iterate through each node
+    Object.values(nodes).forEach(node => {
+        const nodeId = node.id;
+        outputMap[nodeId] = null;
+        
+        // Find the output connection, if any
+        Object.values(node.outputs).forEach(output => {
+            if (output.connections.length > 0) {
+                const outputNodeArray=[];
+                output.connections.forEach((connection)=>{
+                    outputNodeArray.push(connection.node);
+                }) 
+                outputMap[nodeId] = outputNodeArray;
+            }
+
+
+            //finding the starting node
+            Object.values(node.inputs).forEach(input=>{
+                if(input.connections.length==0){
+                    startingNode=nodeId;
+                }
+            })
+
+        });
+    });
+    
+
+    const keys = Object.keys(outputMap);
+
+    
+    const reorderedNodeIds = [];
+
+    reorderedNodeIds.push(startingNode);
+    let key=startingNode;
+   while (outputMap[key]!==null){
+    reorderedNodeIds.push(...outputMap[key]);
+    
+    //now find the next key
+    key = outputMap[key][outputMap[key].length-1];
+   }
+
+    
+    // Create a new object to store the reordered flow data
+    const reorderedFlowData = {};
+    reorderedFlowData.drawflow = { Home: { data: {} } };
+    
+    // Reorder nodes
+    reorderedNodeIds.forEach((id, index) => {
+        reorderedFlowData.drawflow.Home.data[index + 1] = nodes[id];
+    });
+    
+    // Convert the reordered flow data object back to JSON
+    const reorderedFlowJson = JSON.stringify(reorderedFlowData);
+    
+    return reorderedFlowJson;
+
+  }
+  
 }
