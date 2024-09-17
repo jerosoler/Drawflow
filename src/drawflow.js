@@ -44,6 +44,7 @@ export default class Drawflow {
     this.zoom_min = 0.5;
     this.zoom_value = 0.1;
     this.zoom_last_value = 1;
+    this.zoom_use_ctrl_key = true;
 
     // Mobile
     this.evCache = new Array();
@@ -570,7 +571,7 @@ export default class Drawflow {
   }
 
   zoom_enter(event, delta) {
-    if (event.ctrlKey) {
+    if (!this.zoom_use_ctrl_key || event.ctrlKey) {
       event.preventDefault()
       if(event.deltaY > 0) {
         // Zoom Out

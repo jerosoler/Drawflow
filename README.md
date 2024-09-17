@@ -18,24 +18,36 @@ Installing only a javascript library and with four lines of code.
 🎨 [THEME EDIT GENERATOR](https://jerosoler.github.io/drawflow-theme-generator/)
 
 ## Table of contents
-- [Features](#features)
-- [Installation](#installation)
-  - [Running](#running)
-- [Mouse and  Keys](#mouse-and-keys)
-- [Editor](#editor)
-  - [Options](#editor-options)
-- [Modules](#modules)
-- [Nodes](#nodes)
-  - [Node example](#node-example)
-  - [Register Node](#register-node)
-- [Methods](#methods)
-  - [Methods example](#methods-example)
-- [Events](#events)
-  - [Events example](#events-example)
-- [Export / Import](#export-/-import)
-  - [Export example](#export-example)
-- [Example](#example)
-- [License](#license)
+- [Drawflow](#drawflow)
+  - [Table of contents](#table-of-contents)
+  - [Features](#features)
+  - [Installation](#installation)
+      - [Clone](#clone)
+      - [CDN](#cdn)
+      - [NPM](#npm)
+    - [Typescript](#typescript)
+      - [Import](#import)
+      - [Require](#require)
+    - [Running](#running)
+    - [For vue 2 example.](#for-vue-2-example)
+    - [For vue 3 example.](#for-vue-3-example)
+    - [Nuxt](#nuxt)
+  - [Mouse and  Keys](#mouse-and--keys)
+  - [Editor](#editor)
+    - [Editor options](#editor-options)
+    - [Reroute](#reroute)
+  - [Modules](#modules)
+  - [Nodes](#nodes)
+    - [Node example](#node-example)
+    - [Register Node](#register-node)
+  - [Methods](#methods)
+    - [Methods example](#methods-example)
+  - [Events](#events)
+    - [Events example](#events-example)
+  - [Export / Import](#export--import)
+    - [Export example](#export-example)
+  - [Example](#example)
+  - [License](#license)
 
 ## Features
 - Drag Nodes
@@ -176,6 +188,7 @@ Parameter | Type | Default | Description
 `zoom_min` | Number | 0.5 | Default zoom min
 `zoom_value` | Number | 0.1 | Default zoom value update
 `zoom_last_value` | Number | 1 | Default zoom last value
+`zoom_use_ctrl_key` | Boolean | true | Force use of ctrl key when using mousewheel for zooming
 `draggable_inputs` | Boolean | true | Drag nodes on click inputs
 `useuuid` | Boolean | false | Use UUID as node ID instead of integer index. Only affect newly created nodes, do not affect imported nodes
 
