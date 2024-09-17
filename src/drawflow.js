@@ -524,9 +524,7 @@ export default class Drawflow {
     if(this.editor_mode === 'fixed' || this.editor_mode === 'view') {
       return false;
     }
-    if(this.precanvas.getElementsByClassName("drawflow-delete").length) {
-      this.precanvas.getElementsByClassName("drawflow-delete")[0].remove()
-    };
+    this.contextmenuDel()
     if(this.node_selected || this.connection_selected) {
       var deletebox = document.createElement('div');
       deletebox.classList.add("drawflow-delete");
