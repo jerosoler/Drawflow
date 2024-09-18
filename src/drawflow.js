@@ -48,6 +48,9 @@ export default class Drawflow {
     // Mobile
     this.evCache = new Array();
     this.prevDiff = -1;
+
+    // Vue
+    this.vueInstances = {};
   }
 
   start () {
@@ -1242,6 +1245,7 @@ export default class Drawflow {
           ...this.noderegister[html].options
         }).$mount()
         //
+        this.vueInstances[newNodeId] = wrapper;
         content.appendChild(wrapper.$el);
       }
     }
@@ -1724,6 +1728,10 @@ export default class Drawflow {
       this.container.querySelector(`#${id}`).remove();
     }
     delete this.drawflow.drawflow[moduleName].data[id.slice(5)];
+    if(this.vueInstances[id.slice(5)]) {
+      this.vueInstances[id.slice(5)].$destroy();
+      delete this.vueInstances[id.slice(5)];
+    }
     this.dispatch('nodeRemoved', id.slice(5));
   }
 
@@ -1877,6 +1885,9 @@ export default class Drawflow {
   clear () {
     this.precanvas.innerHTML = "";
     this.drawflow = { "drawflow": { "Home": { "data": {} }}};
+
+    Object.keys(this.vueInstances).forEach(key => this.vueInstances[key].$destroy());
+    this.vueInstances = {};
   }
   export () {
     const dataExport = JSON.parse(JSON.stringify(this.drawflow));
