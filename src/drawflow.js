@@ -6,6 +6,7 @@ export default class Drawflow {
     this.nodeId = 1;
     this.ele_selected = null;
     this.node_selected = null;
+    this.framenode_selected = null;
     this.drag = false;
     this.reroute = false;
     this.reroute_fix_curvature = false;
@@ -32,10 +33,12 @@ export default class Drawflow {
     this.draggable_inputs = true;
     this.useuuid = false;
     this.parent = parent;
+    this.frame_to_nodes_registry = { };
+    this.nodes_to_frames_registry = { };
 
     this.noderegister = {};
     this.render = render;
-    this.drawflow = { "drawflow": { "Home": { "data": {} }}};
+    this.drawflow = { "drawflow": { "Home": { "data": { "_frames": {} } } } };
     // Configurable options
     this.module = 'Home';
     this.editor_mode = 'edit';
@@ -44,6 +47,7 @@ export default class Drawflow {
     this.zoom_min = 0.5;
     this.zoom_value = 0.1;
     this.zoom_last_value = 1;
+    this.frameNodePadding = { "top": 100, "left": 30, "right": 30, "bottom": 20 }
 
     // Mobile
     this.evCache = new Array();
@@ -139,7 +143,9 @@ export default class Drawflow {
   /* End Mobile Zoom */
   load() {
     for (var key in this.drawflow.drawflow[this.module].data) {
-      this.addNodeImport(this.drawflow.drawflow[this.module].data[key], this.precanvas);
+      if (!key.startsWith('_')) {
+        this.addNodeImport(this.drawflow.drawflow[this.module].data[key], this.precanvas);
+      }
     }
 
     if(this.reroute) {
@@ -212,6 +218,10 @@ export default class Drawflow {
           this.removeReouteConnectionSelected();
           this.connection_selected = null;
         }
+        if (this.framenode_selected != null) {
+          this.framenode_selected.classList.remove("selected");
+          this.framenode_selected = null
+        }
         if(this.node_selected != this.ele_selected) {
           this.dispatch('nodeSelected', this.ele_selected.id.slice(5));
         }
@@ -239,7 +249,29 @@ export default class Drawflow {
           this.removeReouteConnectionSelected();
           this.connection_selected = null;
         }
+        if (this.framenode_selected != null) {
+          this.framenode_selected.classList.remove("selected");
+          this.framenode_selected = null
+        }
         this.drawConnection(e.target);
+        break;
+      case 'drawflow-framenode':
+        if (this.node_selected != null) {
+          this.node_selected.classList.remove("selected");
+          this.node_selected = null
+          this.dispatch('nodeUnselected', true);
+        }
+        if (this.connection_selected != null) {
+          this.connection_selected.classList.remove("selected");
+          this.removeReouteConnectionSelected();
+          this.connection_selected = null;
+        }
+        if (this.framenode_selected != null) {
+          this.framenode_selected.classList.remove("selected");
+          this.framenode_selected = null
+        }
+        this.framenode_selected = this.ele_selected;
+        this.framenode_selected.classList.add("selected");
         break;
       case 'parent-drawflow':
         if(this.node_selected != null) {
@@ -251,6 +283,10 @@ export default class Drawflow {
           this.connection_selected.classList.remove("selected");
           this.removeReouteConnectionSelected();
           this.connection_selected = null;
+        }
+        if (this.framenode_selected != null) {
+          this.framenode_selected.classList.remove("selected");
+          this.framenode_selected = null
         }
         this.editor_selected = true;
         break;
@@ -265,6 +301,10 @@ export default class Drawflow {
           this.removeReouteConnectionSelected();
           this.connection_selected = null;
         }
+        if (this.framenode_selected != null) {
+          this.framenode_selected.classList.remove("selected");
+          this.framenode_selected = null
+        }
         this.editor_selected = true;
         break;
       case 'main-path':
@@ -277,6 +317,10 @@ export default class Drawflow {
           this.connection_selected.classList.remove("selected");
           this.removeReouteConnectionSelected();
           this.connection_selected = null;
+        }
+        if (this.framenode_selected != null) {
+          this.framenode_selected.classList.remove("selected");
+          this.framenode_selected = null
         }
         this.connection_selected = this.ele_selected;
         this.connection_selected.classList.add("selected");
@@ -303,6 +347,10 @@ export default class Drawflow {
           this.removeConnection();
         }
 
+        if (this.framenode_selected) {
+          this.removeFrameNodeId(this.framenode_selected.id);
+        }
+
         if(this.node_selected != null) {
           this.node_selected.classList.remove("selected");
           this.node_selected = null;
@@ -312,6 +360,10 @@ export default class Drawflow {
           this.connection_selected.classList.remove("selected");
           this.removeReouteConnectionSelected();
           this.connection_selected = null;
+        }
+        if (this.framenode_selected != null) {
+          this.framenode_selected.classList.remove("selected");
+          this.framenode_selected = null
         }
 
       break;
@@ -543,6 +595,21 @@ export default class Drawflow {
 
       }
 
+    } else {
+      if (e.target.classList.contains('drawflow-framenode') || e.target.classList.contains('drawflow-framenode-text')) {
+        const frameNode = e.target.classList.contains('drawflow-framenode') ? e.target : e.target.parentElement
+        const deletebox = document.createElement('div');
+        deletebox.classList.add("drawflow-delete");
+        deletebox.innerHTML = "x";
+
+        const frameNodeBCR = frameNode.getBoundingClientRect()
+        const pos_y = frameNodeBCR.top - 30 // roughly include margin and node size
+        const pos_x = frameNodeBCR.left + frameNodeBCR.width
+        deletebox.style.top = pos_y * (this.precanvas.clientHeight / (this.precanvas.clientHeight * this.zoom)) - (this.precanvas.getBoundingClientRect().y * (this.precanvas.clientHeight / (this.precanvas.clientHeight * this.zoom))) + "px";
+        deletebox.style.left = pos_x * (this.precanvas.clientWidth / (this.precanvas.clientWidth * this.zoom)) - (this.precanvas.getBoundingClientRect().x * (this.precanvas.clientWidth / (this.precanvas.clientWidth * this.zoom))) + "px";
+
+        this.precanvas.appendChild(deletebox);
+      }
     }
 
   }
@@ -693,7 +760,7 @@ export default class Drawflow {
 
   }
 
-  addConnection(id_output, id_input, output_class, input_class) {
+  addConnection(id_output, id_input, output_class, input_class, labels) {
     var nodeOneModule = this.getModuleFromNodeId(id_output);
     var nodeTwoModule = this.getModuleFromNodeId(id_input);
     if(nodeOneModule === nodeTwoModule) {
@@ -725,6 +792,10 @@ export default class Drawflow {
           connection.classList.add(output_class);
           connection.classList.add(input_class);
           connection.appendChild(path);
+          if (labels) {
+            var connectionLabel = this.buildConnectionLabels(labels, id_input, id_output)
+            connection.appendChild(connectionLabel);
+          }
           this.precanvas.appendChild(connection);
           this.updateConnectionNodes('node-'+id_output);
           this.updateConnectionNodes('node-'+id_input);
@@ -733,6 +804,35 @@ export default class Drawflow {
         this.dispatch('connectionCreated', { output_id: id_output, input_id: id_input, output_class:  output_class, input_class: input_class});
       }
     }
+  }
+
+  buildConnectionLabels(labels, id_input, id_output) {
+    var foreignObject = document.createElementNS('http://www.w3.org/2000/svg', "foreignObject");
+    if (!labels || labels.length == 0) {
+      return foreignObject;
+    }
+    foreignObject.setAttributeNS(null, 'width', '100%');
+    foreignObject.setAttributeNS(null, 'height', '100%');
+    foreignObject.style['overflow'] = 'visible';
+    var div = document.createElement('div');
+    labels.forEach((labelHtml) => {
+      var template = document.createElement('template');
+      labelHtml = labelHtml.trim();
+      template.innerHTML = labelHtml;
+      div.appendChild(template.content.firstChild);
+    })
+    div.classList.add("connection-label-container");
+    div.setAttribute('node_in', id_input);
+    div.setAttribute('node_out', id_output);
+    foreignObject.appendChild(div);
+    return foreignObject;
+  }
+
+  updateConnectionLabels(labelFOContainer, start_pos_x, start_pos_y, end_pos_x, end_pos_y) {
+    var xMid = start_pos_x + (end_pos_x - start_pos_x) / 2
+    var yMid = start_pos_y + (end_pos_y - start_pos_y) / 2
+    labelFOContainer.setAttributeNS(null, 'x', xMid);
+    labelFOContainer.setAttributeNS(null, 'y', yMid);
   }
 
   updateConnectionNodes(id) {
@@ -745,6 +845,7 @@ export default class Drawflow {
     const precanvas = this.precanvas;
     const curvature = this.curvature;
     const createCurvature = this.createCurvature;
+    const updateConnectionLabels = this.updateConnectionLabels;
     const reroute_curvature = this.reroute_curvature;
     const reroute_curvature_start_end = this.reroute_curvature_start_end;
     const reroute_fix_curvature = this.reroute_fix_curvature;
@@ -780,6 +881,9 @@ export default class Drawflow {
 
         const lineCurve = createCurvature(line_x, line_y, x, y, curvature, 'openclose');
         elemsOut[item].children[0].setAttributeNS(null, 'd', lineCurve );
+        if (elemsOut[item].children[1]) {
+          updateConnectionLabels(elemsOut[item].children[1], line_x, line_y, x, y);
+        }
       } else {
         const points = elemsOut[item].querySelectorAll('.point');
         let linecurve = '';
@@ -924,6 +1028,9 @@ export default class Drawflow {
 
         const lineCurve = createCurvature(line_x, line_y, x, y, curvature, 'openclose');
         elems[item].children[0].setAttributeNS(null, 'd', lineCurve );
+        if (elems[item].children[1]) {
+          updateConnectionLabels(elems[item].children[1], line_x, line_y, x, y);
+        }
 
       } else {
         const points = elems[item].querySelectorAll('.point');
@@ -1052,6 +1159,16 @@ export default class Drawflow {
 
       }
     })
+
+    var nodeIdInt = parseInt(id.slice(5));
+    if (this.nodes_to_frames_registry[nodeIdInt] !== undefined && this.nodes_to_frames_registry[nodeIdInt].length > 0) {
+      var _this = this;
+      this.nodes_to_frames_registry[nodeIdInt].forEach((frameNodeUuid) => {
+        const containedNodeIDs = _this.frame_to_nodes_registry[frameNodeUuid]
+        const frameNode = _this.container.querySelector('#framenode-' + frameNodeUuid)
+        _this.updateFrameNodePosition(frameNode, containedNodeIDs);
+      })
+    }
   }
 
   dblclick(e) {
@@ -1310,6 +1427,7 @@ export default class Drawflow {
   }
 
   addNodeImport (dataNode, precanvas) {
+    const buildConnectionLabels = this.buildConnectionLabels;
     const parent = document.createElement('div');
     parent.classList.add("parent-node");
 
@@ -1346,6 +1464,11 @@ export default class Drawflow {
         connection.classList.add(input_item);
 
         connection.appendChild(path);
+        var labels = dataNode.inputs[input_item].connections[output_item].labels
+        if (labels) {
+          var connectionLabel = buildConnectionLabels(labels, dataNode.id, dataNode.inputs[input_item].connections[output_item].node)
+          connection.appendChild(connectionLabel);
+        }
         precanvas.appendChild(connection);
 
       });
@@ -1468,6 +1591,116 @@ export default class Drawflow {
         };
       });
     });
+  }
+
+  addFrameNode(frameNodeConfig) {
+    frameNodeConfig.nodes = [...new Set(frameNodeConfig.nodes)]
+    if (frameNodeConfig.nodes.length == 0) {
+      return
+    }
+
+    var newNodeId = this.getUuid();
+    this.frame_to_nodes_registry[newNodeId] = frameNodeConfig.nodes
+    frameNodeConfig.nodes.forEach(nodeId => {
+      if (this.nodes_to_frames_registry[nodeId] === undefined) {
+        this.nodes_to_frames_registry[nodeId] = []
+      }
+      this.nodes_to_frames_registry[nodeId].push(newNodeId)
+    });
+    const parent = document.createElement('div');
+    parent.classList.add(...["parent-framenode"]);
+
+    const frameNode = document.createElement('div');
+    frameNode.innerHTML = '';
+    frameNode.setAttribute('id', 'framenode-' + newNodeId);
+    frameNode.classList.add(...['drawflow-framenode']);
+    if (frameNodeConfig.class !== undefined && frameNodeConfig.class != '') {
+      frameNode.classList.add(...frameNodeConfig.class.split(' '));
+    }
+
+    this.updateFrameNodePosition(frameNode, frameNodeConfig.nodes)
+
+    const frameTextNode = document.createElement('span');
+    frameTextNode.innerText = frameNodeConfig.text;
+    frameTextNode.classList.add('drawflow-framenode-text')
+    frameNode.appendChild(frameTextNode);
+
+    parent.appendChild(frameNode);
+    this.precanvas.appendChild(parent);
+
+    var json = {
+      id: newNodeId,
+      text: frameNodeConfig.text,
+      nodes: frameNodeConfig.nodes,
+      class: frameNodeConfig.class,
+    }
+    this.drawflow.drawflow[this.module].data._frames[newNodeId] = json;
+    this.dispatch('frameNodeCreated', newNodeId);
+  }
+
+  updateFrameNodePosition(frameNode, nodeIDs) {
+    if (!frameNode) {
+      return
+    }
+
+    var _this = this
+    var nodesHtml = nodeIDs.map(function (id) {
+      return _this.container.querySelector('#node-' + id)
+    })
+
+    function getFrameCoordinatesFromNodes(nodesHtml) {
+      var topLeft = { x: Number.MAX_SAFE_INTEGER, y: Number.MAX_SAFE_INTEGER }
+      var bottomRight = { x: Number.MIN_SAFE_INTEGER, y: Number.MIN_SAFE_INTEGER }
+      nodesHtml.forEach(function (nodeHtml) {
+        var bcr = nodeHtml.getBoundingClientRect()
+        topLeft.x = Math.min(topLeft.x, bcr.left)
+        topLeft.y = Math.min(topLeft.y, bcr.top)
+        bottomRight.x = Math.max(bottomRight.x, bcr.left + bcr.width)
+        bottomRight.y = Math.max(bottomRight.y, bcr.top + bcr.height)
+      })
+      return { topLeft: topLeft, bottomRight: bottomRight }
+    }
+
+    var frameCoordinates = getFrameCoordinatesFromNodes(nodesHtml)
+
+    var pos_x = frameCoordinates.topLeft.x - this.frameNodePadding.left / 2
+    var pos_y = frameCoordinates.topLeft.y - this.frameNodePadding.top / 2
+    var frameNodeHeight = (frameCoordinates.bottomRight.y - frameCoordinates.topLeft.y) + (this.frameNodePadding.top / 2 + this.frameNodePadding.bottom)
+    var frameNodeWidth = (frameCoordinates.bottomRight.x - frameCoordinates.topLeft.x) + (this.frameNodePadding.left / 2 + this.frameNodePadding.right)
+
+    var transpositionFactorX = (this.precanvas.clientWidth / (this.precanvas.clientWidth * this.zoom))
+    var transpositionOffsetX = -(this.precanvas.getBoundingClientRect().x * (this.precanvas.clientWidth / (this.precanvas.clientWidth * this.zoom)))
+    var transpositionFactorY = (this.precanvas.clientHeight / (this.precanvas.clientHeight * this.zoom))
+    var transpositionOffsetY = -(this.precanvas.getBoundingClientRect().y * (this.precanvas.clientHeight / (this.precanvas.clientHeight * this.zoom)))
+
+    pos_x = pos_x * transpositionFactorX + transpositionOffsetX
+    pos_y = pos_y * transpositionFactorY + transpositionOffsetY
+    frameNodeWidth = frameNodeWidth * transpositionFactorX
+    frameNodeHeight = frameNodeHeight * transpositionFactorY
+
+    frameNode.style.top = pos_y + 'px';
+    frameNode.style.left = pos_x + 'px';
+    frameNode.style.height = frameNodeHeight + 'px';
+    frameNode.style.width = frameNodeWidth + 'px';
+  }
+
+  updateFramenode(frameNodeUuid, frameNodeConfig) {
+    const frameNode = document.getElementById(frameNodeUuid);
+    frameNode.classList.remove(...frameNode.classList)
+    frameNode.classList.add(...['drawflow-framenode']);
+    if (frameNodeConfig.class !== undefined && frameNodeConfig.class != '') {
+      frameNode.classList.add(...frameNodeConfig.class.split(' '));
+    }
+
+    const frameTextNode = frameNode.querySelector('.drawflow-framenode-text')
+    frameTextNode.innerText = frameNodeConfig.text
+
+    var oldJson = this.drawflow.drawflow[this.module].data._frames[frameNodeUuid.slice(10)]
+    oldJson.text = frameNodeConfig.text
+    oldJson.class = frameNodeConfig.class
+    this.drawflow.drawflow[this.module].data._frames[frameNodeUuid.slice(10)] = oldJson;
+
+    this.dispatch('frameNodeUpdated', frameNodeUuid.slice(10));
   }
 
   updateNodeValue(event) {
@@ -1723,6 +1956,25 @@ export default class Drawflow {
     if(this.module === moduleName) {
       this.container.querySelector(`#${id}`).remove();
     }
+
+    var _this = this
+    var new_frame_to_nodes_registry = []
+    if (this.nodes_to_frames_registry[id.slice(5)] !== undefined) {
+      this.nodes_to_frames_registry[id.slice(5)].forEach((frameUuid) => {
+        new_frame_to_nodes_registry = _this.frame_to_nodes_registry[frameUuid].filter((nodeId) => {
+          return id.slice(5) != nodeId;
+        })
+        if (new_frame_to_nodes_registry.length == 0) {
+          _this.removeFrameNodeId('framenode-' + frameUuid)
+        } else {
+          const frameNode = _this.container.querySelector('#framenode-' + frameUuid)
+          _this.frame_to_nodes_registry[frameUuid] = new_frame_to_nodes_registry
+          _this.updateFrameNodePosition(frameNode, _this.frame_to_nodes_registry[frameUuid]);
+        }
+      })
+      delete this.nodes_to_frames_registry[id.slice(5)]
+    }
+
     delete this.drawflow.drawflow[moduleName].data[id.slice(5)];
     this.dispatch('nodeRemoved', id.slice(5));
   }
@@ -1828,6 +2080,21 @@ export default class Drawflow {
     }
   }
 
+  removeFrameNodeId(fullID) {
+    const frameUuid = fullID.slice(10);
+    const moduleName = this.getModuleFromNodeId(this.frame_to_nodes_registry[frameUuid][0])
+    this.container.querySelector(`#${fullID}`).remove();
+    var _this = this;
+    this.frame_to_nodes_registry[frameUuid].forEach((nodeID) => {
+      _this.nodes_to_frames_registry[nodeID] = _this.nodes_to_frames_registry[nodeID].filter((frameNodeUuid) => {
+        return frameNodeUuid != frameUuid;
+      })
+    })
+    delete this.frame_to_nodes_registry[frameUuid];
+    delete this.drawflow.drawflow[moduleName].data._frames[frameUuid];
+    this.dispatch('frameNodeRemoved', frameUuid);
+  }
+
   getModuleFromNodeId(id) {
     var nameModule;
     const editor = this.drawflow.drawflow
@@ -1842,7 +2109,7 @@ export default class Drawflow {
   }
 
   addModule(name) {
-    this.drawflow.drawflow[name] =  { "data": {} };
+    this.drawflow.drawflow[name] = { "data": { "_frames": {} } };
     this.dispatch('moduleCreated', name);
   }
   changeModule(name) {
@@ -1871,12 +2138,16 @@ export default class Drawflow {
 
   clearModuleSelected() {
     this.precanvas.innerHTML = "";
-    this.drawflow.drawflow[this.module] =  { "data": {} };
+    this.drawflow.drawflow[this.module] = { "data": { "_frames": {} } };
+    this.frame_to_nodes_registry = {};
+    this.nodes_to_frames_registry = {};
   }
 
   clear () {
     this.precanvas.innerHTML = "";
-    this.drawflow = { "drawflow": { "Home": { "data": {} }}};
+    this.drawflow = { "drawflow": { "Home": { "data": { "_frames": {} } } } };
+    this.frame_to_nodes_registry = {};
+    this.nodes_to_frames_registry = {};
   }
   export () {
     const dataExport = JSON.parse(JSON.stringify(this.drawflow));
