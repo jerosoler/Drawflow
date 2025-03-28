@@ -2,6 +2,7 @@ const gulp = require('gulp');
 const concat = require('gulp-concat');
 const minifyCSS = require('gulp-minify-css');
 const replace = require('gulp-replace');
+const { exec } = require('child_process');
 
 gulp.task('style', () => {
   return gulp.src('dist/drawflow.min.css')
@@ -17,8 +18,23 @@ gulp.task('css', () => {
   .pipe(gulp.dest('dist/'))
 });
 
+gulp.task('docs', (done) => {
+  exec('npx jsdoc -c jsdoc.json', (err, stdout, stderr) => {
+    if (err) {
+      console.error(`Error generating JSDoc: ${err}`);
+      return done(err);
+    }
+    console.log(`JSDoc output: ${stdout}`);
+    if (stderr) {
+      console.error(`JSDoc errors: ${stderr}`);
+    }
+    done();
+  });
+});
+
 gulp.task('default', gulp.series(
     'css', 
-    'style'
+    'style',
+    'docs'
   )
 );

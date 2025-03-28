@@ -1,55 +1,304 @@
+/**
+ * Drawflow - Simple flow library
+ * 
+ * Drawflow allows you to create data flows easily and quickly.
+ * It provides a visual interface for creating nodes with inputs and outputs,
+ * and connecting them to create a flow diagram.
+ * 
+ * @author Jero Soler <jerosoler@gmail.com>
+ * @version 0.0.59
+ * @license MIT
+ * @see https://github.com/jerosoler/Drawflow
+ */
+
+/**
+ * Main Drawflow class
+ * 
+ * @export
+ * @class Drawflow
+ */
 export default class Drawflow {
+  /**
+   * Creates an instance of Drawflow.
+   * 
+   * @param {HTMLElement} container - The container element where the flow editor will be rendered
+   * @param {Object} render - Rendering engine (null for standard DOM, Vue for Vue.js integration)
+   * @param {Object} parent - Parent instance (used for Vue.js integration)
+   */
   constructor(container, render = null, parent = null) {
+    /**
+     * Event listeners storage
+     * @type {Object}
+     */
     this.events = {};
+
+    /**
+     * Container element where the flow editor is rendered
+     * @type {HTMLElement}
+     */
     this.container = container;
+
+    /**
+     * Canvas element for drawing the flow
+     * @type {HTMLElement}
+     */
     this.precanvas = null;
+
+    /**
+     * Counter for generating unique node IDs
+     * @type {number}
+     */
     this.nodeId = 1;
+
+    /**
+     * Currently selected element
+     * @type {HTMLElement}
+     */
     this.ele_selected = null;
+
+    /**
+     * Currently selected node
+     * @type {HTMLElement}
+     */
     this.node_selected = null;
+
+    /**
+     * Flag indicating if dragging is active
+     * @type {boolean}
+     */
     this.drag = false;
+
+    /**
+     * Flag to enable/disable rerouting of connections
+     * @type {boolean}
+     */
     this.reroute = false;
+
+    /**
+     * Flag to fix curvature when rerouting
+     * @type {boolean}
+     */
     this.reroute_fix_curvature = false;
+
+    /**
+     * Curvature value for connections
+     * @type {number}
+     */
     this.curvature = 0.5;
+
+    /**
+     * Curvature value for the start and end of rerouted connections
+     * @type {number}
+     */
     this.reroute_curvature_start_end = 0.5;
+
+    /**
+     * Curvature value for rerouted connections
+     * @type {number}
+     */
     this.reroute_curvature = 0.5;
+
+    /**
+     * Width of reroute points
+     * @type {number}
+     */
     this.reroute_width = 6;
+
+    /**
+     * Flag indicating if a point is being dragged
+     * @type {boolean}
+     */
     this.drag_point = false;
+
+    /**
+     * Flag indicating if the editor is selected
+     * @type {boolean}
+     */
     this.editor_selected = false;
+
+    /**
+     * Flag indicating if a connection is being created
+     * @type {boolean}
+     */
     this.connection = false;
+
+    /**
+     * Element used for the current connection
+     * @type {HTMLElement}
+     */
     this.connection_ele = null;
+
+    /**
+     * Currently selected connection
+     * @type {HTMLElement}
+     */
     this.connection_selected = null;
+
+    /**
+     * X position of the canvas
+     * @type {number}
+     */
     this.canvas_x = 0;
+
+    /**
+     * Y position of the canvas
+     * @type {number}
+     */
     this.canvas_y = 0;
+
+    /**
+     * Current X position
+     * @type {number}
+     */
     this.pos_x = 0;
+
+    /**
+     * Starting X position
+     * @type {number}
+     */
     this.pos_x_start = 0;
+
+    /**
+     * Current Y position
+     * @type {number}
+     */
     this.pos_y = 0;
+
+    /**
+     * Starting Y position
+     * @type {number}
+     */
     this.pos_y_start = 0;
+
+    /**
+     * Current mouse X position
+     * @type {number}
+     */
     this.mouse_x = 0;
+
+    /**
+     * Current mouse Y position
+     * @type {number}
+     */
     this.mouse_y = 0;
+
+    /**
+     * Width of connection lines
+     * @type {number}
+     */
     this.line_path = 5;
+
+    /**
+     * Element that was first clicked
+     * @type {HTMLElement}
+     */
     this.first_click = null;
+
+    /**
+     * Flag to force connections to the first input
+     * @type {boolean}
+     */
     this.force_first_input = false;
+
+    /**
+     * Flag to enable/disable dragging inputs
+     * @type {boolean}
+     */
     this.draggable_inputs = true;
+
+    /**
+     * Flag to use UUID for node IDs instead of incremental numbers
+     * @type {boolean}
+     */
     this.useuuid = false;
+
+    /**
+     * Parent instance (used for Vue.js integration)
+     * @type {Object}
+     */
     this.parent = parent;
 
+    /**
+     * Registry of node templates
+     * @type {Object}
+     */
     this.noderegister = {};
+
+    /**
+     * Rendering engine
+     * @type {Object}
+     */
     this.render = render;
+
+    /**
+     * Data structure for the flow
+     * @type {Object}
+     */
     this.drawflow = { "drawflow": { "Home": { "data": {} }}};
+
     // Configurable options
+    /**
+     * Current module name
+     * @type {string}
+     */
     this.module = 'Home';
+
+    /**
+     * Editor mode: 'edit', 'fixed', or 'view'
+     * @type {string}
+     */
     this.editor_mode = 'edit';
+
+    /**
+     * Current zoom level
+     * @type {number}
+     */
     this.zoom = 1;
+
+    /**
+     * Maximum zoom level
+     * @type {number}
+     */
     this.zoom_max = 1.6;
+
+    /**
+     * Minimum zoom level
+     * @type {number}
+     */
     this.zoom_min = 0.5;
+
+    /**
+     * Zoom increment/decrement value
+     * @type {number}
+     */
     this.zoom_value = 0.1;
+
+    /**
+     * Last zoom value
+     * @type {number}
+     */
     this.zoom_last_value = 1;
 
     // Mobile
+    /**
+     * Cache for touch events (used for mobile zoom)
+     * @type {Array}
+     */
     this.evCache = new Array();
+
+    /**
+     * Previous difference between touch points
+     * @type {number}
+     */
     this.prevDiff = -1;
   }
 
+  /**
+   * Initializes the Drawflow editor
+   * 
+   * Sets up the container, creates the canvas, and attaches event listeners
+   * for mouse, touch, keyboard, and other interactions.
+   */
   start () {
     // console.info("Start Drawflow!!");
     this.container.classList.add("parent-drawflow");
@@ -89,11 +338,23 @@ export default class Drawflow {
     this.load();
   }
 
-  /* Mobile zoom */
+  /**
+   * Mobile zoom functionality - handles pointer down events
+   * 
+   * @param {PointerEvent} ev - The pointer event
+   */
   pointerdown_handler(ev) {
    this.evCache.push(ev);
   }
 
+  /**
+   * Mobile zoom functionality - handles pointer move events
+   * 
+   * Calculates the distance between two touch points to determine
+   * whether to zoom in or out.
+   * 
+   * @param {PointerEvent} ev - The pointer event
+   */
   pointermove_handler(ev) {
    for (var i = 0; i < this.evCache.length; i++) {
      if (ev.pointerId == this.evCache[i].pointerId) {
@@ -109,7 +370,6 @@ export default class Drawflow {
      if (this.prevDiff > 100) {
        if (curDiff > this.prevDiff) {
          // The distance between the two pointers has increased
-
          this.zoom_in();
        }
        if (curDiff < this.prevDiff) {
@@ -121,12 +381,23 @@ export default class Drawflow {
    }
   }
 
+  /**
+   * Mobile zoom functionality - handles pointer up events
+   * 
+   * @param {PointerEvent} ev - The pointer event
+   */
   pointerup_handler(ev) {
     this.remove_event(ev);
     if (this.evCache.length < 2) {
       this.prevDiff = -1;
     }
   }
+
+  /**
+   * Mobile zoom helper - removes an event from the cache
+   * 
+   * @param {PointerEvent} ev - The pointer event to remove
+   */
   remove_event(ev) {
    // Remove this event from the target's cache
    for (var i = 0; i < this.evCache.length; i++) {
@@ -137,21 +408,31 @@ export default class Drawflow {
    }
   }
   /* End Mobile Zoom */
+  /**
+   * Loads the flow data into the editor
+   * 
+   * This method imports nodes from the data structure, adds reroute points if enabled,
+   * updates connections between nodes, and sets the next node ID.
+   */
   load() {
+    // Import nodes from data
     for (var key in this.drawflow.drawflow[this.module].data) {
       this.addNodeImport(this.drawflow.drawflow[this.module].data[key], this.precanvas);
     }
 
+    // Add reroute points if enabled
     if(this.reroute) {
       for (var key in this.drawflow.drawflow[this.module].data) {
         this.addRerouteImport(this.drawflow.drawflow[this.module].data[key]);
       }
     }
 
+    // Update connections between nodes
     for (var key in this.drawflow.drawflow[this.module].data) {
       this.updateConnectionNodes('node-'+key);
     }
 
+    // Set the next node ID based on the highest existing ID
     const editor = this.drawflow.drawflow;
     let number = 1;
     Object.keys(editor).map(function(moduleName, index) {
@@ -693,6 +974,18 @@ export default class Drawflow {
 
   }
 
+  /**
+   * Adds a connection between two nodes
+   * 
+   * Creates a connection between an output of one node and an input of another node.
+   * The connection is only created if both nodes are in the same module and the connection
+   * doesn't already exist.
+   * 
+   * @param {string|number} id_output - ID of the node where the connection starts
+   * @param {string|number} id_input - ID of the node where the connection ends
+   * @param {string} output_class - Class of the output connector (e.g., 'output_1')
+   * @param {string} input_class - Class of the input connector (e.g., 'input_1')
+   */
   addConnection(id_output, id_input, output_class, input_class) {
     var nodeOneModule = this.getModuleFromNodeId(id_output);
     var nodeTwoModule = this.getModuleFromNodeId(id_input);
@@ -1159,14 +1452,43 @@ export default class Drawflow {
     this.updateConnectionNodes(nodeUpdate);
   }
 
+  /**
+   * Registers a node template
+   * 
+   * Stores a node template that can be reused when creating nodes.
+   * Used with the addNode method when typenode is true or 'vue'.
+   * 
+   * @param {string} name - Name to identify the registered node
+   * @param {HTMLElement|Object} html - HTML element or Vue component to use as the node content
+   * @param {Object} props - Properties to pass to the Vue component (only used with Vue)
+   * @param {Object} options - Additional options for the Vue component (only used with Vue)
+   */
   registerNode(name, html, props = null, options = null) {
     this.noderegister[name] = {html: html, props: props, options: options};
   }
 
+  /**
+   * Gets a node by its ID
+   * 
+   * Retrieves a deep copy of a node's data from the flow based on its ID.
+   * The method first determines which module contains the node.
+   * 
+   * @param {string|number} id - ID of the node to retrieve
+   * @returns {Object} A deep copy of the node's data
+   */
   getNodeFromId(id) {
     var moduleName = this.getModuleFromNodeId(id)
     return JSON.parse(JSON.stringify(this.drawflow.drawflow[moduleName].data[id]));
   }
+  /**
+   * Gets all nodes with a specific name
+   * 
+   * Searches through all modules to find nodes with the specified name.
+   * Returns an array of node IDs that match the name.
+   * 
+   * @param {string} name - Name of the nodes to find
+   * @returns {Array} Array of node IDs that match the name
+   */
   getNodesFromName(name) {
     var nodes = [];
     const editor = this.drawflow.drawflow
@@ -1180,6 +1502,23 @@ export default class Drawflow {
     return nodes;
   }
 
+  /**
+   * Adds a new node to the flow
+   * 
+   * Creates a node with the specified properties, inputs, and outputs,
+   * and adds it to the canvas and data structure.
+   * 
+   * @param {string} name - Name of the node
+   * @param {number} num_in - Number of input connections
+   * @param {number} num_out - Number of output connections
+   * @param {number} ele_pos_x - X position of the node on the canvas
+   * @param {number} ele_pos_y - Y position of the node on the canvas
+   * @param {string} classoverride - CSS classes to add to the node (space-separated)
+   * @param {Object} data - Data to bind to the node's elements with df-* attributes
+   * @param {string} html - HTML content or name of registered node
+   * @param {boolean|string} typenode - Type of node: false for HTML, true for registered node, 'vue' for Vue component
+   * @returns {number} The ID of the created node
+   */
   addNode (name, num_in, num_out, ele_pos_x, ele_pos_y, classoverride, data, html, typenode = false) {
     if (this.useuuid) {
       var newNodeId = this.getUuid();
@@ -1491,6 +1830,15 @@ export default class Drawflow {
     }
   }
 
+  /**
+   * Updates the data of a node
+   * 
+   * Updates the data object of a node with the specified ID and refreshes
+   * any DOM elements with matching df-* attributes.
+   * 
+   * @param {string|number} id - ID of the node to update
+   * @param {Object} data - New data object to assign to the node
+   */
   updateNodeDataFromId(id, data) {
     var moduleName = this.getModuleFromNodeId(id)
     this.drawflow.drawflow[moduleName].data[id].data = data;
@@ -1537,6 +1885,14 @@ export default class Drawflow {
     }
   }
 
+  /**
+   * Adds an input to a node
+   * 
+   * Creates a new input connection point on the specified node.
+   * The input is added to both the DOM and the data structure.
+   * 
+   * @param {string|number} id - ID of the node to add an input to
+   */
   addNodeInput(id) {
     var moduleName = this.getModuleFromNodeId(id)
     const infoNode = this.getNodeFromId(id)
@@ -1554,6 +1910,14 @@ export default class Drawflow {
     this.drawflow.drawflow[moduleName].data[id].inputs["input_"+(numInputs+1)] = { "connections": []};
   }
 
+  /**
+   * Adds an output to a node
+   * 
+   * Creates a new output connection point on the specified node.
+   * The output is added to both the DOM and the data structure.
+   * 
+   * @param {string|number} id - ID of the node to add an output to
+   */
   addNodeOutput(id) {
     var moduleName = this.getModuleFromNodeId(id)
     const infoNode = this.getNodeFromId(id)
@@ -1571,6 +1935,16 @@ export default class Drawflow {
     this.drawflow.drawflow[moduleName].data[id].outputs["output_"+(numOutputs+1)] = { "connections": []};
   }
 
+  /**
+   * Removes an input from a node
+   * 
+   * Removes the specified input connection point from a node.
+   * Also removes any connections attached to this input and updates
+   * the remaining inputs to maintain consecutive numbering.
+   * 
+   * @param {string|number} id - ID of the node to remove an input from
+   * @param {string} input_class - Class name of the input to remove (e.g., 'input_2')
+   */
   removeNodeInput(id, input_class) {
     var moduleName = this.getModuleFromNodeId(id)
     const infoNode = this.getNodeFromId(id)
@@ -1642,6 +2016,16 @@ export default class Drawflow {
     this.updateConnectionNodes('node-'+id);
   }
 
+  /**
+   * Removes an output from a node
+   * 
+   * Removes the specified output connection point from a node.
+   * Also removes any connections attached to this output and updates
+   * the remaining outputs to maintain consecutive numbering.
+   * 
+   * @param {string|number} id - ID of the node to remove an output from
+   * @param {string} output_class - Class name of the output to remove (e.g., 'output_2')
+   */
   removeNodeOutput(id, output_class) {
     var moduleName = this.getModuleFromNodeId(id)
     const infoNode = this.getNodeFromId(id)
@@ -1717,6 +2101,14 @@ export default class Drawflow {
     this.updateConnectionNodes('node-'+id);
   }
 
+  /**
+   * Removes a node from the editor
+   * 
+   * Removes the specified node and all its connections from both
+   * the DOM and the data structure.
+   * 
+   * @param {string} id - ID of the node to remove (format: 'node-X')
+   */
   removeNodeId(id) {
     this.removeConnectionNodeId(id);
     var moduleName = this.getModuleFromNodeId(id.slice(5))
@@ -1746,6 +2138,18 @@ export default class Drawflow {
     }
   }
 
+  /**
+   * Removes a single connection between two nodes
+   * 
+   * Removes a specific connection between an output of one node and an input of another node.
+   * The connection is only removed if both nodes are in the same module and the connection exists.
+   * 
+   * @param {string|number} id_output - ID of the node where the connection starts
+   * @param {string|number} id_input - ID of the node where the connection ends
+   * @param {string} output_class - Class of the output connector (e.g., 'output_1')
+   * @param {string} input_class - Class of the input connector (e.g., 'input_1')
+   * @returns {boolean} True if the connection was removed, false otherwise
+   */
   removeSingleConnection(id_output, id_input, output_class, input_class) {
     var nodeOneModule = this.getModuleFromNodeId(id_output);
     var nodeTwoModule = this.getModuleFromNodeId(id_input);
@@ -1784,6 +2188,14 @@ export default class Drawflow {
     }
   }
 
+  /**
+   * Removes all connections associated with a node
+   * 
+   * Removes all connections where the specified node is either the source (output)
+   * or the target (input). Updates both the DOM and the data structure.
+   * 
+   * @param {string} id - ID of the node to remove connections from (format: 'node-X')
+   */
   removeConnectionNodeId(id) {
     const idSearchIn = 'node_in_'+id;
     const idSearchOut = 'node_out_'+id;
@@ -1828,6 +2240,15 @@ export default class Drawflow {
     }
   }
 
+  /**
+   * Gets the module name containing a node
+   * 
+   * Searches through all modules to find which one contains a node with the given ID.
+   * Returns the name of the module where the node is found.
+   * 
+   * @param {string|number} id - ID of the node to locate
+   * @returns {string} Name of the module containing the node
+   */
   getModuleFromNodeId(id) {
     var nameModule;
     const editor = this.drawflow.drawflow
@@ -1841,10 +2262,26 @@ export default class Drawflow {
     return nameModule;
   }
 
+  /**
+   * Adds a new module to the editor
+   * 
+   * Creates a new module with the specified name and initializes its data structure.
+   * 
+   * @param {string} name - Name of the module to create
+   */
   addModule(name) {
     this.drawflow.drawflow[name] =  { "data": {} };
     this.dispatch('moduleCreated', name);
   }
+
+  /**
+   * Changes to a different module
+   * 
+   * Switches the editor view to the specified module, clearing the canvas
+   * and reloading the module's data.
+   * 
+   * @param {string} name - Name of the module to change to
+   */
   changeModule(name) {
     this.dispatch('moduleChanged', name);
     this.module = name;
@@ -1861,6 +2298,14 @@ export default class Drawflow {
     this.import(this.drawflow, false);
   }
 
+  /**
+   * Removes a module from the editor
+   * 
+   * Deletes the specified module and its data. If the current module
+   * is being removed, changes to the 'Home' module.
+   * 
+   * @param {string} name - Name of the module to remove
+   */
   removeModule(name) {
     if(this.module === name) {
       this.changeModule('Home');
@@ -1869,21 +2314,50 @@ export default class Drawflow {
     this.dispatch('moduleRemoved', name);
   }
 
+  /**
+   * Clears the currently selected module
+   * 
+   * Removes all nodes and connections from the current module and resets its data structure.
+   */
   clearModuleSelected() {
     this.precanvas.innerHTML = "";
     this.drawflow.drawflow[this.module] =  { "data": {} };
   }
 
+  /**
+   * Clears the entire editor
+   * 
+   * Removes all nodes and connections from all modules and resets the data structure
+   * to only contain an empty 'Home' module.
+   */
   clear () {
     this.precanvas.innerHTML = "";
     this.drawflow = { "drawflow": { "Home": { "data": {} }}};
   }
+
+  /**
+   * Exports the flow data
+   * 
+   * Creates a deep copy of the current flow data and returns it.
+   * Also dispatches an 'export' event with the data.
+   * 
+   * @returns {Object} The exported flow data
+   */
   export () {
     const dataExport = JSON.parse(JSON.stringify(this.drawflow));
     this.dispatch('export', dataExport);
     return dataExport;
   }
 
+  /**
+   * Imports flow data into the editor
+   * 
+   * Clears the current editor, replaces the data with the imported data,
+   * and reloads the editor.
+   * 
+   * @param {Object} data - The flow data to import
+   * @param {boolean} notifi - Whether to dispatch an 'import' event (default: true)
+   */
   import (data, notifi = true) {
     this.clear();
     this.drawflow = JSON.parse(JSON.stringify(data));
@@ -1914,9 +2388,17 @@ export default class Drawflow {
        this.events[event].listeners.push(callback);
    }
 
+  /**
+   * Removes an event listener
+   * 
+   * Removes a previously registered callback function for the specified event.
+   * 
+   * @param {string} event - The name of the event
+   * @param {Function} callback - The callback function to remove
+   * @returns {boolean} False if the event doesn't exist, undefined otherwise
+   */
    removeListener (event, callback) {
       // Check if this event not exists
-
       if (!this.events[event]) return false
 
       const listeners = this.events[event].listeners
@@ -1925,6 +2407,16 @@ export default class Drawflow {
       if (hasListener) listeners.splice(listenerIndex, 1)
    }
 
+  /**
+   * Dispatches an event
+   * 
+   * Executes all callback functions registered for the specified event,
+   * passing the provided details to each callback.
+   * 
+   * @param {string} event - The name of the event to dispatch
+   * @param {*} details - Data to pass to the event listeners
+   * @returns {boolean} False if the event doesn't exist, undefined otherwise
+   */
    dispatch (event, details) {
        // Check if this event not exists
        if (this.events[event] === undefined) {
@@ -1936,6 +2428,15 @@ export default class Drawflow {
        });
    }
 
+    /**
+     * Generates a UUID (Universally Unique Identifier)
+     * 
+     * Creates a random UUID following the RFC 4122 standard.
+     * Used when the `useuuid` option is enabled to generate unique node IDs.
+     * 
+     * @returns {string} A randomly generated UUID
+     * @see http://www.ietf.org/rfc/rfc4122.txt
+     */
     getUuid() {
         // http://www.ietf.org/rfc/rfc4122.txt
         var s = [];
