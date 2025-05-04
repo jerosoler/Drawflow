@@ -1224,7 +1224,11 @@ export default class Drawflow {
     const content = document.createElement('div');
     content.classList.add("drawflow_content_node");
     if(typenode === false) {
-      content.innerHTML = html;
+      if (html instanceof HTMLElement) {
+        content.appendChild(html);
+      } else {
+        content.innerHTML = html;
+      }
     } else if (typenode === true) {
       content.appendChild(this.noderegister[html].html.cloneNode(true));
     } else {
@@ -1362,7 +1366,11 @@ export default class Drawflow {
     content.classList.add("drawflow_content_node");
 
     if(dataNode.typenode === false) {
-      content.innerHTML = dataNode.html;
+      if (dataNode.html instanceof HTMLElement) {
+        content.appendChild(dataNode.html);
+      } else {
+        content.innerHTML = dataNode.html;
+      }
     } else if (dataNode.typenode === true) {
       content.appendChild(this.noderegister[dataNode.html].html.cloneNode(true));
     } else {
@@ -1886,7 +1894,7 @@ export default class Drawflow {
 
   import (data, notifi = true) {
     this.clear();
-    this.drawflow = JSON.parse(JSON.stringify(data));
+    this.drawflow = data;//JSON.parse(JSON.stringify(data));
     this.load();
     if(notifi) {
       this.dispatch('import', 'import');
