@@ -71,6 +71,49 @@
   top: 2px;
 }
 
+.drawflow-node .box {
+  padding: 10px 20px 20px 20px;
+  font-size: 14px;
+  color: #555555;
+}
+
+.drawflow-node .field-group {
+  margin-bottom: 15px;
+}
+
+.drawflow-node .field-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 500;
+  color: #333;
+}
+
+.drawflow-node .field-group input[type="text"],
+.drawflow-node .field-group input[type="number"],
+.drawflow-node .field-group select,
+.drawflow-node .field-group textarea {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  color: #555;
+}
+
+.drawflow-node .field-group textarea {
+  resize: vertical;
+  min-height: 60px;
+}
+
+.drawflow-node .field-group select {
+  height: 36px;
+  background-color: white;
+}
+
+.drawflow-node .field-group input[type="number"] {
+  width: 100px;
+}
+
 .drawflow svg {
   z-index: 0;
   position: absolute;

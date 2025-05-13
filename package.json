@@ -37,8 +37,11 @@
     "gulp-minify-css": "^1.2.4",
     "gulp-replace": "^1.0.0",
     "mini-css-extract-plugin": "^0.9.0",
+    "webpack": "^4.42.1",
     "webpack-cli": "^3.3.11",
-    "webpack-dev-server": "^3.11.2",
-    "webpack": "^4.42.1"
+    "webpack-dev-server": "^3.11.2"
+  },
+  "dependencies": {
+    "drawflow": "^0.0.60"
   }
 }
