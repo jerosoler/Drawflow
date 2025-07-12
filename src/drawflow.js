@@ -46,8 +46,22 @@ export default class Drawflow {
     this.zoom_last_value = 1;
 
     // Mobile
-    this.evCache = new Array();
+    this.evCache = [];
     this.prevDiff = -1;
+    
+    // Bind methods to preserve context
+    this.pointerdown_handler = this.pointerdown_handler.bind(this);
+    this.pointermove_handler = this.pointermove_handler.bind(this);
+    this.pointerup_handler = this.pointerup_handler.bind(this);
+    this.remove_event = this.remove_event.bind(this);
+    this.dragEnd = this.dragEnd.bind(this);
+    this.position = this.position.bind(this);
+    this.click = this.click.bind(this);
+    this.contextmenu = this.contextmenu.bind(this);
+    this.key = this.key.bind(this);
+    this.zoom_enter = this.zoom_enter.bind(this);
+    this.updateNodeValue = this.updateNodeValue.bind(this);
+    this.dblclick = this.dblclick.bind(this);
   }
 
   start () {
@@ -59,32 +73,32 @@ export default class Drawflow {
     this.container.appendChild(this.precanvas);
 
     /* Mouse and Touch Actions */
-    this.container.addEventListener('mouseup', this.dragEnd.bind(this));
-    this.container.addEventListener('mousemove', this.position.bind(this));
-    this.container.addEventListener('mousedown', this.click.bind(this) );
+    this.container.addEventListener('mouseup', this.dragEnd);
+    this.container.addEventListener('mousemove', this.position);
+    this.container.addEventListener('mousedown', this.click);
 
-    this.container.addEventListener('touchend', this.dragEnd.bind(this));
-    this.container.addEventListener('touchmove', this.position.bind(this));
-    this.container.addEventListener('touchstart', this.click.bind(this));
+    this.container.addEventListener('touchend', this.dragEnd);
+    this.container.addEventListener('touchmove', this.position);
+    this.container.addEventListener('touchstart', this.click);
 
     /* Context Menu */
-    this.container.addEventListener('contextmenu', this.contextmenu.bind(this));
+    this.container.addEventListener('contextmenu', this.contextmenu);
     /* Delete */
-    this.container.addEventListener('keydown', this.key.bind(this));
+    this.container.addEventListener('keydown', this.key);
 
     /* Zoom Mouse */
-    this.container.addEventListener('wheel', this.zoom_enter.bind(this));
+    this.container.addEventListener('wheel', this.zoom_enter);
     /* Update data Nodes */
-    this.container.addEventListener('input', this.updateNodeValue.bind(this));
+    this.container.addEventListener('input', this.updateNodeValue);
 
-    this.container.addEventListener('dblclick', this.dblclick.bind(this));
+    this.container.addEventListener('dblclick', this.dblclick);
     /* Mobile zoom */
-    this.container.onpointerdown = this.pointerdown_handler.bind(this);
-    this.container.onpointermove = this.pointermove_handler.bind(this);
-    this.container.onpointerup = this.pointerup_handler.bind(this);
-    this.container.onpointercancel = this.pointerup_handler.bind(this);
-    this.container.onpointerout = this.pointerup_handler.bind(this);
-    this.container.onpointerleave = this.pointerup_handler.bind(this);
+    this.container.onpointerdown = this.pointerdown_handler;
+    this.container.onpointermove = this.pointermove_handler;
+    this.container.onpointerup = this.pointerup_handler;
+    this.container.onpointercancel = this.pointerup_handler;
+    this.container.onpointerout = this.pointerup_handler;
+    this.container.onpointerleave = this.pointerup_handler;
 
     this.load();
   }
@@ -96,13 +110,13 @@ export default class Drawflow {
 
   pointermove_handler(ev) {
    for (var i = 0; i < this.evCache.length; i++) {
-     if (ev.pointerId == this.evCache[i].pointerId) {
+     if (ev.pointerId === this.evCache[i].pointerId) {
         this.evCache[i] = ev;
      break;
      }
    }
 
-   if (this.evCache.length == 2) {
+   if (this.evCache.length === 2) {
      // Calculate the distance between the two pointers
      var curDiff = Math.abs(this.evCache[0].clientX - this.evCache[1].clientX);
 
@@ -130,7 +144,7 @@ export default class Drawflow {
   remove_event(ev) {
    // Remove this event from the target's cache
    for (var i = 0; i < this.evCache.length; i++) {
-     if (this.evCache[i].pointerId == ev.pointerId) {
+     if (this.evCache[i].pointerId === ev.pointerId) {
        this.evCache.splice(i, 1);
        break;
      }
@@ -1112,7 +1126,7 @@ export default class Drawflow {
 
       if(this.reroute_fix_curvature) {
 
-        if(position_add_array_point > 0 || this.drawflow.drawflow[this.module].data[nodeId].outputs[output_class].connections[searchConnection].points !== []) {
+        if(position_add_array_point > 0 || (this.drawflow.drawflow[this.module].data[nodeId].outputs[output_class].connections[searchConnection].points && this.drawflow.drawflow[this.module].data[nodeId].outputs[output_class].connections[searchConnection].points.length > 0)) {
           this.drawflow.drawflow[this.module].data[nodeId].outputs[output_class].connections[searchConnection].points.splice(position_add_array_point, 0, { pos_x: pos_x, pos_y: pos_y });
         } else {
           this.drawflow.drawflow[this.module].data[nodeId].outputs[output_class].connections[searchConnection].points.push({ pos_x: pos_x, pos_y: pos_y });
@@ -1172,7 +1186,7 @@ export default class Drawflow {
     const editor = this.drawflow.drawflow
     Object.keys(editor).map(function(moduleName, index) {
       for (var node in editor[moduleName].data) {
-        if(editor[moduleName].data[node].name == name) {
+        if(editor[moduleName].data[node].name === name) {
           nodes.push(editor[moduleName].data[node].id);
         }
       }
@@ -1477,7 +1491,7 @@ export default class Drawflow {
                 var keys = attr[i].nodeName.slice(3).split("-");
                 var target = this.drawflow.drawflow[this.module].data[event.target.closest(".drawflow_content_node").parentElement.id.slice(5)].data;
                 for (var index = 0; index < keys.length - 1; index += 1) {
-                    if (target[keys[index]] == null) {
+                    if (target[keys[index]] === null) {
                         target[keys[index]] = {};
                     }
                     target = target[keys[index]];
@@ -1622,7 +1636,7 @@ export default class Drawflow {
 
     nodeUpdates.forEach((itemx, i) => {
       this.drawflow.drawflow[moduleName].data[itemx.node].outputs[itemx.input].connections.forEach((itemz, g) => {
-          if(itemz.node == id) {
+          if(itemz.node === id) {
             const output_id = itemz.output.slice(6);
             if(parseInt(input_class_id) < parseInt(output_id)) {
               if(this.module === moduleName) {
@@ -1693,7 +1707,7 @@ export default class Drawflow {
 
     nodeUpdates.forEach((itemx, i) => {
       this.drawflow.drawflow[moduleName].data[itemx.node].inputs[itemx.output].connections.forEach((itemz, g) => {
-          if(itemz.node == id) {
+          if(itemz.node === id) {
             const input_id = itemz.input.slice(7);
             if(parseInt(output_class_id) < parseInt(input_id)) {
               if(this.module === moduleName) {
@@ -1754,7 +1768,7 @@ export default class Drawflow {
 
       // Check connection exist
       var exists = this.drawflow.drawflow[nodeOneModule].data[id_output].outputs[output_class].connections.findIndex(function(item,i) {
-        return item.node == id_input && item.output === input_class
+        return item.node === id_input && item.output === input_class
       });
       if(exists > -1) {
 
@@ -1764,7 +1778,7 @@ export default class Drawflow {
         }
 
         var index_out = this.drawflow.drawflow[nodeOneModule].data[id_output].outputs[output_class].connections.findIndex(function(item,i) {
-          return item.node == id_input && item.output === input_class
+          return item.node === id_input && item.output === input_class
         });
         this.drawflow.drawflow[nodeOneModule].data[id_output].outputs[output_class].connections.splice(index_out,1);
 
@@ -1833,7 +1847,7 @@ export default class Drawflow {
     const editor = this.drawflow.drawflow
     Object.keys(editor).map(function(moduleName, index) {
       Object.keys(editor[moduleName].data).map(function(node, index2) {
-        if(node == id) {
+        if(node === id) {
           nameModule = moduleName;
         }
       })
@@ -1937,17 +1951,22 @@ export default class Drawflow {
    }
 
     getUuid() {
+        // Modern UUID v4 generation
+        if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+            return crypto.randomUUID();
+        }
+        
+        // Fallback for older browsers
         // http://www.ietf.org/rfc/rfc4122.txt
-        var s = [];
-        var hexDigits = "0123456789abcdef";
-        for (var i = 0; i < 36; i++) {
+        const s = [];
+        const hexDigits = "0123456789abcdef";
+        for (let i = 0; i < 36; i++) {
             s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1);
         }
         s[14] = "4";  // bits 12-15 of the time_hi_and_version field to 0010
         s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1);  // bits 6-7 of the clock_seq_hi_and_reserved to 01
         s[8] = s[13] = s[18] = s[23] = "-";
 
-        var uuid = s.join("");
-        return uuid;
+        return s.join("");
     }
 }
