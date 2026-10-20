@@ -165,6 +165,10 @@ Parameter | Type | Default | Description
 `reroute` | Boolean | false | Active reroute
 `reroute_fix_curvature` | Boolean | false | Fix adding points
 `curvature` | Number | 0.5 | Curvature
+`curvature_backward` | Boolean | true | Draw connections to a node on the left as a loop around the nodes
+`backward_offset` | Number | 60 | Horizontal distance the loop goes out of the output / into the input
+`backward_depth` | Number | 80 | Distance the loop goes below the lowest port (nodes on the same row)
+`backward_row_gap` | Number | 120 | Vertical distance from which the loop crosses between rows instead of going below
 `reroute_curvature_start_end` | Number | 0.5 | Curvature reroute first point and las point
 `reroute_curvature` | Number | 0.5 | Curvature reroute
 `reroute_width` | Number | 6 | Width of reroute
